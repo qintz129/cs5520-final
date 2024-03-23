@@ -7,7 +7,6 @@ import Login from "./screens/Login";
 import MainTab from "./navigations/MainTab";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
-import { Ionicons, AntDesign } from "@expo/vector-icons";
 
 
 const Stack = createNativeStackNavigator();
