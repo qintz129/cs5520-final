@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View } from 'react-native'
 import React, {useState} from "react";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton"; 
 import Library  from "./Library"; 
 import Reviews from "./Reviews"; 

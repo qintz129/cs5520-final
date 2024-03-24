@@ -29,7 +29,7 @@ export default function Signup({ navigation }) {
         email,
         password
       ); 
-      const newUser = {name: email, email: email, uid: userCred.user.uid}; 
+      const newUser = {uid: userCred.user.uid, name: email, email: email}; 
       writeToDB(newUser , "users");
       console.log(userCred);
     } catch (err) {

@@ -3,7 +3,7 @@ import React from 'react'
 
 // CustomInput component to achieve the input for all screens 
 // Customized the input style and reminder message for invalid input
-export default function CustomInput({title, onChangeText, keyboardType="default", value, placeholder=''}){ 
+export default function CustomInput({title, onChangeText, keyboardType="default", value, placeholder='', editable=true}){  
     return (
         <View style={styles.container}>
             <Text style={styles.text}>{title}</Text>
@@ -12,7 +12,8 @@ export default function CustomInput({title, onChangeText, keyboardType="default"
                 onChangeText={onChangeText}  
                 keyboardType={keyboardType}  
                 value = {value} 
-                placeholder={placeholder}
+                placeholder={placeholder} 
+                editable = {editable}
             /> 
         </View>
     )
