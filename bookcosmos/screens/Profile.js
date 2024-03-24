@@ -4,24 +4,16 @@ import { signOut } from "firebase/auth";
 import { auth } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton"; 
 import Library  from "./Library"; 
-import Reviews from "./Reviews";
+import Reviews from "./Reviews"; 
+import { Ionicons } from '@expo/vector-icons';
 
-export default function Profile() {  
+export default function Profile({navigation}) {  
   const [activeTab, setActiveTab] = useState('library');
-  const signOutHandler = async () => {
-    try {
-      await signOut(auth);
-    } catch (err) {
-      console.log(err);
-    }
-  };
   return (
-    <View>
-      <Text>{auth.currentUser.uid}</Text>
-      <Text>{auth.currentUser.email}</Text> 
-      <CustomButton onPress={signOutHandler}> 
-        <Text>Log out</Text>
-      </CustomButton>  
+    <View> 
+      <CustomButton onPress={() => navigation.navigate('UserInfo')}>   
+        <Ionicons name="person-circle" size={60} color="black" />
+      </CustomButton> 
       <View style={styles.tabs}>
         <CustomButton onPress={() => setActiveTab('library')}>  
           <Text>My Library</Text>
@@ -30,8 +22,6 @@ export default function Profile() {
           <Text>Reviews</Text>
         </CustomButton> 
       </View>
-
-      {/* Conditional Content Rendering */}
       {activeTab === 'library' ? <Library /> : <Reviews />}
     </View>
   );

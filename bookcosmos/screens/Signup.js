@@ -3,7 +3,8 @@ import { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup"; 
 import CustomInput from "../components/CustomInput"; 
-import CustomButton from "../components/CustomButton";
+import CustomButton from "../components/CustomButton"; 
+import { writeToDB } from "../firebase-files/firestoreHelper";
 
 export default function Signup({ navigation }) {
   const [email, setEmail] = useState("");
@@ -27,7 +28,9 @@ export default function Signup({ navigation }) {
         auth,
         email,
         password
-      );
+      ); 
+      const newUser = {name: email, email: email, uid: userCred.user.uid}; 
+      writeToDB(newUser , "users");
       console.log(userCred);
     } catch (err) {
       console.log(err.code);
