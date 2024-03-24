@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  TouchableOpacity,
-} from "react-native";
+import { StyleSheet, Text, View, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
@@ -13,8 +7,9 @@ import {
   deleteBookFromDB,
 } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
+import CustomButton from "../components/CustomButton";
 
-export default function Library() {
+export default function Library({ navigation }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
@@ -51,17 +46,26 @@ export default function Library() {
   const renderItem = ({ item }) => (
     <Swipeable
       renderRightActions={() => (
-        <TouchableOpacity
+        <CustomButton
           style={styles.deleteButton}
           onPress={() => handleDeleteItem(item)}
         >
           <Text style={styles.deleteButtonText}>Delete</Text>
-        </TouchableOpacity>
+        </CustomButton>
       )}
     >
       <View style={styles.item}>
-        {item.bookName && <Text>{item.bookName}</Text>}
-        {item.author && <Text>{item.author}</Text>}
+        <CustomButton
+          onPress={() =>
+            navigation.navigate("Add A Book", {
+              editMode: true,
+              bookId: item.id,
+            })
+          }
+        >
+          {item.bookName && <Text>{item.bookName}</Text>}
+          {item.author && <Text>{item.author}</Text>}
+        </CustomButton>
       </View>
     </Swipeable>
   );

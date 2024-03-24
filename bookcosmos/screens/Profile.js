@@ -13,7 +13,9 @@ export default function Profile({ navigation }) {
         <Ionicons name="person-circle" size={60} color="black" />
       </CustomButton>
       <View style={styles.addABook}>
-        <CustomButton onPress={() => navigation.navigate("Add A Book")}>
+        <CustomButton
+          onPress={() => navigation.navigate("Add A Book", { editMode: false })}
+        >
           <Text>Add A Book</Text>
         </CustomButton>
       </View>
@@ -25,7 +27,11 @@ export default function Profile({ navigation }) {
           <Text>Reviews</Text>
         </CustomButton>
       </View>
-      {activeTab === "library" ? <Library /> : <Reviews />}
+      {activeTab === "library" ? (
+        <Library navigation={navigation} />
+      ) : (
+        <Reviews />
+      )}
     </View>
   );
 }

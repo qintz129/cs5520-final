@@ -111,3 +111,22 @@ export async function deleteBookFromDB(bookId) {
     throw err;
   }
 }
+
+// Function to update a book in the database
+export async function updateBookInDB(bookId, updatedBookData) {
+  try {
+    // Ensure the user is logged in
+    if (!auth.currentUser) {
+      throw new Error("User is not logged in");
+    }
+
+    // Update the book document in the 'books' collection
+    const bookDocRef = doc(database, "books", bookId);
+    await updateDoc(bookDocRef, updatedBookData);
+
+    console.log("Book updated successfully");
+  } catch (err) {
+    console.error("Error updating book:", err);
+    throw err;
+  }
+}
