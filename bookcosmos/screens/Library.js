@@ -1,12 +1,88 @@
-import { StyleSheet, Text, View } from 'react-native'
-import React from 'react'
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  TouchableOpacity,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import { collection, onSnapshot } from "firebase/firestore";
+import { database } from "../firebase-files/firebaseSetup";
+import {
+  getAllDocs,
+  deleteBookFromDB,
+} from "../firebase-files/firestoreHelper";
+import Swipeable from "react-native-gesture-handler/Swipeable";
 
 export default function Library() {
+  const [books, setBooks] = useState([]);
+
+  useEffect(() => {
+    // Define the books collection reference
+    const booksCollection = collection(database, "books");
+
+    // Subscribe to the query
+    const unsubscribe = onSnapshot(booksCollection, (snapshot) => {
+      const fetchedBooks = [];
+      snapshot.forEach((doc) => {
+        fetchedBooks.push({ id: doc.id, ...doc.data() });
+      });
+      // Update the state variable with the fetched books
+      setBooks(fetchedBooks);
+    });
+
+    // Clean up the subscription when the component unmounts
+    return () => unsubscribe();
+  }, []);
+
+  const handleDeleteItem = async (item) => {
+    try {
+      // Call the deleteBookFromDB function to delete the book from the database
+      await deleteBookFromDB(item.id);
+
+      // After successful deletion, fetch the updated list of books from the database
+      const updatedBooksData = await getAllDocs("books");
+      setBooks(updatedBooksData);
+    } catch (error) {
+      console.error("Error deleting book:", error);
+    }
+  };
+
+  const renderItem = ({ item }) => (
+    <Swipeable
+      renderRightActions={() => (
+        <TouchableOpacity
+          style={styles.deleteButton}
+          onPress={() => handleDeleteItem(item)}
+        >
+          <Text style={styles.deleteButtonText}>Delete</Text>
+        </TouchableOpacity>
+      )}
+    >
+      <View style={styles.item}>
+        {item.bookName && <Text>{item.bookName}</Text>}
+        {item.author && <Text>{item.author}</Text>}
+      </View>
+    </Swipeable>
+  );
+
   return (
-    <View>
-      <Text>Library</Text>
+    <View style={styles.container}>
+      {books.length > 0 && (
+        <FlatList
+          data={books}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+      )}
     </View>
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+});

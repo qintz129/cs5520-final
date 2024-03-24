@@ -7,6 +7,7 @@ import {
   getDocs,
   updateDoc,
   arrayUnion,
+  arrayRemove,
 } from "firebase/firestore";
 import { database, auth } from "./firebaseSetup";
 
@@ -45,7 +46,6 @@ export async function getAllDocs(path) {
     let newArray = [];
     querySnapshot.forEach((doc) => {
       newArray.push(doc.data());
-      console.log(doc.data());
     });
     return newArray;
   } catch (err) {
@@ -60,22 +60,54 @@ export async function writeUserBooksToDB(bookData) {
     if (!auth.currentUser) {
       throw new Error("User is not logged in");
     }
-
-    // Add book data to the 'books' collection
+    // Add book data to the 'books' collection and get the document reference
     const docRef = await addDoc(collection(database, "books"), {
       ...bookData,
       owner: auth.currentUser.uid,
     });
 
+    // Get the ID of the added book document
+    const bookId = docRef.id;
+
+    // Update the book document with its ID in the 'books' collection
+    await updateDoc(docRef, { id: bookId });
+
     // Add the book ID to the 'books' field in the user document
     const userDocRef = doc(database, "users", auth.currentUser.uid);
     await updateDoc(userDocRef, {
-      books: arrayUnion(docRef.id),
+      books: arrayUnion(bookId),
     });
 
-    return docRef.id; // Return the document ID of the book
+    console.log("Book data written successfully");
+
+    return bookId; // Return the document ID of the book
   } catch (err) {
     console.error("Error writing book data:", err);
+    throw err;
+  }
+}
+
+// Function to delete a book from the database
+export async function deleteBookFromDB(bookId) {
+  try {
+    // Ensure the user is logged in
+    if (!auth.currentUser) {
+      throw new Error("User is not logged in");
+    }
+
+    // Delete the book document from the 'books' collection
+    const bookDocRef = doc(database, "books", bookId);
+    await deleteDoc(bookDocRef);
+
+    // Remove the book ID from the 'books' field in the user document
+    const userDocRef = doc(database, "users", auth.currentUser.uid);
+    await updateDoc(userDocRef, {
+      books: arrayRemove(bookDocRef.id),
+    });
+
+    console.log("Book deleted successfully");
+  } catch (err) {
+    console.error("Error deleting book:", err);
     throw err;
   }
 }

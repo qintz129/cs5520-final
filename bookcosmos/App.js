@@ -2,6 +2,7 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Signup from "./screens/Signup";
 import Login from "./screens/Login";
 import MainTab from "./navigations/MainTab";
@@ -68,11 +69,13 @@ export default function App() {
   );
 
   return (
-    <NavigationContainer>
-      <Stack.Navigator initialRouteName="Signup">
-        {userLoggedIn ? AppStack : AuthStack}
-      </Stack.Navigator>
-    </NavigationContainer>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <NavigationContainer>
+        <Stack.Navigator initialRouteName="Signup">
+          {userLoggedIn ? AppStack : AuthStack}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </GestureHandlerRootView>
   );
 }
 
