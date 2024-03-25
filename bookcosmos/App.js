@@ -8,6 +8,7 @@ import Login from "./screens/Login";
 import MainTab from "./navigations/MainTab";
 import UserInfo from "./screens/UserInfo";
 import AddABook from "./screens/AddABook";
+import BookDetail from "./screens/BookDetail";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
@@ -65,6 +66,7 @@ export default function App() {
           },
         })}
       />
+      <Stack.Screen name="Book Detail" component={BookDetail} />
     </>
   );
 
