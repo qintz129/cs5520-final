@@ -32,18 +32,16 @@ export default function AddReview({navigation}) {
   const [comment, setComment] = useState(''); 
   const [key, setKey] = useState(0); 
   const { reviewee } = route.params; 
-  const [submitted, setSubmitted] = useState(false);
 
   const ratingCompleted = (rate) => {
     setRating(rate);
   };
 
   const handleSubmit = () => {
-    const newReview = {rating: rating, comment: comment, reviewerName: reviewer, revieweeId: reviewee, date: new Date().toISOString()};  
+    const newReview = {rating: rating, comment: comment, reviewerId: auth.currentUser.uid, reviewerName: reviewer, revieweeId: reviewee, date: new Date().toISOString()};  
     console.log(newReview); 
     writeToDB(newReview, "users", reviewee, "reviews")
     Keyboard.dismiss();  
-    route.params?.isSubmitted(true);
     navigation.goBack();
   }; 
 

@@ -101,7 +101,8 @@ export default function History({navigation}) {
           date={item.recordTime}  
           status={item.status} 
           navigation={navigation}   
-          reviewee={item.toUser}
+          reviewee={item.toUser} 
+          reviewer={item.fromUser}
 
         /> 
       ) : item.toUser === auth.currentUser.uid ? (
@@ -111,7 +112,8 @@ export default function History({navigation}) {
           date={item.recordTime}  
           status={item.status} 
           navigation={navigation} 
-          reviewee={item.fromUser}
+          reviewee={item.fromUser} 
+          reviewer={item.toUser}
         />
       ) : null // This is needed to handle the case where neither condition is true, though based on your logic this case may never happen.
     )}

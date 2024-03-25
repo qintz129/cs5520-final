@@ -1,7 +1,9 @@
-import { StyleSheet, Text, View } from 'react-native'
+import { StyleSheet, Text, View, FlatList} from 'react-native'
 import React, {useEffect, useState} from 'react'  
 import {database, auth} from "../firebase-files/firebaseSetup"; 
-import { collection, onSnapshot, query} from "firebase/firestore";
+import { collection, onSnapshot, query} from "firebase/firestore"; 
+import {convertTimestamp} from '../Utils'; 
+import ReviewCard from '../components/ReviewCard';
 
 export default function Reviews() {  
  const [reviews, setReviews] = useState([]);
@@ -16,8 +18,12 @@ export default function Reviews() {
           // store this data in a new array
         });
         // console.log(newArray);
-        //updating the goals array with the new array
-        setReviews(newArray);
+        //updating the goals array with the new array 
+        const updatedArray = newArray.map(item => ({
+          ...item,
+          date: convertTimestamp(item.date)
+        }));
+        setReviews(updatedArray);
       }, 
       (error) => { 
         console.log(error.message);
@@ -31,7 +37,15 @@ export default function Reviews() {
   console.log(reviews);
   return (
     <View>
-      <Text>Reviews</Text>
+      <FlatList  
+        data={reviews} 
+        keyExtractor={(item) => item.id} 
+        renderItem={({item}) => (  
+          <ReviewCard  
+             review={item}
+          />
+        )} 
+      />
     </View>
   )
 }
