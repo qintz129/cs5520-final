@@ -38,9 +38,25 @@ export default function ChooseBookModal({
     setSelectedBookId(bookId);
   };
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedBookId) {
-      onSelectBook(selectedBookId);
+      try {
+        const requestTime = serverTimestamp();
+        const requestData = {
+          fromUser: userId,
+          offeredBook: selectedBookId,
+          requestTime: requestTime,
+          requestedBook: null, // You need to set this to the requested book ID
+          toUser: null, // You need to set this to the user ID you are sending the request to
+          status: "unaccepted",
+        };
+        // Write request data to the database
+        await addDoc(collection(database, "requests"), requestData);
+        // Call the onSelectBook function to pass the selected book ID to the parent component
+        onSelectBook(selectedBookId);
+      } catch (error) {
+        console.error("Error writing request to database:", error);
+      }
     }
   };
 
