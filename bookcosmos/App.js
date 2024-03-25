@@ -7,7 +7,8 @@ import Signup from "./screens/Signup";
 import Login from "./screens/Login";
 import MainTab from "./navigations/MainTab";
 import UserInfo from "./screens/UserInfo";
-import AddABook from "./screens/AddABook";
+import AddABook from "./screens/AddABook"; 
+import AddReview from "./screens/AddReview";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
@@ -46,7 +47,10 @@ export default function App() {
         component={MainTab}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="UserInfo" component={UserInfo} />
+      <Stack.Screen  
+        name="UserInfo"  
+        component={UserInfo}  
+        />
       <Stack.Screen
         name="Add A Book"
         component={AddABook}
@@ -64,14 +68,20 @@ export default function App() {
             },
           },
         })}
-      />
+      /> 
+      <Stack.Screen name="Add A Review" component={AddReview} />
     </>
   );
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Signup">
+        <Stack.Navigator  
+          initialRouteName="Signup"  
+          screenOptions={{ 
+            headerBackTitleVisible: false 
+          }}
+        >
           {userLoggedIn ? AppStack : AuthStack}
         </Stack.Navigator>
       </NavigationContainer>

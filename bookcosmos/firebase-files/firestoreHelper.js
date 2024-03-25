@@ -12,8 +12,11 @@ import {
 import { database, auth } from "./firebaseSetup";
 
 // Function to write data to the database
-export async function writeToDB(data, col) {
-  try {
+export async function writeToDB(data, col, docId, subCol) { 
+  try { 
+    if (docId) {
+      await addDoc(collection(database, col, docId, subCol), data);
+    } else {
     let docRef;
     if (col === "users" && data.uid) {
       docRef = doc(database, col, data.uid);
@@ -24,7 +27,8 @@ export async function writeToDB(data, col) {
     } else {
       docRef = doc(database, col);
       await addDoc(collection(database, col), data);
-    }
+    } 
+  }
   } catch (err) {
     console.log(err);
   }
@@ -38,8 +42,9 @@ export async function updateToDB(id, col, updates) {
   } catch (err) {
     console.log(err);
   }
-}
+} 
 
+// Function to get all documents from a collection
 export async function getAllDocs(path) {
   try {
     const querySnapshot = await getDocs(collection(database, path));

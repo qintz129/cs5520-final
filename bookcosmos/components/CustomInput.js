@@ -8,7 +8,7 @@ export default function CustomInput({title, onChangeText, keyboardType="default"
         <View style={styles.container}>
             <Text style={styles.text}>{title}</Text>
             <TextInput  
-                style={styles.input}  
+                style={[styles.input, !editable && styles.nonEditable]} 
                 onChangeText={onChangeText}  
                 keyboardType={keyboardType}  
                 value = {value} 
@@ -23,7 +23,9 @@ export default function CustomInput({title, onChangeText, keyboardType="default"
 const styles = StyleSheet.create({  
     container:{ 
         marginBottom: 20, 
-        width: '100%', 
+        width: '100%',  
+        marginHorizontal: 20, 
+        alignSelf: 'center',
     }, 
     text: { 
         fontWeight: 'bold', 
@@ -35,5 +37,9 @@ const styles = StyleSheet.create({
         marginTop: 5, 
         borderRadius: 10, 
         paddingHorizontal: 10,
-    }, 
+    },  
+    nonEditable: {
+        borderWidth: 0, 
+        backgroundColor: '#f0f0f0', 
+      },
 })

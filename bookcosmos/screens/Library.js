@@ -63,8 +63,8 @@ export default function Library({ navigation }) {
             })
           }
         >
-          {item.bookName && <Text>{item.bookName}</Text>}
-          {item.author && <Text>{item.author}</Text>}
+          {item.bookName && <Text>Name: {item.bookName}</Text>}
+          {item.author && <Text>Author: {item.author}</Text>}
         </CustomButton>
       </View>
     </Swipeable>
