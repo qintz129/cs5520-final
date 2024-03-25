@@ -27,7 +27,6 @@ export default function Library({ navigation, userId }) {
       });
       // Update the state variable with the fetched books
       setBooks(fetchedBooks);
-      console.log("Fetched books:", fetchedBooks);
     });
 
     // Clean up the subscription when the component unmounts

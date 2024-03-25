@@ -1,12 +1,21 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import {
+  collection,
+  onSnapshot,
+  query,
+  orderBy,
+  startAt,
+  endAt,
+} from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
+import CustomInput from "../components/CustomInput";
 
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState("");
 
   useEffect(() => {
     const fetchBooks = async () => {
@@ -14,8 +23,22 @@ export default function Explore({ navigation }) {
         // Define the books collection reference
         const booksCollection = collection(database, "books");
 
+        // Define the query
+        let booksQuery = query(booksCollection);
+
+        // If there's a search keyword, filter by bookName or author
+        if (searchKeyword) {
+          // Filter by bookName or author matching the lowercase searchKeyword
+          booksQuery = query(
+            booksCollection,
+            orderBy("bookName"),
+            startAt(searchKeyword),
+            endAt(searchKeyword + "\uf8ff")
+          );
+        }
+
         // Subscribe to the query
-        const unsubscribe = onSnapshot(booksCollection, async (snapshot) => {
+        const unsubscribe = onSnapshot(booksQuery, async (snapshot) => {
           const fetchedBooks = [];
           const promises = snapshot.docs.map(async (doc) => {
             const bookData = doc.data();
@@ -35,7 +58,7 @@ export default function Explore({ navigation }) {
     };
 
     fetchBooks();
-  }, []);
+  }, [searchKeyword]);
 
   const getOwnerName = async (ownerId) => {
     try {
@@ -62,15 +85,21 @@ export default function Explore({ navigation }) {
           })
         }
       >
-        {item.bookName && <Text>{item.bookName}</Text>}
-        {item.author && <Text>{item.author}</Text>}
-        {item.owner && <Text>{item.ownerName}</Text>}
+        {item.bookName && <Text>Book Name : {item.bookName}</Text>}
+        {item.author && <Text>Author: {item.author}</Text>}
+        {item.owner && <Text>User: {item.ownerName}</Text>}
       </CustomButton>
     </View>
   );
 
   return (
     <View style={styles.container}>
+      <View style={styles.search}>
+        <CustomInput
+          placeholder="Search books by name"
+          onChangeText={(text) => setSearchKeyword(text)}
+        />
+      </View>
       {books.length > 0 && (
         <FlatList
           data={books}
@@ -82,4 +111,15 @@ export default function Explore({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  item: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+  search: {
+    padding: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: "#ccc",
+  },
+});
