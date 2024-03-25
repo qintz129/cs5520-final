@@ -7,6 +7,7 @@ import {
 } from "../firebase-files/firestoreHelper";
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
+import CustomInput from "../components/CustomInput";
 
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
@@ -104,21 +105,21 @@ export default function AddABook({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <TextInput
+      <CustomInput
+        title={"Book Name"}
         style={styles.input}
-        placeholder="Book Name"
         value={bookName}
         onChangeText={setBookName}
       />
-      <TextInput
+      <CustomInput
+        title={"Author"}
         style={styles.input}
-        placeholder="Author"
         value={author}
         onChangeText={setAuthor}
       />
-      <TextInput
+      <CustomInput
+        title={"Description"}
         style={styles.input}
-        placeholder="Description"
         value={description}
         onChangeText={setDescription}
       />
