@@ -58,7 +58,7 @@ export default function Explore({ navigation }) {
     };
 
     fetchBooks();
-  }, [searchKeyword]);
+  }, [searchKeyword, books]);
 
   const getOwnerName = async (ownerId) => {
     try {
@@ -82,6 +82,7 @@ export default function Explore({ navigation }) {
         onPress={() =>
           navigation.navigate("Book Detail", {
             bookId: item.id,
+            ownerId: item.owner,
           })
         }
       >

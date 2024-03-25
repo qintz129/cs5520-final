@@ -9,7 +9,7 @@ import {
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
 
-export default function Library({ navigation, userId }) {
+export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
@@ -46,6 +46,17 @@ export default function Library({ navigation, userId }) {
     }
   };
 
+  const handlePressBook = (item) => {
+    if (isMyLibrary) {
+      navigation.navigate("Add A Book", { editMode: true, bookId: item.id });
+    } else {
+      navigation.navigate("Book Detail", {
+        bookId: item.id,
+        ownerId: item.owner,
+      });
+    }
+  };
+
   const renderItem = ({ item }) => (
     <Swipeable
       renderRightActions={() => (
@@ -58,14 +69,7 @@ export default function Library({ navigation, userId }) {
       )}
     >
       <View style={styles.item}>
-        <CustomButton
-          onPress={() =>
-            navigation.navigate("Add A Book", {
-              editMode: true,
-              bookId: item.id,
-            })
-          }
-        >
+        <CustomButton onPress={() => handlePressBook(item)}>
           {item.bookName && <Text>{item.bookName}</Text>}
           {item.author && <Text>{item.author}</Text>}
         </CustomButton>

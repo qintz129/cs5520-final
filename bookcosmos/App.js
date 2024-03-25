@@ -9,6 +9,7 @@ import MainTab from "./navigations/MainTab";
 import UserInfo from "./screens/UserInfo";
 import AddABook from "./screens/AddABook";
 import BookDetail from "./screens/BookDetail";
+import OtherUserProfile from "./screens/OtherUserProfile";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
@@ -47,7 +48,11 @@ export default function App() {
         component={MainTab}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="UserInfo" component={UserInfo} />
+      <Stack.Screen
+        name="UserInfo"
+        component={UserInfo}
+        options={{ headerBackTitleVisible: false }}
+      />
       <Stack.Screen
         name="Add A Book"
         component={AddABook}
@@ -66,7 +71,16 @@ export default function App() {
           },
         })}
       />
-      <Stack.Screen name="Book Detail" component={BookDetail} />
+      <Stack.Screen
+        name="Book Detail"
+        component={BookDetail}
+        options={{ headerBackTitleVisible: false }}
+      />
+      <Stack.Screen
+        name="Other User Profile"
+        component={OtherUserProfile}
+        options={{ headerBackTitleVisible: false }}
+      />
     </>
   );
 

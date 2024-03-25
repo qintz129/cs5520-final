@@ -8,6 +8,7 @@ import {
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
 import CustomInput from "../components/CustomInput";
+import CustomButton from "../components/CustomButton";
 
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
@@ -124,8 +125,12 @@ export default function AddABook({ navigation, route }) {
         onChangeText={setDescription}
       />
       <View style={styles.buttonContainer}>
-        <Button title="Clear" onPress={handleClear} />
-        <Button title="Save" onPress={handleSave} />
+        <CustomButton onPress={handleClear}>
+          <Text>Clear</Text>
+        </CustomButton>
+        <CustomButton onPress={handleSave}>
+          <Text>Save</Text>
+        </CustomButton>
       </View>
     </View>
   );
