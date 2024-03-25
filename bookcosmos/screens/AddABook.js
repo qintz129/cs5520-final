@@ -6,7 +6,8 @@ import {
   updateBookInDB,
 } from "../firebase-files/firestoreHelper";
 import { database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore"; 
+import CustomInput from "../components/CustomInput";
 
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
@@ -86,25 +87,22 @@ export default function AddABook({ navigation, route }) {
   };
 
   return (
-    <View style={styles.container}>
-      <TextInput
-        style={styles.input}
-        placeholder="Book Name"
+    <View style={styles.container}> 
+      <CustomInput
+        title="Book Name"
         value={bookName}
-        onChangeText={setBookName}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Author"
+        onChangeText={setBookName} 
+        /> 
+      <CustomInput 
+        title="Author"
         value={author}
         onChangeText={setAuthor}
-      />
-      <TextInput
-        style={styles.input}
-        placeholder="Description"
+        /> 
+      <CustomInput 
+        title="Description"
         value={description}
         onChangeText={setDescription}
-      />
+        />
       <View style={styles.buttonContainer}>
         <Button title="Clear" onPress={handleClear} />
         <Button title="Save" onPress={handleSave} />
