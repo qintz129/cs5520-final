@@ -47,7 +47,10 @@ export default function App() {
         component={MainTab}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="UserInfo" component={UserInfo} />
+      <Stack.Screen  
+        name="UserInfo"  
+        component={UserInfo}  
+        />
       <Stack.Screen
         name="Add A Book"
         component={AddABook}
@@ -73,7 +76,12 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator initialRouteName="Signup">
+        <Stack.Navigator  
+          initialRouteName="Signup"  
+          screenOptions={{ 
+            headerBackTitleVisible: false 
+          }}
+        >
           {userLoggedIn ? AppStack : AuthStack}
         </Stack.Navigator>
       </NavigationContainer>

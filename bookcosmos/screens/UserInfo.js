@@ -67,7 +67,7 @@ export default function UserInfo() {
         } 
 
     return (
-        <View>
+        <View style={styles.container}>
             <CustomInput title="Name" onChangeText={handleNameChange} value={name} /> 
             <CustomInput title="Email" value={email} editable={false}/>
             <View style={styles.buttonView}> 
@@ -86,7 +86,11 @@ export default function UserInfo() {
     )
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({  
+    container: {
+        flex: 1, 
+        paddingHorizontal: 20,  
+    },
     buttonView: {
         flexDirection: 'row',
         justifyContent: 'space-around',
