@@ -7,8 +7,9 @@ import {
   orderBy,
   startAt,
   endAt,
+  where,
 } from "firebase/firestore";
-import { database } from "../firebase-files/firebaseSetup";
+import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
@@ -36,6 +37,12 @@ export default function Explore({ navigation }) {
             endAt(searchKeyword + "\uf8ff")
           );
         }
+
+        // Filter out books owned by the current user
+        booksQuery = query(
+          booksQuery,
+          where("owner", "!=", auth.currentUser.uid)
+        );
 
         // Subscribe to the query
         const unsubscribe = onSnapshot(booksQuery, async (snapshot) => {

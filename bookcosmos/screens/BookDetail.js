@@ -2,13 +2,16 @@ import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
+import { auth } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
+import ChooseBookModal from "../components/ChooseBookModal";
 
 export default function BookDetail({ route, navigation }) {
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
   const [ownerName, setOwnerName] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
   const { bookId, ownerId } = route.params;
 
   useEffect(() => {
@@ -52,6 +55,15 @@ export default function BookDetail({ route, navigation }) {
     fetchBookData();
   }, [bookId]);
 
+  const handleSendRequest = () => {
+    setModalVisible(true);
+  };
+
+  const handleSelectBook = (selectedBookId) => {
+    console.log("Selected book ID:", selectedBookId);
+    setModalVisible(false);
+  };
+
   return (
     <View style={styles.container}>
       <Text>Book Name: {bookName}</Text>
@@ -69,11 +81,22 @@ export default function BookDetail({ route, navigation }) {
           <Text>User: {ownerName}</Text>
         </CustomButton>
       </View>
-      <View style={styles.buttonContainer}>
+      <View style={styles.goodReads}>
         <CustomButton>
+          <Text>See more information from Goodreads</Text>
+        </CustomButton>
+      </View>
+      <View style={styles.buttonContainer}>
+        <CustomButton onPress={handleSendRequest}>
           <Text>Send Request</Text>
         </CustomButton>
       </View>
+      <ChooseBookModal
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+        onSelectBook={handleSelectBook}
+        userId={auth.currentUser.uid}
+      />
     </View>
   );
 }
