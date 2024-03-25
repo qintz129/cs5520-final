@@ -5,7 +5,7 @@ import { database, auth} from "../firebase-files/firebaseSetup";
 import { convertTimestamp} from '../Utils'; 
 import HistoryCard from '../components/HistoryCard';
 
-export default function History() {  
+export default function History({navigation}) {  
   const [history, setHistory] = useState([]);
   
   useEffect(() => {   
@@ -13,7 +13,7 @@ export default function History() {
       const bookRef = doc(database, "books", bookId);  
       const bookSnap = await getDoc(bookRef);  
       return bookSnap.exists() ? bookSnap.data().bookName : "Unknown Book";
-    }
+    } 
 
     const fetchExtra = async (doc) => { 
       const docData = doc.data(); 
@@ -99,14 +99,19 @@ export default function History() {
           myBook={item.offeredBookName} 
           theirBook={item.requestedBookName} 
           date={item.recordTime}  
-          status={item.status}
+          status={item.status} 
+          navigation={navigation}   
+          reviewee={item.toUser}
+
         /> 
       ) : item.toUser === auth.currentUser.uid ? (
         <HistoryCard 
           myBook={item.requestedBookName} 
           theirBook={item.offeredBookName} 
           date={item.recordTime}  
-          status={item.status}
+          status={item.status} 
+          navigation={navigation} 
+          reviewee={item.fromUser}
         />
       ) : null // This is needed to handle the case where neither condition is true, though based on your logic this case may never happen.
     )}

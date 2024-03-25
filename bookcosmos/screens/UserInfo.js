@@ -17,14 +17,13 @@ export default function UserInfo() {
                 const docRef = doc(database, "users", auth.currentUser.uid);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    console.log("Document data:", docSnap.data());
                     setName(docSnap.data().name); 
                     setInitialName(docSnap.data().name);
                     setEmail(docSnap.data().email);
                 } else {
                     console.log("No such document!");
                 }
-            } catch (e) {
+            } catch (err) {
                 console.log(err);
             }
         };

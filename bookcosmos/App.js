@@ -7,7 +7,8 @@ import Signup from "./screens/Signup";
 import Login from "./screens/Login";
 import MainTab from "./navigations/MainTab";
 import UserInfo from "./screens/UserInfo";
-import AddABook from "./screens/AddABook";
+import AddABook from "./screens/AddABook"; 
+import AddReview from "./screens/AddReview";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
@@ -64,7 +65,8 @@ export default function App() {
             },
           },
         })}
-      />
+      /> 
+      <Stack.Screen name="Add A Review" component={AddReview} />
     </>
   );
 
