@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
-import { collection, onSnapshot } from "firebase/firestore";
+import React, { useState, useEffect, useRef } from "react";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {
   getAllDocs,
@@ -9,26 +9,30 @@ import {
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
 
-export default function Library({ navigation }) {
+export default function Library({ navigation, userId }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
-    // Define the books collection reference
-    const booksCollection = collection(database, "books");
+    // Define the query to fetch books for a specific user
+    const booksQuery = query(
+      collection(database, "books"),
+      where("owner", "==", userId)
+    );
 
     // Subscribe to the query
-    const unsubscribe = onSnapshot(booksCollection, (snapshot) => {
+    const unsubscribe = onSnapshot(booksQuery, (snapshot) => {
       const fetchedBooks = [];
       snapshot.forEach((doc) => {
         fetchedBooks.push({ id: doc.id, ...doc.data() });
       });
       // Update the state variable with the fetched books
       setBooks(fetchedBooks);
+      console.log("Fetched books:", fetchedBooks);
     });
 
     // Clean up the subscription when the component unmounts
     return () => unsubscribe();
-  }, []);
+  }, [userId]);
 
   const handleDeleteItem = async (item) => {
     try {

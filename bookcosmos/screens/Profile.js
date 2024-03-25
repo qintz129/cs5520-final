@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import CustomButton from "../components/CustomButton";
 import Library from "./Library";
 import Reviews from "./Reviews";
+import { auth } from "../firebase-files/firebaseSetup";
 import { Ionicons } from "@expo/vector-icons";
 
 export default function Profile({ navigation }) {
@@ -28,7 +29,7 @@ export default function Profile({ navigation }) {
         </CustomButton>
       </View>
       {activeTab === "library" ? (
-        <Library navigation={navigation} />
+        <Library navigation={navigation} userId={auth.currentUser.uid} />
       ) : (
         <Reviews />
       )}

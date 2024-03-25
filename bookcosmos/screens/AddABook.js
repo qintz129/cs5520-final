@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button } from "react-native";
+import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
 import {
   getAllDocs,
   writeUserBooksToDB,
@@ -45,21 +45,15 @@ export default function AddABook({ navigation, route }) {
     }
   }, [editMode, bookId]);
 
-  const handleSave = async () => {
+  function handleSave() {
     try {
       // Ensure all fields are filled before saving
       if (!bookName || !author || !description) {
-        alert("Please fill in all fields");
+        Alert.alert("Please fill in all fields");
         return;
       }
-
       if (editMode) {
-        const updatedBookData = {
-          bookName,
-          author,
-          description,
-        };
-        await updateBookInDB(bookId, updatedBookData);
+        handleConfirmSave();
       } else {
         // Create a new book data object
         const newBookData = {
@@ -67,16 +61,39 @@ export default function AddABook({ navigation, route }) {
           author,
           description,
         };
-
         // Write book data to the database
-        await writeUserBooksToDB(newBookData);
+        writeUserBooksToDB(newBookData);
+        // Navigate back to the previous screen
+        navigation.goBack();
       }
-      // Navigate back to the previous screen
-      navigation.goBack();
     } catch (error) {
       console.error("Error saving book:", error);
     }
-  };
+  }
+
+  function handleConfirmSave() {
+    Alert.alert(
+      "Important",
+      "Are you sure you want to save these changes?",
+      [
+        { text: "No" },
+        {
+          text: "Yes",
+          onPress: () => {
+            const updatedBookData = {
+              bookName,
+              author,
+              description,
+            };
+            updateBookInDB(bookId, updatedBookData);
+            // Navigate back to the previous screen
+            navigation.goBack();
+          },
+        },
+      ],
+      { cancelable: true }
+    );
+  }
 
   const handleClear = () => {
     // Clear all input fields
