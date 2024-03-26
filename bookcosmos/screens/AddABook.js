@@ -107,20 +107,13 @@ export default function AddABook({ navigation, route }) {
   return (
     <View style={styles.container}>
       <CustomInput
-        title={"Book Name"}
-        style={styles.input}
+        title="Book Name"
         value={bookName}
         onChangeText={setBookName}
       />
+      <CustomInput title="Author" value={author} onChangeText={setAuthor} />
       <CustomInput
-        title={"Author"}
-        style={styles.input}
-        value={author}
-        onChangeText={setAuthor}
-      />
-      <CustomInput
-        title={"Description"}
-        style={styles.input}
+        title="Description"
         value={description}
         onChangeText={setDescription}
       />

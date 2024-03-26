@@ -17,14 +17,13 @@ export default function UserInfo() {
                 const docRef = doc(database, "users", auth.currentUser.uid);
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
-                    console.log("Document data:", docSnap.data());
                     setName(docSnap.data().name); 
                     setInitialName(docSnap.data().name);
                     setEmail(docSnap.data().email);
                 } else {
                     console.log("No such document!");
                 }
-            } catch (e) {
+            } catch (err) {
                 console.log(err);
             }
         };
@@ -68,7 +67,7 @@ export default function UserInfo() {
         } 
 
     return (
-        <View>
+        <View style={styles.container}>
             <CustomInput title="Name" onChangeText={handleNameChange} value={name} /> 
             <CustomInput title="Email" value={email} editable={false}/>
             <View style={styles.buttonView}> 
@@ -87,7 +86,11 @@ export default function UserInfo() {
     )
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({  
+    container: {
+        flex: 1, 
+        paddingHorizontal: 20,  
+    },
     buttonView: {
         flexDirection: 'row',
         justifyContent: 'space-around',

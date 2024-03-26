@@ -73,6 +73,8 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     // alignItems: "stretch",
+    paddingHorizontal: 20, 
     justifyContent: "center",
+
   },
 });
