@@ -17,6 +17,7 @@ export default function CustomButton({
         styles.button,
         customStyle,
         pressed && styles.pressed,
+        disabled && styles.disabled,
       ]}
     >
       {children}
@@ -32,6 +33,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   pressed: {
+    opacity: 0.5,
+  },
+  disabled: {
     opacity: 0.5,
   },
 });

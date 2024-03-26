@@ -58,7 +58,6 @@ export default function BookDetail({ route, navigation }) {
 
   const handleSendRequest = () => {
     setModalVisible(true);
-    setRequestSent(true);
   };
 
   const handleSelectBook = (selectedBookId) => {
@@ -100,6 +99,8 @@ export default function BookDetail({ route, navigation }) {
         fromUserId={auth.currentUser.uid}
         requestedBookId={bookId}
         toUserId={ownerId}
+        requestSent={requestSent}
+        setRequestSent={setRequestSent}
       />
     </View>
   );

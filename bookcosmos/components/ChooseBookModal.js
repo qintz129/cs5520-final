@@ -11,6 +11,8 @@ export default function ChooseBookModal({
   fromUserId,
   requestedBookId,
   toUserId,
+  requestSent,
+  setRequestSent,
 }) {
   const [books, setBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState(null);
@@ -73,6 +75,9 @@ export default function ChooseBookModal({
 
         // Close the modal
         onRequestClose();
+
+        // Set the requestSent state to true
+        setRequestSent(true);
 
         // Alert the user that the request has been sent
         Alert.alert("Your request has been sent!");

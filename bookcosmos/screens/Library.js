@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
@@ -24,6 +24,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     } else {
       booksQuery = query(
         collection(database, "books"),
+        where("owner", "==", userId),
         where("isBookInExchange", "==", false)
       );
     }
@@ -44,12 +45,28 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 
   const handleDeleteItem = async (item) => {
     try {
-      // Call the deleteBookFromDB function to delete the book from the database
-      await deleteBookFromDB(item.id);
+      Alert.alert(
+        "Delete Book",
+        "Are you sure you want to delete this book?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Delete",
+            onPress: async () => {
+              // Call the deleteBookFromDB function to delete the book from the database
+              await deleteBookFromDB(item.id);
 
-      // After successful deletion, fetch the updated list of books from the database
-      const updatedBooksData = await getAllDocs("books");
-      setBooks(updatedBooksData);
+              // After successful deletion, fetch the updated list of books from the database
+              const updatedBooksData = await getAllDocs("books");
+              setBooks(updatedBooksData);
+            },
+          },
+        ],
+        { cancelable: true }
+      );
     } catch (error) {
       console.error("Error deleting book:", error);
     }
