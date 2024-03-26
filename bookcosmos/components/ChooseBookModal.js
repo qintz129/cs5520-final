@@ -3,7 +3,7 @@ import { Modal, View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import CustomButton from "./CustomButton";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
-import { writeToDB } from "../firebase-files/firestoreHelper";
+import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 
 export default function ChooseBookModal({
   visible,
@@ -19,7 +19,8 @@ export default function ChooseBookModal({
     // Define the query to fetch books for a specific user
     const booksQuery = query(
       collection(database, "books"),
-      where("owner", "==", fromUserId)
+      where("owner", "==", fromUserId),
+      where("isBookInExchange", "==", false)
     );
 
     // Subscribe to the query
@@ -40,6 +41,17 @@ export default function ChooseBookModal({
     setSelectedBookId(bookId);
   };
 
+  // Function to update book status to indicate it is in exchange
+  async function updateBookStatusInExchange(bookId) {
+    try {
+      await updateToDB(bookId, "books", { isBookInExchange: true });
+      console.log("Book status updated successfully");
+    } catch (error) {
+      console.error("Error updating book status:", error);
+      throw error;
+    }
+  }
+
   const handleConfirm = async () => {
     if (selectedBookId) {
       try {
@@ -54,8 +66,14 @@ export default function ChooseBookModal({
         // Write request data to the database
         await writeToDB(newRequest, "users", toUserId, "receivedRequests");
         await writeToDB(newRequest, "users", fromUserId, "sentRequests");
+
+        // Update book status to indicate it is in exchange
+        await updateBookStatusInExchange(selectedBookId);
+        await updateBookStatusInExchange(requestedBookId);
+
         // Close the modal
         onRequestClose();
+
         // Alert the user that the request has been sent
         Alert.alert("Your request has been sent!");
       } catch (error) {

@@ -8,6 +8,7 @@ import {
 } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
+import { FontAwesome } from "@expo/vector-icons";
 
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
@@ -72,6 +73,9 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         <CustomButton onPress={() => handlePressBook(item)}>
           {item.bookName && <Text>{item.bookName}</Text>}
           {item.author && <Text>{item.author}</Text>}
+          {item.isBookInExchange && (
+            <FontAwesome name="exchange" size={24} color="red" />
+          )}
         </CustomButton>
       </View>
     </Swipeable>

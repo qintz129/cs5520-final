@@ -12,6 +12,7 @@ export default function BookDetail({ route, navigation }) {
   const [description, setDescription] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
+  const [requestSent, setRequestSent] = useState(false);
   const { bookId, ownerId } = route.params;
 
   useEffect(() => {
@@ -57,6 +58,7 @@ export default function BookDetail({ route, navigation }) {
 
   const handleSendRequest = () => {
     setModalVisible(true);
+    setRequestSent(true);
   };
 
   const handleSelectBook = (selectedBookId) => {
@@ -87,7 +89,7 @@ export default function BookDetail({ route, navigation }) {
         </CustomButton>
       </View>
       <View style={styles.buttonContainer}>
-        <CustomButton onPress={handleSendRequest}>
+        <CustomButton onPress={handleSendRequest} disabled={requestSent}>
           <Text>Send Request</Text>
         </CustomButton>
       </View>

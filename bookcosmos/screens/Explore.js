@@ -38,10 +38,11 @@ export default function Explore({ navigation }) {
           );
         }
 
-        // Filter out books owned by the current user
+        // Filter out books owned by the current user and books that are already in exchange
         booksQuery = query(
           booksQuery,
-          where("owner", "!=", auth.currentUser.uid)
+          where("owner", "!=", auth.currentUser.uid),
+          where("isBookInExchange", "==", false)
         );
 
         // Subscribe to the query
