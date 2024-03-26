@@ -95,7 +95,9 @@ export default function BookDetail({ route, navigation }) {
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
         onSelectBook={handleSelectBook}
-        userId={auth.currentUser.uid}
+        fromUserId={auth.currentUser.uid}
+        requestedBookId={bookId}
+        toUserId={ownerId}
       />
     </View>
   );

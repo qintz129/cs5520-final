@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, FlatList, StyleSheet } from "react-native";
+import { Modal, View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import CustomButton from "./CustomButton";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
+import { writeToDB } from "../firebase-files/firestoreHelper";
 
 export default function ChooseBookModal({
   visible,
   onRequestClose,
-  onSelectBook,
-  userId,
+  fromUserId,
+  requestedBookId,
+  toUserId,
 }) {
   const [books, setBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState(null);
@@ -17,7 +19,7 @@ export default function ChooseBookModal({
     // Define the query to fetch books for a specific user
     const booksQuery = query(
       collection(database, "books"),
-      where("owner", "==", userId)
+      where("owner", "==", fromUserId)
     );
 
     // Subscribe to the query
@@ -32,7 +34,7 @@ export default function ChooseBookModal({
 
     // Clean up the subscription when the component unmounts
     return () => unsubscribe();
-  }, [userId]);
+  }, [fromUserId]);
 
   const handleSelectBook = (bookId) => {
     setSelectedBookId(bookId);
@@ -41,19 +43,21 @@ export default function ChooseBookModal({
   const handleConfirm = async () => {
     if (selectedBookId) {
       try {
-        const requestTime = serverTimestamp();
-        const requestData = {
-          fromUser: userId,
+        const newRequest = {
+          fromUser: fromUserId,
           offeredBook: selectedBookId,
-          requestTime: requestTime,
-          requestedBook: null, // You need to set this to the requested book ID
-          toUser: null, // You need to set this to the user ID you are sending the request to
+          requestTime: new Date().toISOString(),
+          requestedBook: requestedBookId,
+          toUser: toUserId,
           status: "unaccepted",
         };
         // Write request data to the database
-        await addDoc(collection(database, "requests"), requestData);
-        // Call the onSelectBook function to pass the selected book ID to the parent component
-        onSelectBook(selectedBookId);
+        await writeToDB(newRequest, "users", toUserId, "receivedRequests");
+        await writeToDB(newRequest, "users", fromUserId, "sentRequests");
+        // Close the modal
+        onRequestClose();
+        // Alert the user that the request has been sent
+        Alert.alert("Your request has been sent!");
       } catch (error) {
         console.error("Error writing request to database:", error);
       }

@@ -13,6 +13,7 @@ export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
+  const [isBookInExchange, setIsBookInExchange] = useState(false);
   const { editMode, bookId } = route.params;
 
   // Render the header based on the edit mode
@@ -35,6 +36,7 @@ export default function AddABook({ navigation, route }) {
             setBookName(bookData.bookName);
             setAuthor(bookData.author);
             setDescription(bookData.description);
+            setIsBookInExchange(bookData.isInExchange);
           } else {
             console.error("No such document!");
           }
@@ -61,6 +63,7 @@ export default function AddABook({ navigation, route }) {
           bookName,
           author,
           description,
+          isBookInExchange,
         };
         // Write book data to the database
         writeUserBooksToDB(newBookData);
