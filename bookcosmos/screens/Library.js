@@ -14,11 +14,19 @@ export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
+    let booksQuery;
     // Define the query to fetch books for a specific user
-    const booksQuery = query(
-      collection(database, "books"),
-      where("owner", "==", userId)
-    );
+    if (isMyLibrary) {
+      booksQuery = query(
+        collection(database, "books"),
+        where("owner", "==", userId)
+      );
+    } else {
+      booksQuery = query(
+        collection(database, "books"),
+        where("isBookInExchange", "==", false)
+      );
+    }
 
     // Subscribe to the query
     const unsubscribe = onSnapshot(booksQuery, (snapshot) => {
