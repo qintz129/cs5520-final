@@ -31,7 +31,7 @@ export default function OtherUserProfile({ navigation, route }) {
       {activeTab === "library" ? (
         <Library navigation={navigation} userId={ownerId} isMyLibrary={false} />
       ) : (
-        <Reviews />
+        <Reviews userId={ownerId} />
       )}
     </View>
   );

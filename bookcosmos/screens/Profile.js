@@ -35,7 +35,7 @@ export default function Profile({ navigation }) {
           isMyLibrary={true}
         />
       ) : (
-        <Reviews />
+        <Reviews userId={auth.currentUser.uid} />
       )}
     </View>
   );
