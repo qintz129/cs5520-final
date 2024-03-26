@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
 import {
-  getAllDocs,
   writeUserBooksToDB,
   updateBookInDB,
 } from "../firebase-files/firestoreHelper";

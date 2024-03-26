@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
-import { database, auth } from "../firebase-files/firebaseSetup";
+import { database } from "../firebase-files/firebaseSetup";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { convertTimestamp } from "../Utils";
 import ReviewCard from "../components/ReviewCard";

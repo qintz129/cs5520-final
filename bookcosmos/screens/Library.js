@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {

@@ -1,9 +1,9 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
-import { auth } from "../firebase-files/firebaseSetup"; 
-import CustomInput from "../components/CustomInput"; 
-import CustomButton from "../components/CustomButton"; 
+import { auth } from "../firebase-files/firebaseSetup";
+import CustomInput from "../components/CustomInput";
+import CustomButton from "../components/CustomButton";
 import { writeToDB } from "../firebase-files/firestoreHelper";
 
 export default function Signup({ navigation }) {
@@ -28,9 +28,9 @@ export default function Signup({ navigation }) {
         auth,
         email,
         password
-      ); 
-      const newUser = {uid: userCred.user.uid, name: email, email: email}; 
-      writeToDB(newUser , "users");
+      );
+      const newUser = { uid: userCred.user.uid, name: email, email: email };
+      writeToDB(newUser, "users");
       console.log(userCred);
     } catch (err) {
       console.log(err.code);
@@ -43,27 +43,30 @@ export default function Signup({ navigation }) {
   };
   return (
     <View style={styles.container}>
-      <CustomInput  
-        title="Email"  
-        onChangeText={(changedText) => setEmail(changedText)}  
-        value={email}  
-        placeholder="Email" /> 
-      <CustomInput  
-        title="Password"  
-        onChangeText={(changedText) => setPassword(changedText)}  
-        value={password}  
-        placeholder="Password" />   
-      <CustomInput  
-        title="Confirm Password"  
-        onChangeText={(changedText) => setConfirmPassword(changedText)}  
-        value={confirmPassword}  
-        placeholder="Password" />   
-      <CustomButton onPress={signupHandler}> 
+      <CustomInput
+        title="Email"
+        onChangeText={(changedText) => setEmail(changedText)}
+        value={email}
+        placeholder="Email"
+      />
+      <CustomInput
+        title="Password"
+        onChangeText={(changedText) => setPassword(changedText)}
+        value={password}
+        placeholder="Password"
+      />
+      <CustomInput
+        title="Confirm Password"
+        onChangeText={(changedText) => setConfirmPassword(changedText)}
+        value={confirmPassword}
+        placeholder="Password"
+      />
+      <CustomButton onPress={signupHandler}>
         <Text>Register</Text>
-      </CustomButton>  
-      <CustomButton onPress={loginHandler}> 
+      </CustomButton>
+      <CustomButton onPress={loginHandler}>
         <Text>Already Registered? Login</Text>
-      </CustomButton> 
+      </CustomButton>
     </View>
   );
 }
@@ -73,8 +76,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     // alignItems: "stretch",
-    paddingHorizontal: 20, 
+    paddingHorizontal: 20,
     justifyContent: "center",
-
   },
 });

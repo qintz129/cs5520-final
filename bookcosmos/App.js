@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Signup from "./screens/Signup";
@@ -11,7 +11,7 @@ import AddABook from "./screens/AddABook";
 import BookDetail from "./screens/BookDetail";
 import OtherUserProfile from "./screens/OtherUserProfile";
 import AddReview from "./screens/AddReview";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "./components/CustomButton";
