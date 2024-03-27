@@ -21,9 +21,6 @@ export async function writeToDB(data, col, docId, subCol) {
     if (col === "users" && data.uid) {
       docRef = doc(database, col, data.uid);
       await setDoc(docRef, data);
-    } else if (col === "books") {
-      data = { ...data, owner: auth.currentUser.uid };
-      await addDoc(collection(database, col), data);
     } else {
       docRef = doc(database, col);
       await addDoc(collection(database, col), data);
@@ -68,7 +65,8 @@ export async function writeUserBooksToDB(bookData) {
     // Add book data to the 'books' collection and get the document reference
     const docRef = await addDoc(collection(database, "books"), {
       ...bookData,
-      owner: auth.currentUser.uid,
+      owner: auth.currentUser.uid, 
+      bookNameLower: bookData.bookName.toLowerCase(),
     });
 
     // Get the ID of the added book document

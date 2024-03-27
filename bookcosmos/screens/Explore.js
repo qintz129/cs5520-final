@@ -10,7 +10,7 @@ import {
   where,
 } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs} from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 
@@ -25,48 +25,44 @@ export default function Explore({ navigation }) {
         const booksCollection = collection(database, "books");
 
         // Define the query
-        let booksQuery = query(booksCollection);
+        let booksQuery;
 
         // If there's a search keyword, filter by bookName or author
         if (searchKeyword) {
           // Filter by bookName or author matching the lowercase searchKeyword
           booksQuery = query(
             booksCollection,
-            orderBy("bookName"),
-            startAt(searchKeyword),
-            endAt(searchKeyword + "\uf8ff")
+            orderBy("bookNameLower"),
+            startAt(searchKeyword.toLowerCase()),
+            endAt(searchKeyword.toLowerCase() + "\uf8ff")
           );
-        }
+        } else {
+          booksQuery = query(booksCollection);
+        } 
 
-        // Filter out books owned by the current user and books that are already in exchange
-        booksQuery = query(
-          booksQuery,
-          where("owner", "!=", auth.currentUser.uid),
-          where("isBookInExchange", "==", false)
-        );
+         // Fetch the books based on the query
+        const querySnapshot = await getDocs(booksQuery);
+        let fetchedBooks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
 
-        // Subscribe to the query
-        const unsubscribe = onSnapshot(booksQuery, async (snapshot) => {
-          const fetchedBooks = [];
-          const promises = snapshot.docs.map(async (doc) => {
-            const bookData = doc.data();
-            const ownerName = await getOwnerName(bookData.owner);
-            fetchedBooks.push({ id: doc.id, ...bookData, ownerName });
-          });
-          await Promise.all(promises);
-          // Update the state variable with the fetched books
-          setBooks(fetchedBooks);
-        });
+        fetchedBooks = fetchedBooks.filter(book => 
+          book.owner !== auth.currentUser.uid && book.bookStatus !== "inExchange"
+        ); 
 
-        // Clean up the subscription when the component unmounts
-        return () => unsubscribe();
-      } catch (error) {
-        console.error("Error fetching books:", error);
-      }
-    };
+      // Get additional data like ownerName for each book
+      const promises = fetchedBooks.map(async (book) => {
+        const ownerName = await getOwnerName(book.owner);
+        return { ...book, ownerName };
+      });
+      const booksWithOwnerName = await Promise.all(promises);
 
+      // Update the state variable with the fetched and filtered books
+      setBooks(booksWithOwnerName);
+    } catch (error) {
+      console.error("Error fetching books:", error);
+    }
+  };
     fetchBooks();
-  }, [searchKeyword, books]);
+  }, [searchKeyword]);
 
   const getOwnerName = async (ownerId) => {
     try {

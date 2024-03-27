@@ -8,7 +8,7 @@ import {
 } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
-import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign} from "@expo/vector-icons";
 
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
@@ -83,28 +83,51 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     }
   };
 
-  const renderItem = ({ item }) => (
-    <Swipeable
-      renderRightActions={() => (
-        <CustomButton
-          style={styles.deleteButton}
-          onPress={() => handleDeleteItem(item)}
-        >
-          <Text style={styles.deleteButtonText}>Delete</Text>
-        </CustomButton>
-      )}
-    >
-      <View style={styles.item}>
-        <CustomButton onPress={() => handlePressBook(item)}>
-          {item.bookName && <Text>{item.bookName}</Text>}
-          {item.author && <Text>{item.author}</Text>}
-          {item.isBookInExchange && (
-            <FontAwesome name="exchange" size={24} color="red" />
+  const renderItem = ({ item }) => {
+    // Render the item inside a Swipeable component if it's not in exchange
+    if (item.bookStatus ==="free") {
+      return (
+        <Swipeable
+          renderRightActions={() => (
+            <CustomButton
+              onPress={() => handleDeleteItem(item)}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </CustomButton>
           )}
-        </CustomButton>
-      </View>
-    </Swipeable>
-  );
+        >
+          <View style={styles.item}>
+            <CustomButton onPress={() => handlePressBook(item)}>
+              {item.bookName && <Text>{item.bookName}</Text>}
+              {item.author && <Text>{item.author}</Text>}
+            </CustomButton>
+          </View>
+        </Swipeable>
+      );
+    } else if (item.bookStatus === "pending"){
+      // Render the item inside a regular View component if it's pending
+      return (
+        <View style={styles.item}>
+          <CustomButton onPress={() => handlePressBook(item)}>
+            {item.bookName && <Text>{item.bookName}</Text>}
+            {item.author && <Text>{item.author}</Text>}
+            <AntDesign name="swapright" size={24} color="red" />
+          </CustomButton>
+        </View>
+      );
+    } else if (item.bookStatus === "inExchange"){
+      // Render the item inside a regular View component if it's in exchange
+      return (
+        <View style={styles.item}>
+          <CustomButton onPress={() => handlePressBook(item)}>
+            {item.bookName && <Text>{item.bookName}</Text>}
+            {item.author && <Text>{item.author}</Text>}
+            <AntDesign name="swap" size={24} color="red" />
+          </CustomButton>
+        </View>
+      );
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -124,5 +147,9 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
-  },
+  },   
+  deleteButtonText: { 
+    padding: 10,
+  }
+
 });

@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import { doc, getDoc } from "firebase/firestore";
-import { database } from "../firebase-files/firebaseSetup";
-import { auth } from "../firebase-files/firebaseSetup";
+import { database, auth} from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
 import ChooseBookModal from "../components/ChooseBookModal";
 
@@ -70,7 +69,7 @@ export default function BookDetail({ route, navigation }) {
       <Text>Book Name: {bookName}</Text>
       <Text>Author: {author}</Text>
       <Text>Description: {description}</Text>
-      <View style={styles.userContainer}>
+      <View>
         <CustomButton
           onPress={() =>
             navigation.navigate("Other User Profile", {
@@ -89,7 +88,7 @@ export default function BookDetail({ route, navigation }) {
       </View>
       <View style={styles.buttonContainer}>
         <CustomButton onPress={handleSendRequest} disabled={requestSent}>
-          <Text>Send Request</Text>
+        <Text>{requestSent ? "Request Sent" : "Send Request"}</Text>
         </CustomButton>
       </View>
       <ChooseBookModal

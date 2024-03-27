@@ -22,7 +22,7 @@ export default function ChooseBookModal({
     const booksQuery = query(
       collection(database, "books"),
       where("owner", "==", fromUserId),
-      where("isBookInExchange", "==", false)
+      where("bookStatus", "==", "free")
     );
 
     // Subscribe to the query
@@ -43,10 +43,10 @@ export default function ChooseBookModal({
     setSelectedBookId(bookId);
   };
 
-  // Function to update book status to indicate it is in exchange
-  async function updateBookStatusInExchange(bookId) {
+  // Function to update book status to indicate it is used to exchange for another book
+  async function updateBookStatus(bookId) {
     try {
-      await updateToDB(bookId, "books", { isBookInExchange: true });
+      await updateToDB(bookId, "books", { bookStatus: "pending" });
       console.log("Book status updated successfully");
     } catch (error) {
       console.error("Error updating book status:", error);
@@ -60,7 +60,7 @@ export default function ChooseBookModal({
         const newRequest = {
           fromUser: fromUserId,
           offeredBook: selectedBookId,
-          requestTime: new Date().toISOString(),
+          requestedTime: new Date().toISOString(),
           requestedBook: requestedBookId,
           toUser: toUserId,
           status: "unaccepted",
@@ -70,8 +70,7 @@ export default function ChooseBookModal({
         await writeToDB(newRequest, "users", fromUserId, "sentRequests");
 
         // Update book status to indicate it is in exchange
-        await updateBookStatusInExchange(selectedBookId);
-        await updateBookStatusInExchange(requestedBookId);
+        await updateBookStatus(selectedBookId);
 
         // Close the modal
         onRequestClose();
