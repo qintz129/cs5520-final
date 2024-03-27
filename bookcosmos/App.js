@@ -1,15 +1,17 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Signup from "./screens/Signup";
 import Login from "./screens/Login";
 import MainTab from "./navigations/MainTab";
 import UserInfo from "./screens/UserInfo";
-import AddABook from "./screens/AddABook"; 
+import AddABook from "./screens/AddABook";
+import BookDetail from "./screens/BookDetail";
+import OtherUserProfile from "./screens/OtherUserProfile";
 import AddReview from "./screens/AddReview";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "./components/CustomButton";
@@ -47,10 +49,11 @@ export default function App() {
         component={MainTab}
         options={{ headerShown: false }}
       />
-      <Stack.Screen  
-        name="UserInfo"  
-        component={UserInfo}  
-        />
+      <Stack.Screen
+        name="UserInfo"
+        component={UserInfo}
+        options={{ headerBackTitleVisible: false }}
+      />
       <Stack.Screen
         name="Add A Book"
         component={AddABook}
@@ -68,7 +71,17 @@ export default function App() {
             },
           },
         })}
-      /> 
+      />
+      <Stack.Screen
+        name="Book Detail"
+        component={BookDetail}
+        options={{ headerBackTitleVisible: false }}
+      />
+      <Stack.Screen
+        name="Other User Profile"
+        component={OtherUserProfile}
+        options={{ headerBackTitleVisible: false }}
+      />
       <Stack.Screen name="Add A Review" component={AddReview} />
     </>
   );
@@ -76,10 +89,10 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
-        <Stack.Navigator  
-          initialRouteName="Signup"  
-          screenOptions={{ 
-            headerBackTitleVisible: false 
+        <Stack.Navigator
+          initialRouteName="Signup"
+          screenOptions={{
+            headerBackTitleVisible: false,
           }}
         >
           {userLoggedIn ? AppStack : AuthStack}

@@ -1,16 +1,17 @@
-import { StyleSheet, Text, View, FlatList} from 'react-native'
-import React, {useEffect, useState} from 'react'  
-import {database, auth} from "../firebase-files/firebaseSetup"; 
-import { collection, onSnapshot, query} from "firebase/firestore"; 
-import {convertTimestamp} from '../Utils'; 
-import ReviewCard from '../components/ReviewCard';
+import { StyleSheet, Text, View, FlatList } from "react-native";
+import React, { useEffect, useState } from "react";
+import { database } from "../firebase-files/firebaseSetup";
+import { collection, onSnapshot, query } from "firebase/firestore";
+import { convertTimestamp } from "../Utils";
+import ReviewCard from "../components/ReviewCard";
 
-export default function Reviews() {  
- const [reviews, setReviews] = useState([]);
-  useEffect(() => { 
-    const q = query(collection(database, "users", auth.currentUser.uid, "reviews"));
+export default function Reviews({ userId }) {
+  const [reviews, setReviews] = useState([]);
+  useEffect(() => {
+    const q = query(collection(database, "users", userId, "reviews"));
     const unsubscribe = onSnapshot(
-      q, (querySnapshot) => {
+      q,
+      (querySnapshot) => {
         let newArray = [];
         querySnapshot.forEach((doc) => {
           // update this to also add id of doc to the newArray
@@ -18,36 +19,32 @@ export default function Reviews() {
           // store this data in a new array
         });
         // console.log(newArray);
-        //updating the goals array with the new array 
-        const updatedArray = newArray.map(item => ({
+        //updating the goals array with the new array
+        const updatedArray = newArray.map((item) => ({
           ...item,
-          date: convertTimestamp(item.date)
+          date: convertTimestamp(item.date),
         }));
         setReviews(updatedArray);
-      }, 
-      (error) => { 
+      },
+      (error) => {
         console.log(error.message);
       }
     );
     return () => {
       unsubscribe();
     };
-  }, []); 
+  }, []);
 
   console.log(reviews);
   return (
     <View>
-      <FlatList  
-        data={reviews} 
-        keyExtractor={(item) => item.id} 
-        renderItem={({item}) => (  
-          <ReviewCard  
-             review={item}
-          />
-        )} 
+      <FlatList
+        data={reviews}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => <ReviewCard review={item} />}
       />
     </View>
-  )
+  );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({});

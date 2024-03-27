@@ -1,24 +1,24 @@
 import { StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import CustomButton from "../components/CustomButton";
 import Library from "./Library";
 import Reviews from "./Reviews";
-import { auth } from "../firebase-files/firebaseSetup";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function Profile({ navigation }) {
+export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
+  const { ownerId, ownerName } = route.params;
+
+  useEffect(() => {
+    navigation.setOptions({
+      title: ownerName,
+    });
+  }, [ownerName]);
+
   return (
     <View>
-      <CustomButton onPress={() => navigation.navigate("UserInfo")}>
+      <View style={styles.userAvatar}>
         <Ionicons name="person-circle" size={60} color="black" />
-      </CustomButton>
-      <View style={styles.addABook}>
-        <CustomButton
-          onPress={() => navigation.navigate("Add A Book", { editMode: false })}
-        >
-          <Text>Add A Book</Text>
-        </CustomButton>
       </View>
       <View style={styles.tabs}>
         <CustomButton onPress={() => setActiveTab("library")}>
@@ -29,23 +29,18 @@ export default function Profile({ navigation }) {
         </CustomButton>
       </View>
       {activeTab === "library" ? (
-        <Library
-          navigation={navigation}
-          userId={auth.currentUser.uid}
-          isMyLibrary={true}
-        />
+        <Library navigation={navigation} userId={ownerId} isMyLibrary={false} />
       ) : (
-        <Reviews userId={auth.currentUser.uid} />
+        <Reviews userId={ownerId} />
       )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  addABook: {
-    alignItems: "left",
+  userAvatar: {
+    alignItems: "center",
     marginVertical: 10,
-    marginLeft: 65,
   },
   tabs: {
     flexDirection: "row",

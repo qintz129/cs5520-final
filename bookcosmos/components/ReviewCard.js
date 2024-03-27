@@ -1,9 +1,8 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-import { Rating } from 'react-native-ratings';
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { Rating } from "react-native-ratings";
 
-export default function ReviewCard({review}) {
-
+export default function ReviewCard({ review }) {
   return (
     <View style={styles.card}>
       <Rating
@@ -23,10 +22,10 @@ export default function ReviewCard({review}) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     padding: 15,
     borderRadius: 5,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
@@ -34,21 +33,21 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   rating: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     marginBottom: 5,
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
     marginBottom: 5,
   },
   reviewerName: {
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   date: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
   },
   comment: {
     fontSize: 14,

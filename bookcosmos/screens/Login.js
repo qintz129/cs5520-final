@@ -1,8 +1,8 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
-import { auth } from "../firebase-files/firebaseSetup"; 
-import CustomInput from "../components/CustomInput"; 
+import { auth } from "../firebase-files/firebaseSetup";
+import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 
 export default function Login({ navigation }) {
@@ -26,22 +26,24 @@ export default function Login({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <CustomInput  
-        title="Email"  
-        onChangeText={(changedText) => setEmail(changedText)}  
-        value={email}  
-        placeholder="Email" /> 
-      <CustomInput  
-        title="Password"  
-        onChangeText={(changedText) => setPassword(changedText)}  
-        value={password}  
-        placeholder="Password" /> 
-      <CustomButton onPress={loginHandler}> 
+      <CustomInput
+        title="Email"
+        onChangeText={(changedText) => setEmail(changedText)}
+        value={email}
+        placeholder="Email"
+      />
+      <CustomInput
+        title="Password"
+        onChangeText={(changedText) => setPassword(changedText)}
+        value={password}
+        placeholder="Password"
+      />
+      <CustomButton onPress={loginHandler}>
         <Text>Login</Text>
-      </CustomButton>  
-      <CustomButton onPress={signupHandler}> 
+      </CustomButton>
+      <CustomButton onPress={signupHandler}>
         <Text>New User? Create An Account</Text>
-      </CustomButton> 
+      </CustomButton>
     </View>
   );
 }
@@ -51,7 +53,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#fff",
     alignItems: "stretch",
-    justifyContent: "center", 
-    paddingHorizontal: 20,  
-  }
+    justifyContent: "center",
+    paddingHorizontal: 20,
+  },
 });
