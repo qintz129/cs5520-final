@@ -40,10 +40,18 @@ export async function writeToDB(data, col, docId, subCol) {
 }
 
 // Function to update data in the database
-export async function updateToDB(id, col, updates) {
-  try {
-    const docRef = doc(database, col, id);
-    await updateDoc(docRef, updates);
+export async function updateToDB(id, col, docId=null, subCol=null, updates) {
+  try { 
+    if (docId) {  
+      const docRef = doc(database, col, docId, subCol, id);
+      await updateDoc(docRef, updates);   
+      console.log(docRef);
+
+    } else {
+    const docRef = doc(database, col, id); 
+    await updateDoc(docRef, updates); 
+    } 
+    console.log("Data updated successfully");
   } catch (err) {
     console.log(err);
   }
@@ -64,7 +72,7 @@ export async function getAllDocs(path) {
 }
 
 // Function to delete data from the database
-export async function deleteFROMDB(id, col, docId, subCol) {
+export async function deleteFROMDB(id, col, docId=null, subCol=null,) {
     try {    
         if (docId) {
           await deleteDoc(doc(database, col, docId, subCol, id));
@@ -75,4 +83,17 @@ export async function deleteFROMDB(id, col, docId, subCol) {
     catch (err){ 
         console.log(err);
     }
-} 
+}  
+
+export async function createExchangeRequest(newRequest) {
+
+  const sentRequestRef = doc(collection(database, "users", newRequest.fromUser, "sentRequests"));
+
+  const requestId = sentRequestRef.id;
+
+  const receivedRequestRef = doc(database, "users", newRequest.toUser, "receivedRequests", requestId);
+  await setDoc(receivedRequestRef, newRequest); 
+  await setDoc(sentRequestRef, newRequest);
+
+  return requestId; 
+}

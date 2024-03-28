@@ -81,7 +81,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 
   const renderItem = ({ item }) => {
     // Render the item inside a Swipeable component if it's not in exchange
-    if (item.bookStatus ==="free") {
+    if (item.bookStatus ==="free" && isMyLibrary) {
       return (
         <Swipeable
           renderRightActions={() => (
@@ -100,7 +100,17 @@ export default function Library({ navigation, userId, isMyLibrary }) {
           </View>
         </Swipeable>
       );
-    } else if (item.bookStatus === "pending"){
+    } else if (item.bookStatus === "free" && !isMyLibrary) {   
+      return (
+        <View style={styles.item}>
+        <CustomButton onPress={() => handlePressBook(item)}>
+          {item.bookName && <Text>{item.bookName}</Text>}
+          {item.author && <Text>{item.author}</Text>}
+        </CustomButton>
+      </View> 
+      );
+    }
+    else if (item.bookStatus === "pending"){
       // Render the item inside a regular View component if it's pending
       return (
         <View style={styles.item}>
@@ -124,21 +134,23 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       );
     }
   };
-
   return (
     <View style={styles.container}>
       {books.length > 0 && (
         <FlatList
           data={books}
           renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => index.toString()} 
         />
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
+  container: {
+    flex: 1,
+  },
   item: {
     padding: 10,
     borderBottomWidth: 1,

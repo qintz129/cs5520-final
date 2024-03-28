@@ -7,7 +7,6 @@ import {
   orderBy,
   startAt,
   endAt,
-  where,
 } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc, getDocs} from "firebase/firestore";
@@ -19,49 +18,45 @@ export default function Explore({ navigation }) {
   const [searchKeyword, setSearchKeyword] = useState("");
 
   useEffect(() => {
-    const fetchBooks = async () => {
+    const fetchBooks = () => {
       try {
-        // Define the books collection reference
         const booksCollection = collection(database, "books");
-
-        // Define the query
-        let booksQuery;
-
-        // If there's a search keyword, filter by bookName or author
+        let booksQuery = booksCollection;
+  
         if (searchKeyword) {
-          // Filter by bookName or author matching the lowercase searchKeyword
           booksQuery = query(
             booksCollection,
             orderBy("bookNameLower"),
             startAt(searchKeyword.toLowerCase()),
             endAt(searchKeyword.toLowerCase() + "\uf8ff")
           );
-        } else {
-          booksQuery = query(booksCollection);
-        } 
-
-         // Fetch the books based on the query
-        const querySnapshot = await getDocs(booksQuery);
-        let fetchedBooks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
-
-        fetchedBooks = fetchedBooks.filter(book => 
-          book.owner !== auth.currentUser.uid && book.bookStatus == "free"
-        ); 
-
-      // Get additional data like ownerName for each book
-      const promises = fetchedBooks.map(async (book) => {
-        const ownerName = await getOwnerName(book.owner);
-        return { ...book, ownerName };
-      });
-      const booksWithOwnerName = await Promise.all(promises);
-
-      // Update the state variable with the fetched and filtered books
-      setBooks(booksWithOwnerName);
-    } catch (error) {
-      console.error("Error fetching books:", error);
-    }
-  };
-    fetchBooks();
+        }
+  
+        const unsubscribe = onSnapshot(booksQuery, async (querySnapshot) => {
+          let fetchedBooks = querySnapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .filter(book => book.owner !== auth.currentUser.uid && book.bookStatus === "free");
+  
+          const promises = fetchedBooks.map(async (book) => {
+            const ownerName = await getOwnerName(book.owner);
+            return { ...book, ownerName };
+          });
+  
+          const booksWithOwnerName = await Promise.all(promises);
+          setBooks(booksWithOwnerName);
+        });
+  
+        return unsubscribe; 
+      } catch (error) {
+        console.error("Error fetching books:", error);
+      }
+    };
+  
+    // 调用fetchBooks并处理返回的取消监听函数
+    const unsubscribe = fetchBooks();
+    
+    // 组件卸载时取消监听
+    return () => unsubscribe();
   }, [searchKeyword]);
 
   const getOwnerName = async (ownerId) => {
@@ -116,7 +111,10 @@ export default function Explore({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
+  container: {
+    flex: 1,
+  },
   item: {
     padding: 10,
     borderBottomWidth: 1,

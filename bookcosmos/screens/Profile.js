@@ -9,7 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 export default function Profile({ navigation }) {
   const [activeTab, setActiveTab] = useState("library");
   return (
-    <View>
+    <View style={styles.container}>
       <CustomButton onPress={() => navigation.navigate("UserInfo")}>
         <Ionicons name="person-circle" size={60} color="black" />
       </CustomButton>
@@ -41,7 +41,10 @@ export default function Profile({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
+  container: {
+    flex: 1,
+  },
   addABook: {
     alignItems: "left",
     marginVertical: 10,

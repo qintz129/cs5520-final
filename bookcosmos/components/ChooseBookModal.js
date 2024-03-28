@@ -3,7 +3,7 @@ import { Modal, View, Text, FlatList, StyleSheet, Alert } from "react-native";
 import CustomButton from "./CustomButton";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
-import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
+import { writeToDB, updateToDB, createExchangeRequest } from "../firebase-files/firestoreHelper";
 
 export default function ChooseBookModal({
   visible,
@@ -45,8 +45,8 @@ export default function ChooseBookModal({
 
   // Function to update book status to indicate it is used to exchange for another book
   async function updateBookStatus(bookId) {
-    try {
-      await updateToDB(bookId, "books", { bookStatus: "pending" });
+    try { 
+      await updateToDB(bookId, "books", null, null, { bookStatus: "pending" });
       console.log("Book status updated successfully");
     } catch (error) {
       console.error("Error updating book status:", error);
@@ -66,8 +66,12 @@ export default function ChooseBookModal({
           status: "unaccepted",
         };
         // Write request data to the database
-        await writeToDB(newRequest, "users", toUserId, "receivedRequests");
-        await writeToDB(newRequest, "users", fromUserId, "sentRequests");
+        createExchangeRequest(newRequest).then(requestId => {
+          console.log("Request created with ID:", requestId);
+        })
+        .catch(error => {
+          console.error("Error creating request:", error);
+        });
 
         // Update book status to indicate it is in exchange
         await updateBookStatus(selectedBookId);

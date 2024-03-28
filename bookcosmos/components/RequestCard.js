@@ -2,9 +2,11 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from "react";
 import CustomButton from './CustomButton';  
 import { deleteFROMDB, updateToDB} from '../firebase-files/firestoreHelper';  
-import { auth } from '../firebase-files/firebaseSetup';
+import { AntDesign } from '@expo/vector-icons'; 
+import {auth} from '../firebase-files/firebaseSetup';
 
-export default function RequestCard({date, requestedBookInfo, offeredBookInfo, navigation, tab, requestId}) {  
+export default function RequestCard({date, requestedBookInfo, offeredBookInfo, navigation, tab, requestId, fromUserId, toUserId, initialStatus, initialCompletedUser, setUpdateTrigger}) {   
+    const [status, setStatus] = useState(initialStatus);  
 
     const handlePressBook = ({id, owner}) => {
           navigation.navigate("Book Detail", {
@@ -13,62 +15,153 @@ export default function RequestCard({date, requestedBookInfo, offeredBookInfo, n
           });
       }; 
 
-    const handleCancel = () => {  
-        deleteFROMDB(requestId, "users", auth.currentUser.uid, "sentRequests");   
-        if (offeredBookInfo){
-        updateToDB(offeredBookInfo.id, "books", {bookStatus: "free"}); 
+      const handleCancelAndReject = async () => {  
+        try {
+          // Wait for each delete operation to complete
+          await deleteFROMDB(requestId, "users", fromUserId, "sentRequests");   
+          console.log("Deleted from sentRequests");
+          
+          await deleteFROMDB(requestId, "users", toUserId, "receivedRequests");
+          console.log("Deleted from receivedRequests");
+      
+          // Check if offeredBookInfo exists and its status before updating
+          if (offeredBookInfo && offeredBookInfo.bookStatus !== "inExchange") {
+            await updateToDB(offeredBookInfo.id, "books", null, null, {bookStatus: "free"}); 
+            console.log("Updated offered book status to free"); 
+          }
+        } catch (err) {
+          console.error("Failed to cancel the exchange request:", err);
+          // Handle the error, possibly update UI to show an error message
         }
-    }  
+      }; 
 
-    const handleAccept = () => {  
-        console.log("Accepting request");
-    } 
+    const handleAccept = async () => {
+        try {
+          // Wait for each update operation to complete
+          await updateToDB(requestId, "users", toUserId, "receivedRequests", {status: "accepted"}); 
+          console.log("Updated received request status to accepted"); 
+          
+          await updateToDB(requestId, "users", fromUserId, "sentRequests", {status: "accepted"});  
+          console.log("Updated sent request status to accepted"); 
+          
+          await updateToDB(offeredBookInfo.id, "books", null, null, {bookStatus: "inExchange"});  
+          console.log("Updated offered book status to inExchange", offeredBookInfo.bookName);   
+          setUpdateTrigger((prev) => prev + 1);
+        
+          await updateToDB(requestedBookInfo.id, "books", null, null, {bookStatus: "inExchange"});  
+          console.log("Updated requested book status to inExchange", requestedBookInfo.bookName);   
+      
+          setStatus("accepted"); // Assuming setStatus updates the component state
+        } catch (err) {
+          console.error("Failed to accept the exchange request:", err);
+          // Handle the error, possibly update UI to show an error message
+        }
+      }; 
 
-    const handleReject = () => {  
-        console.log("Rejecting request");
-    } 
+      const handleComplete = async () => {  
+          try { 
+            if (status === "accepted") {
+            const updates = { 
+              status: "one user completed", 
+              completedUser: auth.currentUser.uid
+            };
+            await updateToDB(requestId, "users", fromUserId, "sentRequests", updates); 
+            await updateToDB(requestId, "users", toUserId, "receivedRequests", updates);  
+            
+            setUpdateTrigger((prev) => prev + 1); 
+            setStatus("one user completed");  
+             }  else if (status === "one user completed") {  
+            const updates = { 
+              status: "completed",  
+              completedUser: "all"
+             }  
+            await updateToDB(requestId, "users", fromUserId, "sentRequests", updates); 
+            await updateToDB(requestId, "users", toUserId, "receivedRequests", updates);  
+            await updateToDB(requestedBookInfo.id, "books", null, null, {bookStatus: "completed"});  
+            await updateToDB(offeredBookInfo.id, "books", null, null, {bookStatus: "completed"});   
+            setUpdateTrigger((prev) => prev + 1);
+            setStatus("completed");
+            }
+          } catch (error) {
+            console.error("Failed to complete the exchange request:", error);
+            // Handle the error appropriately
+          }
+        }; 
   return (
     <View style={styles.container}>
-      <Text>{date}</Text>
-      <View style={styles.books}>
+      <Text>{date}</Text> 
+      {
+        status === "unaccepted" && (!offeredBookInfo || !requestedBookInfo || offeredBookInfo.bookStatus === "inExchange" || requestedBookInfo.bookStatus === "inExchange") && (
+            <Text>One or both books are no longer available</Text> 
+        )
+         }
+      <View style={styles.books}> 
         <View style={styles.bookItem}>
-            <Text style={styles.text}>Requested:</Text> 
-            {requestedBookInfo ? (
-            <CustomButton onPress={() => handlePressBook({id: requestedBookInfo.id, owner: requestedBookInfo.owner})}>
-            <Text style={styles.text}>{requestedBookInfo.bookName}</Text>
-            </CustomButton>
-            ) : (
-                <Text style={styles.text}>Unavailable</Text>
-            )}
-        </View>
+                <Text>Offered:</Text> 
+                {
+                    offeredBookInfo ? (
+                    <View style={styles.bookLabel}> 
+                    <CustomButton onPress={() => handlePressBook({id: offeredBookInfo.id, owner: offeredBookInfo.owner})}> 
+                        <Text style={styles.text}>{offeredBookInfo.bookName}</Text> 
+                    </CustomButton>  
+                    {offeredBookInfo.bookStatus === "inExchange" && ( 
+                        <AntDesign name="swap" size={24} color="red" /> 
+                    )}
+                    </View>
+                    ) : ( 
+                        <Text style={styles.text}>Unavailable</Text> 
+                    )
+                }
+        </View>  
         <View style={styles.bookItem}>
-            <Text style={styles.text}>Offered:</Text> 
-           {offeredBookInfo ? (<CustomButton onPress={() => handlePressBook({id: offeredBookInfo.id, owner: offeredBookInfo.owner})}> 
-                <Text style={styles.text}>{offeredBookInfo.bookName}</Text> 
-            </CustomButton> 
-            ) : ( 
-                <Text style={styles.text}>Unavailable</Text> 
-            )}
-        </View>    
-    </View> 
-    {tab === "outgoing" ? (
-            <CustomButton onPress={() => handleCancel()}> 
-                <Text style={styles.text}>Cancel</Text> 
-            </CustomButton>
-        ) : (  
-            <View style={styles.buttonView}> 
-                {offeredBookInfo && requestedBookInfo && (
-                <CustomButton onPress={() => handleAccept()}> 
-                    <Text style={styles.text}>Accept</Text> 
-                </CustomButton>  
+            <Text>Requested:</Text> 
+            {
+                requestedBookInfo ? (
+                    <View style={styles.bookLabel}>
+                    <CustomButton onPress={() => handlePressBook({id: requestedBookInfo.id, owner: requestedBookInfo.owner})}> 
+                        <Text>{requestedBookInfo.bookName}</Text> 
+                    </CustomButton>  
+                    {requestedBookInfo.bookStatus === "inExchange" && ( 
+                        <AntDesign name="swap" size={24} color="red" /> 
+                    )}
+                    </View>
+                ) : ( 
+                    <Text>Unavailable</Text> 
                 )
                 }
-                <CustomButton onPress={() => handleReject()}> 
-                    <Text style={styles.text}>Reject</Text> 
-                </CustomButton> 
-            </View>
+        </View>  
+  </View> 
+    {tab === "outgoing" && status === "unaccepted"? (
+        <CustomButton onPress={() => handleCancelAndReject()}> 
+            <Text style={styles.text}>Cancel</Text> 
+        </CustomButton>
+        ) : tab === "incoming" && status === "unaccepted" ? ( 
+        <View style={styles.buttonView}> 
+            {
+            offeredBookInfo && requestedBookInfo && offeredBookInfo.bookStatus !== "inExchange" && requestedBookInfo.bookStatus !== "inExchange" && (
+                <CustomButton onPress={() => handleAccept()}>
+                <Text>Accept</Text>
+                </CustomButton>
+            )
+            }
+            <CustomButton onPress={() => handleCancelAndReject()}> 
+            <Text>Reject</Text> 
+            </CustomButton> 
+        </View>  
+        ) : status === "accepted"? (
+            <CustomButton onPress={() => handleComplete()}> 
+            <Text style={styles.text}>Complete</Text> 
+            </CustomButton>  
+        ) : status === "one user completed" && initialCompletedUser === auth.currentUser.uid? ( 
+            <Text style={styles.waiting}>Waiting for the other user to complete</Text> 
+        ) : status === "one user completed" && initialCompletedUser !== auth.currentUser.uid? ( 
+            <CustomButton onPress={() => handleComplete()}> 
+            <Text style={styles.text}>Waiting for you to complete</Text> 
+            </CustomButton>  
         )
-    } 
+        : status === "completed"? (
+            <Text style={styles.text}>Completed</Text> 
+        ): null}
   </View>
 );
 }
@@ -93,16 +186,24 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 1.41,
         elevation: 2,
-      }, 
-    text: {
-       alignSelf: "center",
-    }, 
+      },  
+      bookLabel: { 
+        alignItems: "center",
+    },
     bookItem: {
         width: "45%",
-        padding: 10,
-    }, 
+        padding: 10, 
+        alignItems: "center",
+    },  
     buttonView: {
         flexDirection: "row",
         justifyContent: "space-evenly",
-      },
+      }, 
+    waiting: { 
+        color: "red", 
+        alignSelf: "center",
+    }, 
+    text: {
+        alignSelf: "center",
+    },
 });
