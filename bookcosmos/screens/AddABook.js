@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
 import {
-  writeUserBooksToDB,
-  updateBookInDB,
+  writeToDB, 
+  updateToDB,
 } from "../firebase-files/firestoreHelper";
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
@@ -13,7 +13,7 @@ export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
   const [description, setDescription] = useState("");
-  const [isBookInExchange, setIsBookInExchange] = useState(false);
+  const [BookStatus, setBookStatus] = useState("free");
   const { editMode, bookId } = route.params;
 
   // Render the header based on the edit mode
@@ -36,7 +36,7 @@ export default function AddABook({ navigation, route }) {
             setBookName(bookData.bookName);
             setAuthor(bookData.author);
             setDescription(bookData.description);
-            setIsBookInExchange(bookData.isInExchange);
+            setBookStatus(bookData.bookStatus);
           } else {
             console.error("No such document!");
           }
@@ -60,13 +60,13 @@ export default function AddABook({ navigation, route }) {
       } else {
         // Create a new book data object
         const newBookData = {
-          bookName,
-          author,
-          description,
-          isBookInExchange,
+          bookName: bookName,
+          author: author,
+          description: description,
+          bookStatus: BookStatus, 
         };
         // Write book data to the database
-        writeUserBooksToDB(newBookData);
+        writeToDB(newBookData, "books");
         // Navigate back to the previous screen
         navigation.goBack();
       }
@@ -85,11 +85,12 @@ export default function AddABook({ navigation, route }) {
           text: "Yes",
           onPress: () => {
             const updatedBookData = {
-              bookName,
-              author,
-              description,
+              bookName: bookName,
+              author: author,
+              description: description, 
+              bookNameLower: bookName.toLowerCase(),
             };
-            updateBookInDB(bookId, updatedBookData);
+            updateToDB(bookId, "books", updatedBookData);
             // Navigate back to the previous screen
             navigation.goBack();
           },

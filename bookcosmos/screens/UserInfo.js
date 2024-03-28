@@ -10,7 +10,7 @@ import { updateToDB } from "../firebase-files/firestoreHelper";
 export default function UserInfo() {
   const [name, setName] = useState("");
   const [initialName, setInitialName] = useState("");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(""); 
   useEffect(() => {
     const getUserInfo = async () => {
       try {

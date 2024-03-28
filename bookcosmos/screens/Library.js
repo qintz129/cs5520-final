@@ -3,12 +3,12 @@ import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {
-  getAllDocs,
-  deleteBookFromDB,
+  getAllDocs, 
+  deleteFROMDB
 } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
-import { FontAwesome } from "@expo/vector-icons";
+import { AntDesign} from "@expo/vector-icons";
 
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
@@ -25,7 +25,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       booksQuery = query(
         collection(database, "books"),
         where("owner", "==", userId),
-        where("isBookInExchange", "==", false)
+        where("bookStatus", "==", "free")
       );
     }
 
@@ -57,11 +57,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
             text: "Delete",
             onPress: async () => {
               // Call the deleteBookFromDB function to delete the book from the database
-              await deleteBookFromDB(item.id);
-
-              // After successful deletion, fetch the updated list of books from the database
-              const updatedBooksData = await getAllDocs("books");
-              setBooks(updatedBooksData);
+              await deleteFROMDB(item.id, "books"); 
             },
           },
         ],
@@ -83,46 +79,84 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     }
   };
 
-  const renderItem = ({ item }) => (
-    <Swipeable
-      renderRightActions={() => (
-        <CustomButton
-          style={styles.deleteButton}
-          onPress={() => handleDeleteItem(item)}
+  const renderItem = ({ item }) => {
+    // Render the item inside a Swipeable component if it's not in exchange
+    if (item.bookStatus ==="free" && isMyLibrary) {
+      return (
+        <Swipeable
+          renderRightActions={() => (
+            <CustomButton
+              onPress={() => handleDeleteItem(item)}
+            >
+              <Text style={styles.deleteButtonText}>Delete</Text>
+            </CustomButton>
+          )}
         >
-          <Text style={styles.deleteButtonText}>Delete</Text>
-        </CustomButton>
-      )}
-    >
-      <View style={styles.item}>
+          <View style={styles.item}>
+            <CustomButton onPress={() => handlePressBook(item)}>
+              {item.bookName && <Text>{item.bookName}</Text>}
+              {item.author && <Text>{item.author}</Text>}
+            </CustomButton>
+          </View>
+        </Swipeable>
+      );
+    } else if (item.bookStatus === "free" && !isMyLibrary) {   
+      return (
+        <View style={styles.item}>
         <CustomButton onPress={() => handlePressBook(item)}>
           {item.bookName && <Text>{item.bookName}</Text>}
           {item.author && <Text>{item.author}</Text>}
-          {item.isBookInExchange && (
-            <FontAwesome name="exchange" size={24} color="red" />
-          )}
         </CustomButton>
-      </View>
-    </Swipeable>
-  );
-
+      </View> 
+      );
+    }
+    else if (item.bookStatus === "pending"){
+      // Render the item inside a regular View component if it's pending
+      return (
+        <View style={styles.item}>
+          <CustomButton onPress={() => handlePressBook(item)}>
+            {item.bookName && <Text>{item.bookName}</Text>}
+            {item.author && <Text>{item.author}</Text>}
+            <AntDesign name="swapright" size={24} color="red" />
+          </CustomButton>
+        </View>
+      );
+    } else if (item.bookStatus === "inExchange"){
+      // Render the item inside a regular View component if it's in exchange
+      return (
+        <View style={styles.item}>
+          <CustomButton onPress={() => handlePressBook(item)}>
+            {item.bookName && <Text>{item.bookName}</Text>}
+            {item.author && <Text>{item.author}</Text>}
+            <AntDesign name="swap" size={24} color="red" />
+          </CustomButton>
+        </View>
+      );
+    }
+  };
   return (
     <View style={styles.container}>
       {books.length > 0 && (
         <FlatList
           data={books}
           renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
+          keyExtractor={(item, index) => index.toString()} 
         />
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
+  container: {
+    flex: 1,
+  },
   item: {
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
-  },
+  },   
+  deleteButtonText: { 
+    padding: 10,
+  }
 });

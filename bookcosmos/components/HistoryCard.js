@@ -8,23 +8,23 @@ export default function HistoryCard({
   myBook,
   theirBook,
   date,
-  status,
   navigation,
   reviewee,
-  reviewer,
+  reviewer, 
+  exchangeId
 }) {
-  const [isSubmit, setIsSubmit] = useState(false);
+  const [isSubmit, setIsSubmit] = useState(false); 
   const handleReview = () => {
     navigation.navigate("Add A Review", {
-      reviewee: reviewee,
+      reviewee: reviewee, 
+      exchangeId: exchangeId, 
+      onReviewSubmitted: () => setIsSubmit(true),
     });
   };
-  useEffect(() => {
+  useEffect(() => { 
     const fetchReviews = async () => {
-      console.log("reviewee", reviewee);
-      console.log("reviewer", reviewer);
       const reviewsRef = collection(database, "users", reviewee, "reviews");
-      const q = query(reviewsRef, where("reviewerId", "==", reviewer));
+      const q = query(reviewsRef, where("exchangeId", "==", exchangeId));
       try {
         const querySnapshot = await getDocs(q);
         if (!querySnapshot.empty) {
@@ -33,37 +33,56 @@ export default function HistoryCard({
       } catch (err) {
         console.error("Error fetching reviews:", err);
       }
-    };
-    fetchReviews();
-  }, []);
+    }; 
+  try {
+    fetchReviews(); 
+  } catch (error) { 
+    console.error("Error fetching reviews:", error); 
+  }
+  }, [exchangeId, reviewee]);  
   return (
     <View style={styles.container}>
-      <View style={styles.status}>
         <Text>{date}</Text>
-        <Text>{status}</Text>
-      </View>
-      <View style={styles.books}>
-        <Text>My book: {myBook}</Text>
-        <Text>Their book: {theirBook}</Text>
-      </View>
-      {status === "completed" && (
+      <View style={styles.books}> 
+       <View style={styles.bookItem}>
+        <Text>My book:</Text>
+         <Text>{myBook}</Text> 
+        </View>
+        <View style={styles.bookItem}>
+        <Text>Their book:</Text>
+         <Text>{theirBook}</Text> 
+        </View>
+      </View> 
         <CustomButton onPress={handleReview} disabled={isSubmit}>
           <Text>{isSubmit ? "Reviewed" : "Review"}</Text>
         </CustomButton>
-      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  status: {},
   books: {
     flexDirection: "row",
     justifyContent: "space-around",
+  }, 
+  bookItem: {
+    width: "45%",
+    alignItems: "center",
   },
   container: {
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: "#ccc",
-  },
+    backgroundColor: '#fff',
+    borderRadius: 8, 
+    margin: 10, 
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 1.41,
+    elevation: 2,
+  },  
 });

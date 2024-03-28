@@ -1,10 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
-import { doc, getDoc } from "firebase/firestore";
-import { database } from "../firebase-files/firebaseSetup";
-import { auth } from "../firebase-files/firebaseSetup";
+import { doc, getDoc, getDocs, collection} from "firebase/firestore";
+import { database, auth} from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
-import ChooseBookModal from "../components/ChooseBookModal";
+import ChooseBookModal from "../components/ChooseBookModal"; 
 
 export default function BookDetail({ route, navigation }) {
   const [bookName, setBookName] = useState("");
@@ -12,8 +11,10 @@ export default function BookDetail({ route, navigation }) {
   const [description, setDescription] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [requestSent, setRequestSent] = useState(false);
-  const { bookId, ownerId } = route.params;
+  const [requestSent, setRequestSent] = useState(false); 
+  const [bookStatus, setBookStatus] = useState("free");
+  const { bookId, ownerId } = route.params; 
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     let bookData;
@@ -27,7 +28,8 @@ export default function BookDetail({ route, navigation }) {
           bookData = docSnap.data();
           setBookName(bookData.bookName);
           setAuthor(bookData.author);
-          setDescription(bookData.description);
+          setDescription(bookData.description); 
+          setBookStatus(bookData.bookStatus);
 
           await fetchOwnerName(bookData.owner);
         } else {
@@ -54,8 +56,42 @@ export default function BookDetail({ route, navigation }) {
       }
     };
     fetchBookData();
-  }, [bookId]);
+  }, [bookId]);  
 
+  async function getRatings(path) {
+    try {
+      const querySnapshot = await getDocs(collection(database, path));
+      let ratings = [];
+      querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        if (data.rating) {
+          ratings.push(data.rating);
+        }
+      });
+      return ratings;
+    } catch (err) {
+      console.error("Error fetching ratings:", err);
+      return []; 
+    }
+  }
+  useEffect(() => {  
+    const fetchRatings = async () => { 
+      try { 
+        const ratings = await getRatings(`users/${ownerId}/reviews`);
+        if (ratings.length === 0) {
+          setRating(0); 
+        } else {
+          const averageRating = ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length;
+          setRating(Math.round(averageRating * 10) / 10);
+        }
+      } catch (error) { 
+        console.error("Error fetching ratings:", error); 
+      }
+    };  
+  
+    fetchRatings(); 
+  }, [ownerId]);
+console.log("Rating:", rating);
   const handleSendRequest = () => {
     setModalVisible(true);
   };
@@ -69,8 +105,9 @@ export default function BookDetail({ route, navigation }) {
     <View style={styles.container}>
       <Text>Book Name: {bookName}</Text>
       <Text>Author: {author}</Text>
-      <Text>Description: {description}</Text>
-      <View style={styles.userContainer}>
+      <Text>Description: {description}</Text>  
+      <Text>Book Status: {bookStatus}</Text>
+      <View>
         <CustomButton
           onPress={() =>
             navigation.navigate("Other User Profile", {
@@ -79,7 +116,8 @@ export default function BookDetail({ route, navigation }) {
             })
           }
         >
-          <Text>User: {ownerName}</Text>
+          <Text>User: {ownerName}</Text> 
+          {rating > 0 && (<Text>Rating: {rating}</Text>)}
         </CustomButton>
       </View>
       <View style={styles.goodReads}>
@@ -87,10 +125,13 @@ export default function BookDetail({ route, navigation }) {
           <Text>See more information from Goodreads</Text>
         </CustomButton>
       </View>
-      <View style={styles.buttonContainer}>
-        <CustomButton onPress={handleSendRequest} disabled={requestSent}>
-          <Text>Send Request</Text>
-        </CustomButton>
+      <View style={styles.buttonContainer}> 
+      {!requestSent && bookStatus === "free" && (
+        <CustomButton onPress={handleSendRequest}>
+        <Text>Send Request</Text>
+        </CustomButton>  
+      )
+      }
       </View>
       <ChooseBookModal
         visible={modalVisible}
