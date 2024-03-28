@@ -9,7 +9,7 @@ import {
   endAt,
 } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc, getDocs} from "firebase/firestore";
+import { doc, getDoc, getDocs } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 
@@ -22,7 +22,7 @@ export default function Explore({ navigation }) {
       try {
         const booksCollection = collection(database, "books");
         let booksQuery = booksCollection;
-  
+
         if (searchKeyword) {
           booksQuery = query(
             booksCollection,
@@ -31,31 +31,33 @@ export default function Explore({ navigation }) {
             endAt(searchKeyword.toLowerCase() + "\uf8ff")
           );
         }
-  
+
         const unsubscribe = onSnapshot(booksQuery, async (querySnapshot) => {
           let fetchedBooks = querySnapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(book => book.owner !== auth.currentUser.uid && book.bookStatus === "free");
-  
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .filter(
+              (book) =>
+                book.owner !== auth.currentUser.uid &&
+                book.bookStatus === "free"
+            );
+
           const promises = fetchedBooks.map(async (book) => {
             const ownerName = await getOwnerName(book.owner);
             return { ...book, ownerName };
           });
-  
+
           const booksWithOwnerName = await Promise.all(promises);
           setBooks(booksWithOwnerName);
         });
-  
-        return unsubscribe; 
+
+        return unsubscribe;
       } catch (error) {
         console.error("Error fetching books:", error);
       }
     };
-  
-    // 调用fetchBooks并处理返回的取消监听函数
+
     const unsubscribe = fetchBooks();
-    
-    // 组件卸载时取消监听
+
     return () => unsubscribe();
   }, [searchKeyword]);
 
@@ -111,7 +113,7 @@ export default function Explore({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
