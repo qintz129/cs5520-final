@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList} from "react-native";
+import { StyleSheet, Text, View, FlatList, ActivityIndicator} from "react-native";
 import React, { useState, useEffect } from 'react';
 import { collection, getDoc, query, onSnapshot, doc} from 'firebase/firestore'; 
 import { database, auth} from "../firebase-files/firebaseSetup";  
@@ -8,8 +8,14 @@ import RequestCard from "../components/RequestCard";
 
 export default function Requests({navigation}) { 
   const [activeTab, setActiveTab] = useState("incoming"); 
-  const [requests, setRequests] = useState([]); 
-  useEffect(() => {
+  const [requests, setRequests] = useState([]);    
+  const [isLoading, setLoading] = useState(false);
+
+  const handleTabChange = (newTab) => {
+      setActiveTab(newTab);
+  };
+  useEffect(() => { 
+    setLoading(true);
     let subcollectionName = activeTab === "incoming" ? "receivedRequests" : "sentRequests"; 
   
     async function fetchBookInfo(bookId) {
@@ -32,14 +38,15 @@ export default function Requests({navigation}) {
     };
   
     const q = query(collection(database, "users", auth.currentUser.uid, subcollectionName));  
-    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+    const unsubscribe = onSnapshot(q, async (querySnapshot) => { 
       const promises = querySnapshot.docs.map(doc => fetchExtra(doc));
       const newArray = await Promise.all(promises); 
       const updatedArray = newArray.map((item) => ({ 
         ...item, 
         date: convertTimestamp(item.requestedTime), 
       }));
-      setRequests(updatedArray);
+      setRequests(updatedArray);  
+      setLoading(false);
     }, (err) => { console.log(err); }
     );  
     return () => unsubscribe(); 
@@ -47,29 +54,34 @@ export default function Requests({navigation}) {
 
   console.log(requests);
   return ( 
-  <View>
-    <View style={styles.tabs}>
-    <CustomButton onPress={() => setActiveTab("incoming")}>
+<View>
+  <View style={styles.tabs}>
+    <CustomButton onPress={() => handleTabChange("incoming")}>
       <Text>Incoming</Text>
     </CustomButton>
-    <CustomButton onPress={() => setActiveTab("outgoing")}>
+    <CustomButton onPress={() => handleTabChange("outgoing")}>
       <Text>Outgoing</Text>
     </CustomButton> 
-    </View> 
-    <FlatList  
-      data={requests}   
+  </View>
+  {isLoading ? (
+    <ActivityIndicator size="large" color="#0000ff" />
+  ) : (
+    <FlatList
+      data={requests}
       keyExtractor={(item) => item.id}
-      renderItem={({ item }) => ( 
+      renderItem={({ item }) => (
         <RequestCard
           date={item.date}
-          requestedBookInfo={ item.requestedBookInfo}
-          offeredBookInfo={item.offeredBookInfo} 
+          requestedBookInfo={item.requestedBookInfo}
+          offeredBookInfo={item.offeredBookInfo}
           navigation={navigation}
-        />    
-      ) 
-    } 
-    /> 
-  </View>
+          requestId={item.id}
+          tab={activeTab}
+        />
+      )}
+    />
+  )}
+</View>
   );
 }
 

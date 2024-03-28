@@ -3,8 +3,8 @@ import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {
-  getAllDocs,
-  deleteBookFromDB,
+  getAllDocs, 
+  deleteFROMDB
 } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
@@ -57,11 +57,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
             text: "Delete",
             onPress: async () => {
               // Call the deleteBookFromDB function to delete the book from the database
-              await deleteBookFromDB(item.id);
-
-              // After successful deletion, fetch the updated list of books from the database
-              const updatedBooksData = await getAllDocs("books");
-              setBooks(updatedBooksData);
+              await deleteFROMDB(item.id, "books"); 
             },
           },
         ],

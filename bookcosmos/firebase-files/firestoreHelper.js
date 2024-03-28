@@ -6,8 +6,6 @@ import {
   deleteDoc,
   getDocs,
   updateDoc,
-  arrayUnion,
-  arrayRemove,
 } from "firebase/firestore";
 import { database, auth } from "./firebaseSetup";
 
@@ -21,7 +19,17 @@ export async function writeToDB(data, col, docId, subCol) {
     if (col === "users" && data.uid) {
       docRef = doc(database, col, data.uid);
       await setDoc(docRef, data);
-    } else {
+    } else if (col === "books") { 
+      const docRef = await addDoc(collection(database, "books"), {
+        ...data,
+        owner: auth.currentUser.uid, 
+        bookNameLower: data.bookName.toLowerCase(),
+      }); 
+      const bookId = docRef.id; 
+      await updateDoc(docRef, { id: bookId }); 
+      console.log("Book data written successfully");
+    } 
+    else {
       docRef = doc(database, col);
       await addDoc(collection(database, col), data);
     } 
@@ -55,81 +63,16 @@ export async function getAllDocs(path) {
   }
 }
 
-// Function to write book data to the database
-export async function writeUserBooksToDB(bookData) {
-  try {
-    // Ensure the user is logged in
-    if (!auth.currentUser) {
-      throw new Error("User is not logged in");
+// Function to delete data from the database
+export async function deleteFROMDB(id, col, docId, subCol) {
+    try {    
+        if (docId) {
+          await deleteDoc(doc(database, col, docId, subCol, id));
+        } else {
+          await deleteDoc(doc(database, col, id));
+        }
+    } 
+    catch (err){ 
+        console.log(err);
     }
-    // Add book data to the 'books' collection and get the document reference
-    const docRef = await addDoc(collection(database, "books"), {
-      ...bookData,
-      owner: auth.currentUser.uid, 
-      bookNameLower: bookData.bookName.toLowerCase(),
-    });
-
-    // Get the ID of the added book document
-    const bookId = docRef.id;
-
-    // Update the book document with its ID in the 'books' collection
-    await updateDoc(docRef, { id: bookId });
-
-    // Add the book ID to the 'books' field in the user document
-    const userDocRef = doc(database, "users", auth.currentUser.uid);
-    await updateDoc(userDocRef, {
-      books: arrayUnion(bookId),
-    });
-
-    console.log("Book data written successfully");
-
-    return bookId; // Return the document ID of the book
-  } catch (err) {
-    console.error("Error writing book data:", err);
-    throw err;
-  }
-}
-
-// Function to delete a book from the database
-export async function deleteBookFromDB(bookId) {
-  try {
-    // Ensure the user is logged in
-    if (!auth.currentUser) {
-      throw new Error("User is not logged in");
-    }
-
-    // Delete the book document from the 'books' collection
-    const bookDocRef = doc(database, "books", bookId);
-    await deleteDoc(bookDocRef);
-
-    // Remove the book ID from the 'books' field in the user document
-    const userDocRef = doc(database, "users", auth.currentUser.uid);
-    await updateDoc(userDocRef, {
-      books: arrayRemove(bookDocRef.id),
-    });
-
-    console.log("Book deleted successfully");
-  } catch (err) {
-    console.error("Error deleting book:", err);
-    throw err;
-  }
-}
-
-// Function to update a book in the database
-export async function updateBookInDB(bookId, updatedBookData) {
-  try {
-    // Ensure the user is logged in
-    if (!auth.currentUser) {
-      throw new Error("User is not logged in");
-    }
-
-    // Update the book document in the 'books' collection
-    const bookDocRef = doc(database, "books", bookId);
-    await updateDoc(bookDocRef, updatedBookData);
-
-    console.log("Book updated successfully");
-  } catch (err) {
-    console.error("Error updating book:", err);
-    throw err;
-  }
-}
+} 

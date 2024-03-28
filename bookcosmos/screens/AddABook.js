@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
 import {
-  writeUserBooksToDB,
-  updateBookInDB,
+  writeToDB, 
+  updateToDB,
 } from "../firebase-files/firestoreHelper";
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
@@ -66,7 +66,7 @@ export default function AddABook({ navigation, route }) {
           bookStatus: BookStatus, 
         };
         // Write book data to the database
-        writeUserBooksToDB(newBookData);
+        writeToDB(newBookData, "books");
         // Navigate back to the previous screen
         navigation.goBack();
       }
@@ -90,7 +90,7 @@ export default function AddABook({ navigation, route }) {
               description: description, 
               bookNameLower: bookName.toLowerCase(),
             };
-            updateBookInDB(bookId, updatedBookData);
+            updateToDB(bookId, "books", updatedBookData);
             // Navigate back to the previous screen
             navigation.goBack();
           },

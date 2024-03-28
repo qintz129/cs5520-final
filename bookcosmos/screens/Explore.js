@@ -45,7 +45,7 @@ export default function Explore({ navigation }) {
         let fetchedBooks = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); 
 
         fetchedBooks = fetchedBooks.filter(book => 
-          book.owner !== auth.currentUser.uid && book.bookStatus !== "inExchange"
+          book.owner !== auth.currentUser.uid && book.bookStatus == "free"
         ); 
 
       // Get additional data like ownerName for each book
