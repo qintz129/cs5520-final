@@ -73,7 +73,8 @@ export default function RequestCard({date, requestedBookInfo, offeredBookInfo, n
              }  else if (status === "one user completed") {  
             const updates = { 
               status: "completed",  
-              completedUser: "all"
+              completedUser: "all", 
+              requestedTime: new Date().toISOString(),
              }  
             await updateToDB(requestId, "users", fromUserId, "sentRequests", updates); 
             await updateToDB(requestId, "users", toUserId, "receivedRequests", updates);  
@@ -87,7 +88,8 @@ export default function RequestCard({date, requestedBookInfo, offeredBookInfo, n
             // Handle the error appropriately
           }
         }; 
-  return (
+  return ( 
+    status === "completed" ? null : (
     <View style={styles.container}>
       <Text>{date}</Text> 
       {
@@ -95,13 +97,15 @@ export default function RequestCard({date, requestedBookInfo, offeredBookInfo, n
             <Text>One or both books are no longer available</Text> 
         )
          }
-      <View style={styles.books}> 
+      <View style={styles.books}>  
         <View style={styles.bookItem}>
                 <Text>Offered:</Text> 
                 {
                     offeredBookInfo ? (
                     <View style={styles.bookLabel}> 
-                    <CustomButton onPress={() => handlePressBook({id: offeredBookInfo.id, owner: offeredBookInfo.owner})}> 
+                    <CustomButton  
+                      onPress={() => handlePressBook({id: offeredBookInfo.id, owner: offeredBookInfo.owner})}  
+                      > 
                         <Text style={styles.text}>{offeredBookInfo.bookName}</Text> 
                     </CustomButton>  
                     {offeredBookInfo.bookStatus === "inExchange" && ( 
@@ -118,7 +122,9 @@ export default function RequestCard({date, requestedBookInfo, offeredBookInfo, n
             {
                 requestedBookInfo ? (
                     <View style={styles.bookLabel}>
-                    <CustomButton onPress={() => handlePressBook({id: requestedBookInfo.id, owner: requestedBookInfo.owner})}> 
+                    <CustomButton  
+                      onPress={() => handlePressBook({id: requestedBookInfo.id, owner: requestedBookInfo.owner})}  
+                    > 
                         <Text>{requestedBookInfo.bookName}</Text> 
                     </CustomButton>  
                     {requestedBookInfo.bookStatus === "inExchange" && ( 
@@ -159,10 +165,9 @@ export default function RequestCard({date, requestedBookInfo, offeredBookInfo, n
             <Text style={styles.text}>Waiting for you to complete</Text> 
             </CustomButton>  
         )
-        : status === "completed"? (
-            <Text style={styles.text}>Completed</Text> 
-        ): null}
-  </View>
+        :  null}
+  </View> 
+    )
 );
 }
 
@@ -192,7 +197,6 @@ const styles = StyleSheet.create({
     },
     bookItem: {
         width: "45%",
-        padding: 10, 
         alignItems: "center",
     },  
     buttonView: {

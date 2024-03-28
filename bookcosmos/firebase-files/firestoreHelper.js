@@ -5,7 +5,8 @@ import {
   setDoc,
   deleteDoc,
   getDocs,
-  updateDoc,
+  updateDoc, 
+  getDoc,
 } from "firebase/firestore";
 import { database, auth } from "./firebaseSetup";
 
@@ -45,13 +46,11 @@ export async function updateToDB(id, col, docId=null, subCol=null, updates) {
     if (docId) {  
       const docRef = doc(database, col, docId, subCol, id);
       await updateDoc(docRef, updates);   
-      console.log(docRef);
 
     } else {
     const docRef = doc(database, col, id); 
     await updateDoc(docRef, updates); 
     } 
-    console.log("Data updated successfully");
   } catch (err) {
     console.log(err);
   }
@@ -96,4 +95,24 @@ export async function createExchangeRequest(newRequest) {
   await setDoc(sentRequestRef, newRequest);
 
   return requestId; 
+} 
+
+// Fetch book info using the book id
+async function fetchBookInfo(bookId) {
+  const bookRef = doc(database, "books", bookId);
+  const bookSnap = await getDoc(bookRef);
+  return bookSnap.exists() ? bookSnap.data(): null;
 }
+
+// Combine the request data with book information
+export async function fetchExtra(doc){
+  const docData = doc.data();
+  const offeredBookInfo = await fetchBookInfo(docData.offeredBook); 
+  const requestedBookInfo = await fetchBookInfo(docData.requestedBook);
+  return {
+    ...docData,
+    id: doc.id,
+    offeredBookInfo,
+    requestedBookInfo,
+  };
+};

@@ -159,5 +159,4 @@ const styles = StyleSheet.create({
   deleteButtonText: { 
     padding: 10,
   }
-
 });

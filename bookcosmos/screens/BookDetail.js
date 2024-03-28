@@ -11,7 +11,8 @@ export default function BookDetail({ route, navigation }) {
   const [description, setDescription] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [requestSent, setRequestSent] = useState(false);
+  const [requestSent, setRequestSent] = useState(false); 
+  const [bookStatus, setBookStatus] = useState("free");
   const { bookId, ownerId } = route.params;
 
   useEffect(() => {
@@ -26,7 +27,8 @@ export default function BookDetail({ route, navigation }) {
           bookData = docSnap.data();
           setBookName(bookData.bookName);
           setAuthor(bookData.author);
-          setDescription(bookData.description);
+          setDescription(bookData.description); 
+          setBookStatus(bookData.bookStatus);
 
           await fetchOwnerName(bookData.owner);
         } else {
@@ -53,7 +55,7 @@ export default function BookDetail({ route, navigation }) {
       }
     };
     fetchBookData();
-  }, [bookId]);
+  }, [bookId]); 
 
   const handleSendRequest = () => {
     setModalVisible(true);
@@ -68,7 +70,8 @@ export default function BookDetail({ route, navigation }) {
     <View style={styles.container}>
       <Text>Book Name: {bookName}</Text>
       <Text>Author: {author}</Text>
-      <Text>Description: {description}</Text>
+      <Text>Description: {description}</Text>  
+      <Text>Book Status: {bookStatus}</Text>
       <View>
         <CustomButton
           onPress={() =>
@@ -86,10 +89,13 @@ export default function BookDetail({ route, navigation }) {
           <Text>See more information from Goodreads</Text>
         </CustomButton>
       </View>
-      <View style={styles.buttonContainer}>
-        <CustomButton onPress={handleSendRequest} disabled={requestSent}>
-        <Text>{requestSent ? "Request Sent" : "Send Request"}</Text>
-        </CustomButton>
+      <View style={styles.buttonContainer}> 
+      {!requestSent && bookStatus === "free" && (
+        <CustomButton onPress={handleSendRequest}>
+        <Text>Send Request</Text>
+        </CustomButton>  
+      )
+      }
       </View>
       <ChooseBookModal
         visible={modalVisible}
