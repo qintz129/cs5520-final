@@ -14,7 +14,7 @@ export default function BookDetail({ route, navigation }) {
   const [requestSent, setRequestSent] = useState(false); 
   const [bookStatus, setBookStatus] = useState("free");
   const { bookId, ownerId } = route.params; 
-  const [rating, setRating] = useState([]);
+  const [rating, setRating] = useState(0);
 
   useEffect(() => {
     let bookData;
@@ -117,7 +117,7 @@ console.log("Rating:", rating);
           }
         >
           <Text>User: {ownerName}</Text> 
-          <Text>Rating: {rating}</Text>
+          {rating > 0 && (<Text>Rating: {rating}</Text>)}
         </CustomButton>
       </View>
       <View style={styles.goodReads}>
