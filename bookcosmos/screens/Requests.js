@@ -1,33 +1,74 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, FlatList} from "react-native";
 import React, { useState, useEffect } from 'react';
-import { collection, getDocs, query, where } from 'firebase/firestore'; 
-import { database, auth} from "../firebase-files/firebaseSetup"; 
-import CustomButton from "../components/CustomButton";
+import { collection, getDoc, query, onSnapshot, doc} from 'firebase/firestore'; 
+import { database, auth} from "../firebase-files/firebaseSetup";  
+import { convertTimestamp } from "../Utils";
+import CustomButton from "../components/CustomButton"; 
+import RequestCard from "../components/RequestCard";
 
-export default function Requests() { 
+export default function Requests({navigation}) { 
   const [activeTab, setActiveTab] = useState("incoming"); 
   const [requests, setRequests] = useState([]); 
   useEffect(() => {
-    const fetchRequests = async () => {
-      let subcollectionName = activeTab === "incoming" ? "receivedRequests" : "sentRequests";
-      const q = query(collection(database, "users", auth.currentUser.uid, subcollectionName));
-      const querySnapshot = await getDocs(q);
-      const fetchedRequests = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setRequests(fetchedRequests);
+    let subcollectionName = activeTab === "incoming" ? "receivedRequests" : "sentRequests"; 
+  
+    async function fetchBookInfo(bookId) {
+      const bookRef = doc(database, "books", bookId);
+      const bookSnap = await getDoc(bookRef);
+      return bookSnap.exists() ? bookSnap.data(): null;
+    }
+  
+    const fetchExtra = async (doc) => {
+      const docData = doc.data();
+      // Fetch additional details
+      const offeredBookInfo = await fetchBookInfo(docData.offeredBook); 
+      const requestedBookInfo = await fetchBookInfo(docData.requestedBook);
+      return {
+        ...docData,
+        id: doc.id,
+        offeredBookInfo,
+        requestedBookInfo,
+      };
     };
-
-    fetchRequests();
-  }, [activeTab]); 
+  
+    const q = query(collection(database, "users", auth.currentUser.uid, subcollectionName));  
+    const unsubscribe = onSnapshot(q, async (querySnapshot) => {
+      const promises = querySnapshot.docs.map(doc => fetchExtra(doc));
+      const newArray = await Promise.all(promises); 
+      const updatedArray = newArray.map((item) => ({ 
+        ...item, 
+        date: convertTimestamp(item.requestedTime), 
+      }));
+      setRequests(updatedArray);
+    }, (err) => { console.log(err); }
+    );  
+    return () => unsubscribe(); 
+  }, [activeTab]);  
 
   console.log(requests);
-  return (
+  return ( 
+  <View>
     <View style={styles.tabs}>
     <CustomButton onPress={() => setActiveTab("incoming")}>
       <Text>Incoming</Text>
     </CustomButton>
     <CustomButton onPress={() => setActiveTab("outgoing")}>
       <Text>Outgoing</Text>
-    </CustomButton>
+    </CustomButton> 
+    </View> 
+    <FlatList  
+      data={requests}   
+      keyExtractor={(item) => item.id}
+      renderItem={({ item }) => ( 
+        <RequestCard
+          date={item.date}
+          requestedBookInfo={ item.requestedBookInfo}
+          offeredBookInfo={item.offeredBookInfo} 
+          navigation={navigation}
+        />    
+      ) 
+    } 
+    /> 
   </View>
   );
 }

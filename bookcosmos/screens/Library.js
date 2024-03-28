@@ -25,7 +25,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       booksQuery = query(
         collection(database, "books"),
         where("owner", "==", userId),
-        where("isBookInExchange", "==", false)
+        where("bookStatus", "==", "free")
       );
     }
 
