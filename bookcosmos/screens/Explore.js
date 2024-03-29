@@ -1,61 +1,66 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
-import React, { useState, useEffect } from "react";
 import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  startAt,
-  endAt,
-} from "firebase/firestore";
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc, getDocs} from "firebase/firestore";
+import { doc, getDoc, getDocs } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
+  const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
     const fetchBooks = () => {
       try {
+        setLoading(true);
         const booksCollection = collection(database, "books");
         let booksQuery = booksCollection;
-  
+
         if (searchKeyword) {
+          // Convert the search keyword to lowercase
+          const keywordLowerCase = searchKeyword.toLowerCase();
+
           booksQuery = query(
             booksCollection,
-            orderBy("bookNameLower"),
-            startAt(searchKeyword.toLowerCase()),
-            endAt(searchKeyword.toLowerCase() + "\uf8ff")
+            where("bookNameLower", ">=", keywordLowerCase),
+            where("bookNameLower", "<=", keywordLowerCase + "\uf8ff")
           );
         }
-  
+
         const unsubscribe = onSnapshot(booksQuery, async (querySnapshot) => {
           let fetchedBooks = querySnapshot.docs
-            .map(doc => ({ id: doc.id, ...doc.data() }))
-            .filter(book => book.owner !== auth.currentUser.uid && book.bookStatus === "free");
-  
+            .map((doc) => ({ id: doc.id, ...doc.data() }))
+            .filter(
+              (book) =>
+                book.owner !== auth.currentUser.uid &&
+                book.bookStatus === "free"
+            );
+
           const promises = fetchedBooks.map(async (book) => {
             const ownerName = await getOwnerName(book.owner);
             return { ...book, ownerName };
           });
-  
+
           const booksWithOwnerName = await Promise.all(promises);
           setBooks(booksWithOwnerName);
+          setLoading(false);
         });
-  
-        return unsubscribe; 
+        return unsubscribe;
       } catch (error) {
         console.error("Error fetching books:", error);
       }
     };
-  
-    // 调用fetchBooks并处理返回的取消监听函数
+
     const unsubscribe = fetchBooks();
-    
-    // 组件卸载时取消监听
+
     return () => unsubscribe();
   }, [searchKeyword]);
 
@@ -100,18 +105,24 @@ export default function Explore({ navigation }) {
           onChangeText={(text) => setSearchKeyword(text)}
         />
       </View>
-      {books.length > 0 && (
-        <FlatList
-          data={books}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
-        />
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <>
+          {books.length > 0 && (
+            <FlatList
+              data={books}
+              renderItem={renderItem}
+              keyExtractor={(item, index) => index.toString()}
+            />
+          )}
+        </>
       )}
     </View>
   );
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
