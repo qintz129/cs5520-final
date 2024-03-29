@@ -2,13 +2,14 @@ import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
 import CustomButton from "../components/CustomButton";
-import { useRoute } from "@react-navigation/native";
-import { writeToDB, updateToDB} from "../firebase-files/firestoreHelper";
+import { useRoute, CommonActions } from "@react-navigation/native";
+import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { getDoc, doc } from "firebase/firestore";
 
 export default function AddReview({ navigation }) {
   const [reviewer, setReviewer] = useState("");
+
   useEffect(() => {
     const getUserInfo = async () => {
       try {
@@ -31,7 +32,7 @@ export default function AddReview({ navigation }) {
   const [rating, setRating] = useState(3);
   const [comment, setComment] = useState("");
   const [key, setKey] = useState(0);
-  const { reviewee, exchangeId, onReviewSubmitted} = route.params;
+  const { reviewee, exchangeId } = route.params;
 
   const ratingCompleted = (rate) => {
     setRating(rate);
@@ -47,18 +48,24 @@ export default function AddReview({ navigation }) {
       date: new Date().toISOString(),
       exchangeId: exchangeId,
     };
-  
+
     try {
-      await writeToDB(newReview, "users", reviewee, "reviews"); 
-      console.log("Review submitted successfully");  
-      onReviewSubmitted();
-  
+      // Write the review to the database
+      await writeToDB(newReview, "users", reviewee, "reviews");
+      console.log("Review submitted successfully");
+
+      // Change the isReviewed status of the history to false
+      await updateToDB(exchangeId, "users", auth.currentUser.uid, "history", {
+        isReviewed: true,
+      });
+
       Keyboard.dismiss();
       navigation.goBack();
     } catch (error) {
       console.error("Error submitting review:", error);
     }
   };
+
   const handleClear = () => {
     // Clear all input fields
     setComment("");

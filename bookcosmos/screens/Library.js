@@ -2,7 +2,7 @@ import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
-import { getAllDocs, deleteFROMDB } from "../firebase-files/firestoreHelper";
+import { getAllDocs, deleteFromDB } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
 import { AntDesign } from "@expo/vector-icons";
@@ -54,7 +54,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
             text: "Delete",
             onPress: async () => {
               // Call the deleteBookFromDB function to delete the book from the database
-              await deleteFROMDB(item.id, "books");
+              await deleteFromDB(item.id, "books");
             },
           },
         ],
