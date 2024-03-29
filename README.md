@@ -8,7 +8,7 @@ github accounts: hanyi-zhou
 ### Overview
 We have 2 main collections, books and users. In users, there are 3 subcollections in each user  file: receivedRquests, sentRequests, and reviews. 
 
-### Fields and CRUD Operations
+### Fields and CRUD Operation
 #### users 
 1. fields
     - uid: string
@@ -36,7 +36,7 @@ We have 2 main collections, books and users. In users, there are 3 subcollection
     - delete: delete a book  
 
 #### receivedRequests and sentRequests 
-if user A sends a request to user B, the request will be stored in user B's receivedRequests and user A's sentRequests. 
+If user A sends a request to user B, the request will be stored in user B's receivedRequests and user A's sentRequests. 
 1. fields
     - completedUser: string (all, one userId or null), to seperate the requests that is completed by one user or completed by both users
     - fromUser: string (fromUserId) 
@@ -67,11 +67,30 @@ A user can write a review for another user after a request is completed.
     - exchangeId: string (label each request) 
 2. CRUD operations 
     - create: create a new review
-    - read: get review information from reviews tab in profile page  
+    - read: get review information from reviews tab in profile page
+
+#### history
+
+If both users complete an exchange, the exchange data will be stored in each user's history collections.
+
+1. fields
+    - date: string
+    - fromUser: string
+    - toUser: string
+    - myBook: string
+    - requestedBook: string
+    - isReviewed: boolean (false by default)
+
+2. CRUD operations:
+    - create: A history will be created when both users click complete button.
+    - read: Get history information in History screen.
+    - update: Update the isReviewed value to true if a review is submitted by the user.
 
 ## Current Stage  
 Completed all CRUD operations(except for images) and navigations, 13 screens are implemented.  
-### Some Screenshots 
+### Some Screenshots
+<img src="readmeFiles/Explore-IOS.jpg" width="300">
+<img src="readmeFiles/BookDetail-IOS.jpg" width="300">
 
 
 ### Contribution 
