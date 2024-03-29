@@ -89,8 +89,32 @@ If both users complete an exchange, the exchange data will be stored in each use
 ## Current Stage  
 Completed all CRUD operations(except for images) and navigations, 13 screens are implemented.  
 ### Some Screenshots
-<img src="readmeFiles/Explore-IOS.jpg" width="300">
-<img src="readmeFiles/BookDetail-IOS.jpg" width="300">
+![Explore-IOS](readmeFiles/Explore-IOS.jpg)
+![BookDetail-IOS](readmeFiles/BookDetail-IOS.jpeg)
+<br>
+![OtherUserProfileReviews-IOS](readmeFiles/OtherUserProfileReviews-IOS.jpeg)
+![ChooseBookModal-IOS](readmeFiles/ChooseBookModal-IOS.jpeg)
+<br>
+![IncomingRequests-IOS](readmeFiles/IncomingRequests-IOS.jpeg)
+![OutgoingRequests-IOS](readmeFiles/OutgoingRequests-IOS.jpeg)
+<br>
+![UserProfileLibrary-IOS](readmeFiles/UserProfileLibrary-IOS.jpeg)
+![RequestAccepted-IOS](readmeFiles/RequestAccepted-IOS.jpeg)
+<br>
+![RequestCompleteByOneUser-IOS](readmeFiles/RequestCompleteByOneUser-IOS.jpeg)
+![RequestWaitingForCompleteByAnotherUser-IOS](readmeFiles/RequestWaitingForCompleteByAnotherUser-IOS.jpeg)
+<br>
+![History-IOS](readmeFiles/History-IOS.jpeg)
+![AddReview-IOS](readmeFiles/AddReview-IOS.jpeg)
+<br>
+![Explore-Android](readmeFiles/Explore-Android.jpeg)
+![BookDetail-Android](readmeFiles/BookDetail-Android.jpeg)
+<br>
+![IncomingRequests-Android](readmeFiles/IncomingRequests-Android.jpeg)
+![OutgoingRequests-Android](readmeFiles/OutgoingRequests-Android.jpeg)
+<br>
+![History-Android](readmeFiles/History-Android.jpeg)
+![UserProfileLibrary-Android](readmeFiles/UserProfileLibrary-Android.jpeg)
 
 
 ### Contribution 
@@ -99,6 +123,5 @@ Tianzi Qin:
 - Implement the screens and logics: Signup, Login, IncomingRequests, OutgoingRequests, Profile, UserInfo, History, AddReview, Reviews 
 
 Hanyi Zhou: 
-- Implement the screens ad logics: Explore, BookDetails, Library,  AddBook,  OtherUserProfile, ChooseBook, SendRequests
-
-
+- Implement the screens ad logics: Explore, BookDetails, Library,  AddBook,  OtherUserProfile, ChooseBook, SendRequests, History, AddReview
+- Bugs fix, polish and platform tests
