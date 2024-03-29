@@ -7,6 +7,8 @@ import {
   orderBy,
   startAt,
   endAt,
+  where,
+  or,
 } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc, getDocs } from "firebase/firestore";
@@ -24,11 +26,13 @@ export default function Explore({ navigation }) {
         let booksQuery = booksCollection;
 
         if (searchKeyword) {
+          // Convert the search keyword to lowercase
+          const keywordLowerCase = searchKeyword.toLowerCase();
+
           booksQuery = query(
             booksCollection,
-            orderBy("bookNameLower"),
-            startAt(searchKeyword.toLowerCase()),
-            endAt(searchKeyword.toLowerCase() + "\uf8ff")
+            where("bookNameLower", ">=", keywordLowerCase),
+            where("bookNameLower", "<=", keywordLowerCase + "\uf8ff")
           );
         }
 

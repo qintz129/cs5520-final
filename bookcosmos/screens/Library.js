@@ -10,10 +10,6 @@ import { AntDesign } from "@expo/vector-icons";
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
 
-  console.log("userId", userId);
-  console.log("isMyLibrary", isMyLibrary);
-  console.log("books", books);
-
   useEffect(() => {
     let booksQuery;
     // Define the query to fetch books for a specific user
