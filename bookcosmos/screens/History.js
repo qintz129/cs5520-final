@@ -17,28 +17,35 @@ import {
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { convertTimestamp } from "../Utils";
 import HistoryCard from "../components/HistoryCard";
-import { fetchExtra } from "../firebase-files/firestoreHelper";
 
 export default function History({ navigation }) {
   const [history, setHistory] = useState([]);
   const [isLoading, setLoading] = useState(false);
 
   useEffect(() => {
-    setLoading(true);
-    const q = query(
-      collection(database, "users", auth.currentUser.uid, "history")
-    );
+    const fetchHistory = () => {
+      try {
+        setLoading(true);
+        const q = query(
+          collection(database, "users", auth.currentUser.uid, "history")
+        );
 
-    const unsubscribe = onSnapshot(q, (querySnapshot) => {
-      const fetchedHistories = [];
-      querySnapshot.forEach((doc) => {
-        fetchedHistories.push({ ...doc.data(), id: doc.id });
-      });
-      // Sort the fetchedHistories by date
-      fetchedHistories.sort((a, b) => b.date - a.date);
-      setHistory(fetchedHistories);
-      setLoading(false);
-    });
+        const unsubscribe = onSnapshot(q, (querySnapshot) => {
+          const fetchedHistories = [];
+          querySnapshot.forEach((doc) => {
+            fetchedHistories.push({ ...doc.data(), id: doc.id });
+          });
+          // Sort the fetchedHistories by date
+          fetchedHistories.sort((a, b) => b.date - a.date);
+          setHistory(fetchedHistories);
+          setLoading(false);
+        });
+        return unsubscribe;
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    const unsubscribe = fetchHistory();
     return () => unsubscribe();
   }, [auth.currentUser.uid]);
 
