@@ -41,12 +41,12 @@ export default function Profile({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
   addABook: {
-    alignItems: "left",
+    alignItems: "flex-start",
     marginVertical: 10,
     marginLeft: 65,
   },
