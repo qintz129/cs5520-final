@@ -6,19 +6,20 @@ import { getAllDocs, deleteFromDB } from "../firebase-files/firestoreHelper";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "../components/CustomButton";
 import { AntDesign } from "@expo/vector-icons";
-
+// Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
-    let booksQuery;
-    // Define the query to fetch books for a specific user
+    let booksQuery; 
+    // Define the query to fetch books for my profile
     if (isMyLibrary) {
       booksQuery = query(
         collection(database, "books"),
         where("owner", "==", userId)
       );
-    } else {
+    } else { 
+      // Define the query to fetch books for others' profiles
       booksQuery = query(
         collection(database, "books"),
         where("owner", "==", userId),
@@ -75,7 +76,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       });
     }
   };
-
+  console.log(books);
   const renderItem = ({ item }) => {
     // Render the item inside a Swipeable component if it's not in exchange
     if (item.bookStatus === "free" && isMyLibrary) {
@@ -141,7 +142,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({  
   item: {
     padding: 10,
     borderBottomWidth: 1,

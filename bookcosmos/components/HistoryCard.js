@@ -1,9 +1,8 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
 import CustomButton from "./CustomButton";
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { database } from "../firebase-files/firebaseSetup";
 
+// HistoryCard component to display the history of exchanges
 export default function HistoryCard({
   myBook,
   theirBook,
@@ -14,6 +13,8 @@ export default function HistoryCard({
   exchangeId,
   isReviewed,
 }) {
+
+  // Function to handle the review button
   const handleReview = () => {
     navigation.navigate("Add A Review", {
       reviewee: reviewee,

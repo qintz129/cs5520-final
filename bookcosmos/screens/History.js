@@ -18,10 +18,11 @@ import { database, auth } from "../firebase-files/firebaseSetup";
 import { convertTimestamp } from "../Utils";
 import HistoryCard from "../components/HistoryCard";
 
+// History component to display the history of exchanges
 export default function History({ navigation }) {
   const [history, setHistory] = useState([]);
   const [isLoading, setLoading] = useState(false);
-
+ // useEffect to fetch the history of exchanges
   useEffect(() => {
     const fetchHistory = () => {
       try {
@@ -36,7 +37,10 @@ export default function History({ navigation }) {
             fetchedHistories.push({ ...doc.data(), id: doc.id });
           });
           // Sort the fetchedHistories by date
-          fetchedHistories.sort((a, b) => b.date - a.date);
+          fetchedHistories.sort((a, b) => {
+            // Convert string timestamps to numerical timestamps and compare
+            return Date.parse(b.date) - Date.parse(a.date);
+          });
           setHistory(fetchedHistories);
           setLoading(false);
         });

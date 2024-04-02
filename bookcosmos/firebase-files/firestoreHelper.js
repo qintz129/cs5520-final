@@ -87,6 +87,7 @@ export async function deleteFromDB(id, col, docId = null, subCol = null) {
   }
 }
 
+// Function to create requests with the same request id in both sender and receiver's collections
 export async function createExchangeRequest(newRequest) {
   const sentRequestRef = doc(
     collection(database, "users", newRequest.fromUser, "sentRequests")

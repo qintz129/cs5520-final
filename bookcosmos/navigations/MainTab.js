@@ -9,6 +9,7 @@ import { FontAwesome } from "@expo/vector-icons";
 
 const Tab = createBottomTabNavigator();
 
+// MainTab component to create the bottom tab navigation
 export default function MainTab({ navigation }) {
   return (
     <Tab.Navigator>

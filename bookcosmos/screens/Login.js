@@ -5,6 +5,7 @@ import { auth } from "../firebase-files/firebaseSetup";
 import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 
+// Login component to allow users to login
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

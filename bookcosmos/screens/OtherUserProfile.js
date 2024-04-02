@@ -5,6 +5,7 @@ import Library from "./Library";
 import Reviews from "./Reviews";
 import { Ionicons } from "@expo/vector-icons";
 
+// OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
   const { ownerId, ownerName } = route.params;
