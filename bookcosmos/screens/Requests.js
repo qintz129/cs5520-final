@@ -14,13 +14,18 @@ import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import { fetchExtra } from "../firebase-files/firestoreHelper";
 
+// Requests component to display the incoming and outgoing requests
 export default function Requests({ navigation }) {
   const [activeTab, setActiveTab] = useState("incoming");
   const [requests, setRequests] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
-
-  useFocusEffect(
+ 
+  // useFocusEffect hook to fetch the incoming and outgoing requests. 
+  // Similar to useEffect, but it specifically runs when the screen comes into focus or goes out of focus.  
+  // It is useful when you delete a book and come back to the screen, the book should not be there anymore.
+  useFocusEffect( 
+    // Fetch the incoming and outgoing requests
     React.useCallback(() => {
       setLoading(true);
       let subcollectionName =
@@ -45,7 +50,7 @@ export default function Requests({ navigation }) {
         }
       );
       return () => unsubscribe();
-    }, [activeTab, updateTrigger])
+    }, [activeTab, updateTrigger]) // updateTrigger is triggered when any info in the request is updated
   );
 
   return (

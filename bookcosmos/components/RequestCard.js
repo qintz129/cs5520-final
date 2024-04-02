@@ -9,6 +9,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { auth } from "../firebase-files/firebaseSetup";
 
+// RequestCard component to display the exchange requests
 export default function RequestCard({
   date,
   requestedBookInfo,
@@ -30,7 +31,8 @@ export default function RequestCard({
       ownerId: owner,
     });
   };
-
+  
+  // Function to handle the cancel and reject button, 
   const handleCancelAndReject = async () => {
     try {
       // Wait for each delete operation to complete
@@ -40,7 +42,7 @@ export default function RequestCard({
       await deleteFromDB(requestId, "users", toUserId, "receivedRequests");
       console.log("Deleted from receivedRequests");
 
-      // Check if offeredBookInfo exists and its status before updating
+      // Check if offeredBookInfo exists and its status before updating, update the offered book status to free
       if (offeredBookInfo && offeredBookInfo.bookStatus !== "inExchange") {
         await updateToDB(offeredBookInfo.id, "books", null, null, {
           bookStatus: "free",
@@ -52,7 +54,8 @@ export default function RequestCard({
       // Handle the error, possibly update UI to show an error message
     }
   };
-
+ 
+  // Function to handle the accept button
   const handleAccept = async () => {
     try {
       // Wait for each update operation to complete
@@ -65,7 +68,7 @@ export default function RequestCard({
         status: "accepted",
       });
       console.log("Updated sent request status to accepted");
-
+      // Update the book status to inExchange
       await updateToDB(offeredBookInfo.id, "books", null, null, {
         bookStatus: "inExchange",
       });
@@ -89,9 +92,11 @@ export default function RequestCard({
       // Handle the error, possibly update UI to show an error message
     }
   };
-
+  
+  // Function to handle the complete button
   const handleComplete = async () => {
-    try {
+    try { 
+      // if the status is accepted, update the status to one user completed
       if (status === "accepted") {
         const updates = {
           status: "one user completed",
@@ -113,12 +118,12 @@ export default function RequestCard({
         );
 
         setUpdateTrigger((prev) => prev + 1);
-        setStatus("one user completed");
+        setStatus("one user completed"); 
+      // if the status is one user completed, update the status to completed
       } else if (status === "one user completed") {
         const updates = {
           status: "completed",
           completedUser: "all",
-          //requestedTime: new Date().toISOString(),
         };
         await updateToDB(
           requestId,

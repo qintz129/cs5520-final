@@ -5,6 +5,7 @@ import { database, auth} from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
 import ChooseBookModal from "../components/ChooseBookModal"; 
 
+// BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
@@ -39,7 +40,8 @@ export default function BookDetail({ route, navigation }) {
         console.error("Error fetching book data:", error);
       }
     };
-
+    
+    // Fetch the owner name from the database by ownerId
     const fetchOwnerName = async () => {
       try {
         const docRef = doc(database, "users", bookData.owner);
@@ -57,7 +59,8 @@ export default function BookDetail({ route, navigation }) {
     };
     fetchBookData();
   }, [bookId]);  
-
+ 
+  // Function to fetch ratings from the database
   async function getRatings(path) {
     try {
       const querySnapshot = await getDocs(collection(database, path));
@@ -73,7 +76,9 @@ export default function BookDetail({ route, navigation }) {
       console.error("Error fetching ratings:", err);
       return []; 
     }
-  }
+  } 
+
+  // Calculate the average rating of the owner
   useEffect(() => {  
     const fetchRatings = async () => { 
       try { 
@@ -95,7 +100,8 @@ console.log("Rating:", rating);
   const handleSendRequest = () => {
     setModalVisible(true);
   };
-
+  
+ // Function to handle the book selection, after the user selects a book, the modal will be closed
   const handleSelectBook = (selectedBookId) => {
     console.log("Selected book ID:", selectedBookId);
     setModalVisible(false);

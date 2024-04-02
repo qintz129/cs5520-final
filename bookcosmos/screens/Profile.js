@@ -6,6 +6,7 @@ import Reviews from "./Reviews";
 import { auth } from "../firebase-files/firebaseSetup";
 import { Ionicons } from "@expo/vector-icons";
 
+// Profile component to display the profile of the user
 export default function Profile({ navigation }) {
   const [activeTab, setActiveTab] = useState("library");
   return (
@@ -42,9 +43,6 @@ export default function Profile({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   addABook: {
     alignItems: "flex-start",
     marginVertical: 10,

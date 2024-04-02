@@ -12,6 +12,7 @@ import { doc, getDoc, getDocs } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import CustomInput from "../components/CustomInput";
 
+// Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
@@ -63,7 +64,8 @@ export default function Explore({ navigation }) {
 
     return () => unsubscribe();
   }, [searchKeyword]);
-
+ 
+  // Function to get the owner name from the database by ownerId
   const getOwnerName = async (ownerId) => {
     try {
       const userDoc = doc(database, "users", ownerId);
@@ -79,7 +81,8 @@ export default function Explore({ navigation }) {
       return "Unknown";
     }
   };
-
+  
+  // Function to render each book item
   const renderItem = ({ item }) => (
     <View style={styles.item}>
       <CustomButton

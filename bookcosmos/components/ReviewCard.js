@@ -2,6 +2,7 @@ import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Rating } from "react-native-ratings";
 
+// ReviewCard component to display a review
 export default function ReviewCard({ review }) {
   return (
     <View style={styles.card}>

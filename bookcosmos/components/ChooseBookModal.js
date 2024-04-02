@@ -5,6 +5,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import { writeToDB, updateToDB, createExchangeRequest } from "../firebase-files/firestoreHelper";
 
+// ChooseBookModal component to display a modal to choose a book for exchange
 export default function ChooseBookModal({
   visible,
   onRequestClose,

@@ -54,7 +54,7 @@ export default function AddReview({ navigation }) {
       await writeToDB(newReview, "users", reviewee, "reviews");
       console.log("Review submitted successfully");
 
-      // Change the isReviewed status of the history to false
+      // Update the isReviewed field to True in the history
       await updateToDB(exchangeId, "users", auth.currentUser.uid, "history", {
         isReviewed: true,
       });

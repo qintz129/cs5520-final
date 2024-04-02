@@ -6,6 +6,7 @@ import CustomInput from "../components/CustomInput";
 import CustomButton from "../components/CustomButton";
 import { writeToDB } from "../firebase-files/firestoreHelper";
 
+// Signup component to allow users to signup
 export default function Signup({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

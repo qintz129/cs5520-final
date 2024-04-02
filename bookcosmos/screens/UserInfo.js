@@ -7,6 +7,7 @@ import CustomInput from "../components/CustomInput";
 import { signOut } from "firebase/auth";
 import { updateToDB } from "../firebase-files/firestoreHelper";
 
+// UserInfo component to display the user information
 export default function UserInfo() {
   const [name, setName] = useState("");
   const [initialName, setInitialName] = useState("");

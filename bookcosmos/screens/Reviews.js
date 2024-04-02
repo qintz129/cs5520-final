@@ -5,6 +5,7 @@ import { collection, onSnapshot, query } from "firebase/firestore";
 import { convertTimestamp } from "../Utils";
 import ReviewCard from "../components/ReviewCard";
 
+// Reviews component to display the reviews for a user
 export default function Reviews({ userId }) {
   const [reviews, setReviews] = useState([]);
   useEffect(() => {
@@ -17,13 +18,17 @@ export default function Reviews({ userId }) {
           // update this to also add id of doc to the newArray
           newArray.push({ ...doc.data(), id: doc.id });
           // store this data in a new array
+        }); 
+        newArray.sort((a, b) => {
+          // Convert string timestamps to numerical timestamps and compare
+          return Date.parse(b.date) - Date.parse(a.date);
         });
-        // console.log(newArray);
         //updating the goals array with the new array
         const updatedArray = newArray.map((item) => ({
           ...item,
           date: convertTimestamp(item.date),
-        }));
+        }));  
+
         setReviews(updatedArray);
       },
       (error) => {
