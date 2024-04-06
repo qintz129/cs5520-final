@@ -14,7 +14,8 @@ import AddReview from "./screens/AddReview";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
-import CustomButton from "./components/CustomButton";
+import CustomButton from "./components/CustomButton"; 
+import { UserProvider } from "./hooks/UserContext";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -86,7 +87,8 @@ export default function App() {
     </>
   );
 
-  return (
+  return ( 
+  <UserProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator
@@ -98,7 +100,8 @@ export default function App() {
           {userLoggedIn ? AppStack : AuthStack}
         </Stack.Navigator>
       </NavigationContainer>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView> 
+  </UserProvider>
   );
 }
 
