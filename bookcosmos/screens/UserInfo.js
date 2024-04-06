@@ -3,15 +3,21 @@ import React, { useEffect, useState } from "react";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { getDoc, doc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
-import CustomInput from "../components/CustomInput";
-import { signOut } from "firebase/auth";
-import { updateToDB } from "../firebase-files/firestoreHelper";
+import { CustomInput, CustomPassWordInput} from "../components/InputHelper";
+import { signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword} from "firebase/auth";
+import { updateToDB } from "../firebase-files/firestoreHelper"; 
+import {MaterialIcons} from "@expo/vector-icons";
 
 // UserInfo component to display the user information
 export default function UserInfo() {
   const [name, setName] = useState("");
-  const [initialName, setInitialName] = useState("");
-  const [email, setEmail] = useState(""); 
+  const [initialName, setInitialName] = useState(""); 
+  const [initialPassword, setInitialPassword] = useState("");
+  const [email, setEmail] = useState("");   
+  const [password, setPassword] = useState(""); 
+  const [passwordVisible, setPasswordVisible] = useState(false); 
+  const [imageUri, setImageUri] = useState(null);
+
   useEffect(() => {
     const getUserInfo = async () => {
       try {
@@ -20,7 +26,9 @@ export default function UserInfo() {
         if (docSnap.exists()) {
           setName(docSnap.data().name);
           setInitialName(docSnap.data().name);
-          setEmail(docSnap.data().email);
+          setEmail(docSnap.data().email); 
+          setPassword(docSnap.data().password); 
+          setInitialPassword(docSnap.data().password);
         } else {
           console.log("No such document!");
         }
@@ -33,7 +41,11 @@ export default function UserInfo() {
 
   const handleNameChange = (changedText) => {
     setName(changedText);
-  };
+  }; 
+
+  const handlePasswordChange = (changedText) => { 
+    setPassword(changedText); 
+  }
 
   const signOutHandler = async () => {
     try {
@@ -44,9 +56,10 @@ export default function UserInfo() {
   };
 
   const handleCancel = () => {
-    setName(initialName);
+    setName(initialName); 
+    setPassword(initialPassword);
   };
-
+ 
   const handleSave = () => {
     Alert.alert(
       "Important",
@@ -58,19 +71,51 @@ export default function UserInfo() {
         },
         {
           text: "Yes",
-          onPress: () => {
-            updateToDB(auth.currentUser.uid, "users", { name: name });
+          onPress: () => { 
+            if (password.length < 6) {
+              Alert.alert("Password should be at least 6 characters"); 
+              return;
+            }   
+            if (initialPassword !== password) {
+            const credential = EmailAuthProvider.credential(auth.currentUser.email, initialPassword);  
+            // Re-authenticate user 
+            const reAuth = async (user, credential) => { 
+              try {
+                await reauthenticateWithCredential(user, credential);  
+                await updatePassword(user, password); 
+                console.log("Password updated successfully");
+              } catch (error) {
+                console.error("Error reauthenticating:", error);
+              }
+            }  
+            reAuth(auth.currentUser, credential);  
+          }
+            updateToDB(auth.currentUser.uid, "users", null, null, { name: name, password: password}); 
+            setInitialName(name); 
+            setInitialPassword(password);
           },
         },
       ],
       { cancelable: true }
     );
+  }; 
+
+  const toggleVisibility = () => {  
+    setPasswordVisible(!passwordVisible);
   };
 
   return (
-    <View style={styles.container}>
-      <CustomInput title="Name" onChangeText={handleNameChange} value={name} />
-      <CustomInput title="Email" value={email} editable={false} />
+    <View style={styles.container}> 
+      <MaterialIcons name="photo-camera" size={150} color="gray" />
+      <CustomInput title="Name" onChangeText={handleNameChange} value={name}/>
+      <CustomInput title="Email" value={email} editable={false} /> 
+      <CustomPassWordInput
+        title="Password"
+        value={password} 
+        onChangeText={handlePasswordChange}
+        secureTextEntry={!passwordVisible} 
+        onToggleVisibility={toggleVisibility} 
+        />
       <View style={styles.buttonView}>
         <CustomButton onPress={handleCancel}>
           <Text>Cancel</Text>
@@ -94,6 +139,6 @@ const styles = StyleSheet.create({
   buttonView: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginVertical: 10,
+    marginVertical: 30
   },
 });

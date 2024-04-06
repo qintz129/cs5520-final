@@ -36,6 +36,6 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   disabled: {
-    opacity: 0.5,
+    opacity: 0.5, 
   },
 });

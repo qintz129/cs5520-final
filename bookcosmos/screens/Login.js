@@ -2,45 +2,63 @@ import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
-import CustomInput from "../components/CustomInput";
+import { CustomInput, CustomPassWordInput} from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 
 // Login component to allow users to login
 export default function Login({ navigation }) {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState(""); 
+  const [passwordVisible, setPasswordVisible] = useState(false); 
+  const [isEmpty, setIsEmpty] = useState(true);
+
   const signupHandler = () => {
     navigation.replace("Signup");
   };
   const loginHandler = async () => {
     try {
-      if (!email || !password) {
-        Alert.alert("Fields should not be empty");
-        return;
-      }
       const userCred = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCred);
-    } catch (err) {
-      console.log(err);
+    } catch (err) { 
+      console.log(err.code);
+      if (err.code === "auth/invalid-credential") {
+        Alert.alert("Wrong email or password, please try again");
+      }
     }
   };
+  
+  const emailHandler = (changedText) => { 
+    setEmail(changedText);  
+    setIsEmpty(changedText === "" || password === "");
+  } 
 
+  const passwordHandler = (changedText) => { 
+    setPassword(changedText); 
+    setIsEmpty(email === "" || changedText === "");
+  }   
+
+  const toggleVisibility = () => {  
+    setPasswordVisible(!passwordVisible);
+  };
   return (
     <View style={styles.container}>
       <CustomInput
         title="Email"
-        onChangeText={(changedText) => setEmail(changedText)}
+        onChangeText={emailHandler}
         value={email}
         placeholder="Email"
       />
-      <CustomInput
+      <CustomPassWordInput
         title="Password"
-        onChangeText={(changedText) => setPassword(changedText)}
+        onChangeText={passwordHandler}
         value={password}
-        placeholder="Password"
+        placeholder="Password" 
+        secureTextEntry={!passwordVisible} 
+        onToggleVisibility={toggleVisibility}
       />
       <CustomButton onPress={loginHandler}>
-        <Text>Login</Text>
+        <Text style={isEmpty ? styles.disabledText : styles.normalText}>  
+          Login 
+        </Text>
       </CustomButton>
       <CustomButton onPress={signupHandler}>
         <Text>New User? Create An Account</Text>
@@ -56,5 +74,8 @@ const styles = StyleSheet.create({
     alignItems: "stretch",
     justifyContent: "center",
     paddingHorizontal: 20,
+  }, 
+  disabledText: {
+    color: "grey",
   },
 });

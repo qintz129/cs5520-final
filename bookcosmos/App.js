@@ -50,7 +50,7 @@ export default function App() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="UserInfo"
+        name="User Info"
         component={UserInfo}
         options={{ headerBackTitleVisible: false }}
       />

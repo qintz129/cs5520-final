@@ -11,7 +11,7 @@ export default function Profile({ navigation }) {
   const [activeTab, setActiveTab] = useState("library");
   return (
     <View style={styles.container}>
-      <CustomButton onPress={() => navigation.navigate("UserInfo")}>
+      <CustomButton onPress={() => navigation.navigate("User Info")}>
         <Ionicons name="person-circle" size={60} color="black" />
       </CustomButton>
       <View style={styles.addABook}>

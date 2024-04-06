@@ -6,7 +6,7 @@ import {
 } from "../firebase-files/firestoreHelper";
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
-import CustomInput from "../components/CustomInput";
+import {CustomInput} from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 
 export default function AddABook({ navigation, route }) {

@@ -10,7 +10,7 @@ import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc, getDocs } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
-import CustomInput from "../components/CustomInput";
+import { CustomInput } from "../components/InputHelper";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
