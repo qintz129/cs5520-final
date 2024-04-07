@@ -140,7 +140,7 @@ export default function UserInfo({navigation}) {
   // console.log(userInfo);  
   return (
     <View style={styles.container}>  
-      <ImageManager receiveImageUri={receiveImageUri} receiveNewImage={receiveNewImage} initialImageUri={downloadUri}/> 
+      <ImageManager receiveImageUri={receiveImageUri} receiveNewImage={receiveNewImage} initialImageUri={downloadUri} mode="user"/> 
       <CustomInput title="Email" value={email} editable={false} /> 
       <CustomInput title="Name" onChangeText={handleNameChange} value={name}/>
       <CustomPassWordInput

@@ -8,9 +8,10 @@ import {
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc, getDocs } from "firebase/firestore";
+import { doc, getDoc} from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
-import { CustomInput } from "../components/InputHelper";
+import { CustomInput } from "../components/InputHelper";  
+import {AntDesign} from '@expo/vector-icons';
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
@@ -92,10 +93,10 @@ export default function Explore({ navigation }) {
             ownerId: item.owner,
           })
         }
-      >
+      > 
+        <AntDesign name="picture" size={50} color="black" />
         {item.bookName && <Text>Book Name : {item.bookName}</Text>}
         {item.author && <Text>Author: {item.author}</Text>}
-        {item.owner && <Text>User: {item.ownerName}</Text>}
       </CustomButton>
     </View>
   );
@@ -116,7 +117,8 @@ export default function Explore({ navigation }) {
             <FlatList
               data={books}
               renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
+              keyExtractor={(item, index) => index.toString()} 
+              numColumns={2} 
             />
           )}
         </>
@@ -130,9 +132,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   item: {
+    flex: 1,
+    margin: 10,
+    maxWidth: '50%',
+    height: 200,  // 设定一个固定高度
     padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1, // 给书本添加轻微的边框
+    borderColor: '#ddd', // 边框颜色较浅
+    borderRadius: 5, // 轻微的圆角
+    shadowColor: '#000', // 阴影颜色
+    shadowOffset: { width: 0, height: 2 }, // 阴影方向
+    shadowOpacity: 0.25, // 阴影透明度
+    shadowRadius: 3.84, // 阴影扩散
+    elevation: 5, // Android 上的阴影效果
   },
   search: {
     padding: 10, 

@@ -5,13 +5,13 @@ import {MaterialIcons} from "@expo/vector-icons";
 import CustomButton from "./CustomButton"; 
 import { useActionSheet } from '@expo/react-native-action-sheet';
 
-export default function ImageManager({receiveImageUri, receiveNewImage, initialImageUri}) {
+export default function ImageManager({receiveImageUri, receiveNewImage, initialImageUri, mode}) {
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [imageUri, setImageUri] = useState(null); 
   const { showActionSheetWithOptions } = useActionSheet(); 
   useEffect(() => {
     setImageUri(initialImageUri);
-  }, [initialImageUri]);
+  }, [initialImageUri]); 
   async function verifyPermission() {
     if (status.granted) {
       return true;
@@ -31,11 +31,14 @@ export default function ImageManager({receiveImageUri, receiveNewImage, initialI
         return;
       }
 
-      const results = await ImagePicker.launchCameraAsync({
+      const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
-      });
-      receiveImageUri(results.assets[0].uri);
-      setImageUri(results.assets[0].uri); 
+      }); 
+      if (result.canceled) {
+        return;
+      }
+      receiveImageUri(result.assets[0].uri);
+      setImageUri(result.assets[0].uri); 
       receiveNewImage(true);
     } catch (err) {
       console.log(err);
@@ -51,7 +54,10 @@ export default function ImageManager({receiveImageUri, receiveNewImage, initialI
 
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: true,
-    });
+    }); 
+    if (result.canceled) {
+      return;
+    }
       receiveImageUri(result.assets[0].uri);
       setImageUri(result.assets[0].uri); 
       receiveNewImage(true);
@@ -81,7 +87,7 @@ export default function ImageManager({receiveImageUri, receiveNewImage, initialI
   return (
     <View style={styles.container}> 
       {imageUri? ( 
-        <Image style={styles.image} source={{ uri: imageUri }}/>  
+        <Image style={(mode === "user")? styles.userImage: styles.bookImage} source={{ uri: imageUri }}/>  
       ):(  
         <MaterialIcons name="photo-camera" size={150} color="gray" />  
         )}  
@@ -98,11 +104,18 @@ const styles = StyleSheet.create({
       marginVertical: 10,
 
     },
-    image: {
+    userImage: {
       width: 150,
       height: 150, 
       borderRadius: 100,
-    }, 
-    button: { 
+    },  
+    bookImage: {
+      width: 150,
+      height: 180, 
+      borderRadius: 10,
+    },
+    button: {  
+      marginTop: 0, 
+      marginBottom: 0,
     },
 });

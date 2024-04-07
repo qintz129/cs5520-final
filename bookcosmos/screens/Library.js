@@ -1,13 +1,14 @@
 import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
 
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
-  const [books, setBooks] = useState([]); 
+  const [books, setBooks] = useState([]);  
+ 
 
   useEffect(() => {
     let booksQuery; 
@@ -15,14 +16,14 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     if (isMyLibrary) {
       booksQuery = query(
         collection(database, "books"),
-        where("owner", "==", userId)
+        where("owner", "==", userId),
       );
     } else { 
       // Define the query to fetch books for others' profiles
       booksQuery = query(
         collection(database, "books"),
         where("owner", "==", userId),
-        where("bookStatus", "==", "free")
+        where("bookStatus", "==", "free"), 
       );
     }
 
@@ -31,7 +32,9 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       const fetchedBooks = [];
       snapshot.forEach((doc) => {
         fetchedBooks.push({ id: doc.id, ...doc.data() });
-      });
+      });  
+      // Sort the fetched books by book name
+      fetchedBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
       // Update the state variable with the fetched books
       setBooks(fetchedBooks);
     });

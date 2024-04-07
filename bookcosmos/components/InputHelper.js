@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput, View, Text } from "react-native"; 
+import { StyleSheet, TextInput, View, Text} from "react-native"; 
 import CustomButton from "./CustomButton";
 import React from "react";
 import { Ionicons } from '@expo/vector-icons';
@@ -61,19 +61,19 @@ export function MultilineInput({
   value,
   placeholder = "",
   editable = true,  
-}) {
-  return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{title}</Text>
-      <TextInput
-        style={[styles.multiline, !editable && styles.nonEditable]}
-        onChangeText={onChangeText}
-        value={value}
-        placeholder={placeholder}
-        editable={editable}  
-        multiline={true}
-      />
-    </View>
+}) { 
+  return (   
+      <View style={styles.container}>
+        <Text style={styles.text}>{title}</Text> 
+          <TextInput
+            style={[styles.multiline, !editable && styles.nonEditable]}
+            onChangeText={onChangeText}
+            value={value}
+            placeholder={placeholder}
+            editable={editable}  
+            multiline={true}
+          /> 
+      </View>  
   );
 } 
 
@@ -81,7 +81,7 @@ const styles = StyleSheet.create({
   container: { 
     width: "100%",
     marginHorizontal: 10,
-    marginTop: 10, 
+    marginTop: 10,  
   },
   text: {
     fontWeight: "bold", 
@@ -116,5 +116,5 @@ const styles = StyleSheet.create({
   nonEditable: {
     borderWidth: 0,
     backgroundColor: "#f0f0f0",
-  },
+  }, 
 });
