@@ -40,12 +40,14 @@ export default function Profile({ navigation }) {
   console.log("downloadUri", downloadUri);
   return (
     <View style={styles.container}>
-      <CustomButton onPress={() => navigation.navigate("User Info")}>
-       {downloadUri? (  
-        <Image source={{ uri: downloadUri }} style={styles.image} />
-       ): ( 
-       <Ionicons name="person-circle" size={100} color="black" /> 
-        )}
+      <CustomButton onPress={() => navigation.navigate("User Info")}> 
+        <View style={styles.userAvatar}>
+        {downloadUri? (  
+          <Image source={{ uri: downloadUri }} style={styles.image} />
+        ): ( 
+        <Ionicons name="person-circle" size={100} color="black" /> 
+          )} 
+        </View>
       </CustomButton>
       <View style={styles.addABook}>
         <CustomButton
@@ -89,6 +91,13 @@ const styles = StyleSheet.create({
   image: { 
     width: 100,
     height: 100,
-    borderRadius: 50,
+    borderRadius: 50, 
+  }, 
+  container: {
+    flex: 1,
+  }, 
+  userAvatar: {
+    alignItems: "center",
+    marginVertical: 5,
   },
 });

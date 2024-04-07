@@ -96,7 +96,7 @@ export default function BookDetail({ route, navigation }) {
   
     fetchRatings(); 
   }, [ownerId]);
-console.log("Rating:", rating);
+
   const handleSendRequest = () => {
     setModalVisible(true);
   };
@@ -109,9 +109,9 @@ console.log("Rating:", rating);
 
   return (
     <View style={styles.container}>
-      <Text>Book Name: {bookName}</Text>
-      <Text>Author: {author}</Text>
-      <Text>Description: {description}</Text>  
+      <Text style={styles.title}>{bookName}</Text>
+      <Text style={styles.author}>{author}</Text>
+      <Text>{description}</Text>  
       <View>
         <CustomButton
           onPress={() =>
@@ -156,6 +156,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    alignItems: "center",
   },
+  title: {
+    fontSize: 25,
+    marginBottom: 10,  
+    fontWeight: 'bold',
+  }, 
+  author: { 
+    marginBottom: 10,  
+    fontSize: 20
+  },
+  button: {
+    backgroundColor: '#ff5a5f', // Airbnb红色
+    padding: 10,
+    borderRadius: 5,
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  goodReads: {
+    marginTop: 20,
+  },
+  buttonContainer: {
+    marginTop: 20,
+  }
 });

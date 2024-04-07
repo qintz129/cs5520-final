@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
+import { StyleSheet, Text, View, FlatList, Alert} from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
@@ -8,9 +8,8 @@ import BookCard from "../components/BookCard";
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);  
- 
 
-  useEffect(() => {
+  useEffect(() => { 
     let booksQuery; 
     // Define the query to fetch books for my profile
     if (isMyLibrary) {
@@ -36,7 +35,10 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       // Sort the fetched books by book name
       fetchedBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
       // Update the state variable with the fetched books
-      setBooks(fetchedBooks);
+      setBooks(fetchedBooks); 
+    }, 
+    error => {
+      console.error("Error fetching books:", error);
     });
 
     // Clean up the subscription when the component unmounts
@@ -80,18 +82,20 @@ export default function Library({ navigation, userId, isMyLibrary }) {
   }; 
   console.log("books", books);
   return (
-    <FlatList
-      data={books}
-      renderItem={({ item }) => (
-        <BookCard
-          item={item}
-          isMyLibrary={isMyLibrary}
-          handleDeleteItem={handleDeleteItem}
-          handlePressBook={handlePressBook}
+    <View style={styles.container}>
+        <FlatList
+          data={books}
+          renderItem={({ item }) => (
+            <BookCard
+              item={item}
+              isMyLibrary={isMyLibrary}
+              handleDeleteItem={handleDeleteItem}
+              handlePressBook={handlePressBook}
+            />
+          )}
+          keyExtractor={item => item.id.toString()}
         />
-      )}
-      keyExtractor={item => item.id.toString()}
-    />
+    </View>
   );
 };
 

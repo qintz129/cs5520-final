@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, Image} from 'react-native';
 import Swipeable from 'react-native-gesture-handler/Swipeable';
 import CustomButton from './CustomButton';
@@ -6,18 +6,20 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import { database, storage} from "../firebase-files/firebaseSetup"; 
 import { ref, getDownloadURL} from "firebase/storage";
 
-
-
 export default function BookCard({ item, handlePressBook, handleDeleteItem, isMyLibrary }) { 
   const [bookAvatar, setBookAvatar] = useState(null); 
-  if (item.image) {
-    const imageRef = ref(storage, item.image);
-    getDownloadURL(imageRef).then((url) => {
-      setBookAvatar(url);
-    }).catch((error) => {
-      console.log(error);
-    });
-  } 
+  
+  useEffect(() => {
+    if (item.image && !bookAvatar) {
+      const imageRef = ref(storage, item.image);
+      getDownloadURL(imageRef).then((url) => {
+        setBookAvatar(url);
+      }).catch((error) => {
+        console.error("Failed to load image:", error);
+      });
+    }
+  }, [item.image]);
+
   function BookCardContent(){
     return (
       <View style={styles.itemContent}>
@@ -33,20 +35,22 @@ export default function BookCard({ item, handlePressBook, handleDeleteItem, isMy
         </View>
       </View>
     );
-  }
+  } 
   const icon = item.bookStatus === "inExchange" ? "swap" : item.bookStatus === "pending" ? "swapright" : null;
   const content = (
     <View style={styles.item}>
-      <CustomButton onPress={() => handlePressBook(item)}> 
-        <BookCardContent/>
-        {icon && <AntDesign name={icon} size={24} color="red" />}
+      <CustomButton onPress={() => handlePressBook(item)} customStyle={styles.button}>   
+        <View style={styles.itemWithIcon}>
+          <BookCardContent/> 
+          {icon && <AntDesign name={icon} size={30} color="red" />} 
+        </View>
       </CustomButton>
     </View>
   );
   return item.bookStatus === "free" && isMyLibrary ? (
     <Swipeable
       renderRightActions={() => (
-        <CustomButton onPress={() => handleDeleteItem(item)} customStyle={styles.button}>
+        <CustomButton onPress={() => handleDeleteItem(item)} customStyle={styles.deleteButton}>
           <AntDesign name="delete" size={24} color="black" />
         </CustomButton>
       )}
@@ -58,29 +62,43 @@ export default function BookCard({ item, handlePressBook, handleDeleteItem, isMy
 
 const styles = StyleSheet.create({
     item: {
-        alignItems: 'center', 
-        padding: 10,
+        paddingVertical: 5, 
+        paddingHorizontal: 15,
         borderBottomWidth: 1,
-        borderBottomColor: "#ccc",
+        borderBottomColor: "#ccc",  
       }, 
     itemContent: {
-        flexDirection: "row",
-        alignItems: "center",
+        flexDirection: "row", 
     }, 
-    textContent: { 
-        marginLeft: 10
+    textContent: {  
+        flex: 1,
+        marginLeft: 10, 
+        justifyContent: 'center', 
+        width: 20
     }, 
     title: {
         fontSize: 18,
-        fontWeight: "bold",
+        fontWeight: "bold", 
     },
     button: {
-        padding: 10, 
-        marginVertical: 0
-    }, 
+        marginVertical: 0, 
+        padding: 5, 
+        width: "80%", 
+        alignItems:'stretch', 
+        justifyContent:'flex-start'
+    },  
+    deleteButton: {
+      marginVertical: 0, 
+      padding: 5,  
+  }, 
     Image: {
         width: 50,
         height: 50,
         borderRadius: 10,
-    },
+    },  
+    itemWithIcon: {
+        flexDirection: "row", 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+    }, 
 });

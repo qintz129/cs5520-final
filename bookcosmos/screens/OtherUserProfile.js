@@ -43,7 +43,7 @@ export default function OtherUserProfile({ navigation, route }) {
 
 
   return (
-    <View>
+    <View style={styles.container}>
       <View style={styles.userAvatar}> 
         {userAvatar ? (
           <Image source={{ uri: userAvatar }} style={styles.Image} />
@@ -68,10 +68,13 @@ export default function OtherUserProfile({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({
+const styles = StyleSheet.create({ 
+  container: {
+    flex: 1,
+  },
   userAvatar: {
     alignItems: "center",
-    marginVertical: 10,
+    marginVertical: 5,
   },
   tabs: {
     flexDirection: "row",

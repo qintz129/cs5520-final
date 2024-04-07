@@ -26,10 +26,10 @@ export default function CustomButton({
 }
 
 const styles = StyleSheet.create({
-  button: {
-    marginVertical: 10,
+  button: { 
     alignItems: "center",
     justifyContent: "center",
+    marginVertical: 10,
   },
   pressed: {
     opacity: 0.5,
