@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import { StyleSheet, Text, View, TextInput, Button, Alert } from "react-native";
+import { StyleSheet, Text, View, Alert, Keyboard} from "react-native";
 import {
   writeToDB, 
   updateToDB,
 } from "../firebase-files/firestoreHelper";
 import { database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
-import {CustomInput} from "../components/InputHelper";
+import {CustomInput, MultilineInput} from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 
 export default function AddABook({ navigation, route }) {
@@ -51,7 +51,7 @@ export default function AddABook({ navigation, route }) {
   function handleSave() {
     try {
       // Ensure all fields are filled before saving
-      if (!bookName || !author || !description) {
+      if (!bookName || !author) {
         Alert.alert("Please fill in all fields");
         return;
       }
@@ -90,7 +90,8 @@ export default function AddABook({ navigation, route }) {
               description: description, 
               bookNameLower: bookName.toLowerCase(),
             };
-            updateToDB(bookId, "books", updatedBookData);
+            updateToDB(bookId, "books", null, null, updatedBookData); 
+            Keyboard.dismiss();
             // Navigate back to the previous screen
             navigation.goBack();
           },
@@ -104,21 +105,23 @@ export default function AddABook({ navigation, route }) {
     // Clear all input fields
     setBookName("");
     setAuthor("");
-    setDescription("");
+    setDescription(""); 
+    Keyboard.dismiss();
   };
 
   return (
     <View style={styles.container}>
       <CustomInput
-        title="Book Name"
+        title="Book Name*"
         value={bookName}
         onChangeText={setBookName}
       />
-      <CustomInput title="Author" value={author} onChangeText={setAuthor} />
-      <CustomInput
+      <CustomInput title="Author*" value={author} onChangeText={setAuthor} />
+      <MultilineInput 
         title="Description"
-        value={description}
         onChangeText={setDescription}
+        value={description}
+        placeholder="Write your book description here..." 
       />
       <View style={styles.buttonContainer}>
         <CustomButton onPress={handleClear}>
@@ -135,7 +138,7 @@ export default function AddABook({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "flex-start",
     alignItems: "center",
     paddingHorizontal: 20,
   },
@@ -146,7 +149,7 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: 10,
     width: "100%",
-  },
+  }, 
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",

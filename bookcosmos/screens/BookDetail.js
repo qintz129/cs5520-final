@@ -112,7 +112,6 @@ console.log("Rating:", rating);
       <Text>Book Name: {bookName}</Text>
       <Text>Author: {author}</Text>
       <Text>Description: {description}</Text>  
-      <Text>Book Status: {bookStatus}</Text>
       <View>
         <CustomButton
           onPress={() =>

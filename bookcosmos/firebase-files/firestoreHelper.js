@@ -43,18 +43,19 @@ export async function writeToDB(data, col, docId, subCol) {
 export async function updateToDB(
   id,
   col,
-  docId = null,
-  subCol = null,
+  docId=null, 
+  subCol=null,
   updates
 ) {
   try {
     if (docId) {
       const docRef = doc(database, col, docId, subCol, id);
-      await updateDoc(docRef, updates);
+      await updateDoc(docRef, updates); 
     } else {
       const docRef = doc(database, col, id);
-      await updateDoc(docRef, updates);
-    }
+      await updateDoc(docRef, updates); 
+    } 
+    console.log("Data updated successfully");
   } catch (err) {
     console.log(err);
   }
@@ -81,7 +82,8 @@ export async function deleteFromDB(id, col, docId = null, subCol = null) {
       await deleteDoc(doc(database, col, docId, subCol, id));
     } else {
       await deleteDoc(doc(database, col, id));
-    }
+    } 
+    console.log("Data deleted successfully");
   } catch (err) {
     console.log(err);
   }

@@ -53,17 +53,38 @@ export function CustomPassWordInput({
       </View>
     </View>
   );
-}
+} 
+
+export function MultilineInput({
+  title,
+  onChangeText,
+  value,
+  placeholder = "",
+  editable = true,  
+}) {
+  return (
+    <View style={styles.container}>
+      <Text style={styles.text}>{title}</Text>
+      <TextInput
+        style={[styles.multiline, !editable && styles.nonEditable]}
+        onChangeText={onChangeText}
+        value={value}
+        placeholder={placeholder}
+        editable={editable}  
+        multiline={true}
+      />
+    </View>
+  );
+} 
 
 const styles = StyleSheet.create({
-  container: {
+  container: { 
     width: "100%",
-    marginHorizontal: 20,
-    alignSelf: "center", 
-    marginTop: 10,
+    marginHorizontal: 10,
+    marginTop: 10, 
   },
   text: {
-    fontWeight: "bold",
+    fontWeight: "bold", 
   },
   input: {
     height: 40,
@@ -71,9 +92,19 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     marginTop: 5,
     borderRadius: 10,
-    paddingHorizontal: 10, 
+    paddingHorizontal: 10,  
+    borderColor: "gray",
     width: "100%",
-  }, 
+  },  
+  multiline: {
+    borderWidth: 1.5,
+    borderColor: "gray",
+    borderRadius: 10,
+    padding: 10,
+    marginBottom: 10, 
+    marginTop: 5,
+    minHeight: 100,
+  },
   inputContainer: {
     flexDirection: 'row', 
     position: 'relative', 

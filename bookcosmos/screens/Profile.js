@@ -42,7 +42,7 @@ export default function Profile({ navigation }) {
     <View style={styles.container}>
       <CustomButton onPress={() => navigation.navigate("User Info")}>
        {downloadUri? (  
-        <Image source={{ uri: downloadUri }} style={{ width: 100, height: 100, borderRadius: 50 }} />
+        <Image source={{ uri: downloadUri }} style={styles.image} />
        ): ( 
        <Ionicons name="person-circle" size={100} color="black" /> 
         )}
@@ -85,5 +85,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginVertical: 10,
+  }, 
+  image: { 
+    width: 100,
+    height: 100,
+    borderRadius: 50,
   },
 });

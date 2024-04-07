@@ -27,8 +27,7 @@ export default function CustomButton({
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: 10,
-    marginBottom: 10,
+    marginVertical: 10,
     alignItems: "center",
     justifyContent: "center",
   },

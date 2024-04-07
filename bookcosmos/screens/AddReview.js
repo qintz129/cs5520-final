@@ -1,8 +1,9 @@
 import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
-import CustomButton from "../components/CustomButton";
-import { useRoute, CommonActions } from "@react-navigation/native";
+import CustomButton from "../components/CustomButton"; 
+import { MultilineInput } from "../components/InputHelper";
+import { useRoute} from "@react-navigation/native";
 import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { getDoc, doc } from "firebase/firestore";
@@ -77,13 +78,12 @@ export default function AddReview({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Leave a Review for Your Book Partner</Text>
-      <AirbnbRating key={key} onFinishRating={ratingCompleted} />
-      <TextInput
-        style={styles.input}
-        onChangeText={setComment}
+      <AirbnbRating key={key} onFinishRating={ratingCompleted} /> 
+      <MultilineInput 
+        title="Comment"
         value={comment}
+        onChangeText={setComment}  
         placeholder="Write your comment here..."
-        multiline
       />
       <View style={styles.buttonContainer}>
         <CustomButton onPress={handleSubmit}>
@@ -107,16 +107,6 @@ const styles = StyleSheet.create({
   header: {
     fontSize: 18,
     marginBottom: 20,
-  },
-  input: {
-    width: "100%",
-    borderColor: "gray",
-    borderWidth: 1,
-    marginTop: 20,
-    padding: 10,
-    borderRadius: 5,
-    minHeight: 100,
-    textAlignVertical: "top",
   },
   buttonContainer: {
     flexDirection: "row",

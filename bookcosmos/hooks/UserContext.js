@@ -44,6 +44,7 @@ export const UserProvider = ({ children}) => {
       });
     }
   }, [auth.currentUser]);
+  
   // Not in use
   updateUserInfo = (newName, newPassword, newImageUri) => {
     setUserInfo((prevState) => ({

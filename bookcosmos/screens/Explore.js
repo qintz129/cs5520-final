@@ -135,8 +135,9 @@ const styles = StyleSheet.create({
     borderBottomColor: "#ccc",
   },
   search: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    padding: 10, 
+    width: "100%", 
+    alignItems: "center"
+
   },
 });

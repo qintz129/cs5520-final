@@ -1,7 +1,6 @@
 import { StyleSheet, Text, View, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import { auth, database, storage} from "../firebase-files/firebaseSetup";
-import { getDoc, doc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import { CustomInput, CustomPassWordInput} from "../components/InputHelper";
 import { signOut, reauthenticateWithCredential, EmailAuthProvider, updatePassword} from "firebase/auth";
@@ -141,9 +140,9 @@ export default function UserInfo({navigation}) {
   // console.log(userInfo);  
   return (
     <View style={styles.container}>  
-      <ImageManager receiveImageUri={receiveImageUri} receiveNewImage={receiveNewImage} initialImageUri={downloadUri}/>
-      <CustomInput title="Name" onChangeText={handleNameChange} value={name}/>
+      <ImageManager receiveImageUri={receiveImageUri} receiveNewImage={receiveNewImage} initialImageUri={downloadUri}/> 
       <CustomInput title="Email" value={email} editable={false} /> 
+      <CustomInput title="Name" onChangeText={handleNameChange} value={name}/>
       <CustomPassWordInput
         title="Password"
         value={password} 
