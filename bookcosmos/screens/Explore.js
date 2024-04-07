@@ -11,7 +11,7 @@ import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc} from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import { CustomInput } from "../components/InputHelper";  
-import {AntDesign} from '@expo/vector-icons';
+import ExploreBookCard from "../components/ExploreBookCard";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
@@ -82,24 +82,6 @@ export default function Explore({ navigation }) {
       return "Unknown";
     }
   };
-  
-  // Function to render each book item
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <CustomButton
-        onPress={() =>
-          navigation.navigate("Book Detail", {
-            bookId: item.id,
-            ownerId: item.owner,
-          })
-        }
-      > 
-        <AntDesign name="picture" size={50} color="black" />
-        {item.bookName && <Text>Book Name : {item.bookName}</Text>}
-        {item.author && <Text>Author: {item.author}</Text>}
-      </CustomButton>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -116,8 +98,12 @@ export default function Explore({ navigation }) {
           {books.length > 0 && (
             <FlatList
               data={books}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()} 
+              renderItem={({ item }) => ( 
+                <ExploreBookCard
+                  item={item}
+                />
+              )}
+              keyExtractor={item => item.id.toString()}
               numColumns={2} 
             />
           )}
@@ -130,23 +116,6 @@ export default function Explore({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-  },
-  item: {
-    flex: 1,
-    margin: 10,
-    maxWidth: '50%',
-    height: 200,  // 设定一个固定高度
-    padding: 10,
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1, // 给书本添加轻微的边框
-    borderColor: '#ddd', // 边框颜色较浅
-    borderRadius: 5, // 轻微的圆角
-    shadowColor: '#000', // 阴影颜色
-    shadowOffset: { width: 0, height: 2 }, // 阴影方向
-    shadowOpacity: 0.25, // 阴影透明度
-    shadowRadius: 3.84, // 阴影扩散
-    elevation: 5, // Android 上的阴影效果
   },
   search: {
     padding: 10, 
