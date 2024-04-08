@@ -10,7 +10,7 @@ export default function BookCard({ item, handlePressBook, handleDeleteItem, isMy
   const [bookAvatar, setBookAvatar] = useState(null); 
   
   useEffect(() => {
-    if (item.image && !bookAvatar) {
+    if (item.image) {
       const imageRef = ref(storage, item.image);
       getDownloadURL(imageRef).then((url) => {
         setBookAvatar(url);

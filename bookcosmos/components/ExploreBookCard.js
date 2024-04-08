@@ -34,11 +34,13 @@ export default function ExploreBookCard({item}) {
         }
     > 
     <View style={[styles.item, { width: bookCardWidth }]}>
-        {bookAvatar ? (
-        <Image source={{ uri: bookAvatar }} style={styles.cover} />
-        ) : (
-        <AntDesign name="picture" size={50} color="grey" />
-        )}
+        <View style={styles.containerStyle}>
+          {bookAvatar ? (
+              <Image source={{ uri: bookAvatar }} style={{width: '100%', height: 150}} />
+          ) : (
+              <AntDesign name="picture" size={100} color="grey" style={{width: '100%', height: 150}}/>
+          )}
+        </View>
         <Text style={styles.title}>{item.bookName}</Text>
         <Text style={styles.text}>{item.author}</Text>
     </View>
@@ -47,39 +49,36 @@ export default function ExploreBookCard({item}) {
 }
 
 const styles = StyleSheet.create({ 
-    item: {
-        margin: 10,
-        height: 200, 
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderWidth: 1, 
-        borderColor: '#ddd', 
-        borderRadius: 5, 
-        shadowColor: '#000', 
-        shadowOffset: { width: 0, height: 2 }, 
-        shadowOpacity: 0.25, 
-        shadowRadius: 3.84, 
-        elevation: 5, 
-      }, 
-      cover: {
-        width: '100%',  
-        height: '100%', 
-        position: 'absolute',
-        borderRadius: 5,
-      },
-      title: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#fff', 
-        textShadowColor: '#000', 
-        textShadowOffset: { width: 1, height: 1 }, 
-        textShadowRadius: 1, 
-      }, 
-    text: { 
-        fontSize: 14,
-        color: '#fff', 
-        textShadowColor: '#000', 
-        textShadowOffset: { width: 1, height: 1 }, 
-        textShadowRadius: 1, 
-    },
+  item: {
+    flex: 1,  
+    margin: 10,
+    height: 250,  
+    borderWidth: 1, 
+    borderColor: '#ddd', 
+    borderRadius: 5, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 1 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 3.84, 
+    elevation: 5, 
+}, 
+cover: {
+  width: '100%', 
+  height: 150, 
+  justifyContent: 'center',  
+  alignItems: 'center', 
+  borderRadius: 5,  
+  overflow: 'hidden',  
+},
+title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    textAlign: 'center',  
+    padding: 5,  
+},
+text: {
+    fontSize: 14,
+    textAlign: 'center',  
+    padding: 5,  
+}
 })
