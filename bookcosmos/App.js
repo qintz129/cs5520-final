@@ -17,6 +17,7 @@ import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "./components/CustomButton";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { UserProvider } from "./hooks/UserContext";
+import Map from "./screens/Map";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -85,6 +86,7 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
+      <Stack.Screen name="Map" component={Map} />
     </>
   );
 
