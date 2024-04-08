@@ -14,7 +14,10 @@ import AddReview from "./screens/AddReview";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
-import CustomButton from "./components/CustomButton";
+import CustomButton from "./components/CustomButton";  
+import { ActionSheetProvider } from '@expo/react-native-action-sheet';
+import { UserProvider } from "./hooks/UserContext"; 
+
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -50,7 +53,7 @@ export default function App() {
         options={{ headerShown: false }}
       />
       <Stack.Screen
-        name="UserInfo"
+        name="User Info"
         component={UserInfo}
         options={{ headerBackTitleVisible: false }}
       />
@@ -86,7 +89,9 @@ export default function App() {
     </>
   );
 
-  return (
+  return ( 
+  <UserProvider> 
+    <ActionSheetProvider>
     <GestureHandlerRootView style={{ flex: 1 }}>
       <NavigationContainer>
         <Stack.Navigator
@@ -98,7 +103,9 @@ export default function App() {
           {userLoggedIn ? AppStack : AuthStack}
         </Stack.Navigator>
       </NavigationContainer>
-    </GestureHandlerRootView>
+    </GestureHandlerRootView>  
+    </ActionSheetProvider>
+  </UserProvider>
   );
 }
 

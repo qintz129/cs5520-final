@@ -27,7 +27,8 @@ export async function writeToDB(data, col, docId, subCol) {
           bookNameLower: data.bookName.toLowerCase(),
         });
         const bookId = docRef.id;
-        await updateDoc(docRef, { id: bookId });
+        await updateDoc(docRef, { id: bookId }); 
+        await updateUserBooks(bookId, auth.currentUser.uid);
         console.log("Book data written successfully");
       } else {
         docRef = doc(database, col);
@@ -37,24 +38,41 @@ export async function writeToDB(data, col, docId, subCol) {
   } catch (err) {
     console.log(err);
   }
+} 
+
+async function updateUserBooks(bookId, userId) {
+  const userDocRef = doc(database, "users", userId);
+  const userDoc = await getDoc(userDocRef);
+
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+    const books = userData.books ? [...userData.books, bookId] : [bookId];
+    await updateDoc(userDocRef, {
+      books: books
+    });
+    console.log("User data updated successfully with new book ID");
+  } else {
+    console.error("User not found");
+  }
 }
 
 // Function to update data in the database
 export async function updateToDB(
   id,
   col,
-  docId = null,
-  subCol = null,
+  docId=null, 
+  subCol=null,
   updates
 ) {
   try {
     if (docId) {
       const docRef = doc(database, col, docId, subCol, id);
-      await updateDoc(docRef, updates);
+      await updateDoc(docRef, updates); 
     } else {
       const docRef = doc(database, col, id);
-      await updateDoc(docRef, updates);
-    }
+      await updateDoc(docRef, updates); 
+    } 
+    console.log("Data updated successfully");
   } catch (err) {
     console.log(err);
   }
@@ -80,10 +98,39 @@ export async function deleteFromDB(id, col, docId = null, subCol = null) {
     if (docId) {
       await deleteDoc(doc(database, col, docId, subCol, id));
     } else {
-      await deleteDoc(doc(database, col, id));
+      if (col === "books") {
+        const bookDocRef = doc(database, col, id);
+        const bookDoc = await getDoc(bookDocRef);
+        if (bookDoc.exists()) {
+          const bookData = bookDoc.data();
+          await deleteDoc(bookDocRef);
+          console.log("Book deleted successfully");
+          await removeBookFromUser(bookData.owner, id);
+        } else {
+          console.error("Book not found");
+        }
+      } else {
+        await deleteDoc(doc(database, col, id));
+      }
     }
+    console.log("Data deleted successfully");
   } catch (err) {
-    console.log(err);
+    console.error("Error deleting from DB:", err);
+  }
+} 
+
+async function removeBookFromUser(userId, bookId) {
+  const userDocRef = doc(database, "users", userId);
+  const userDoc = await getDoc(userDocRef);
+  if (userDoc.exists()) {
+    const userData = userDoc.data();
+    const books = userData.books ? userData.books.filter(bId => bId !== bookId) : [];
+    await updateDoc(userDocRef, {
+      books: books
+    });
+    console.log("Book ID removed from user successfully");
+  } else {
+    console.error("User not found");
   }
 }
 

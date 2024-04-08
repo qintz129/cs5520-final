@@ -8,9 +8,10 @@ import {
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc, getDocs } from "firebase/firestore";
+import { doc, getDoc} from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
-import CustomInput from "../components/CustomInput";
+import { CustomInput } from "../components/InputHelper";  
+import ExploreBookCard from "../components/ExploreBookCard";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
@@ -81,24 +82,6 @@ export default function Explore({ navigation }) {
       return "Unknown";
     }
   };
-  
-  // Function to render each book item
-  const renderItem = ({ item }) => (
-    <View style={styles.item}>
-      <CustomButton
-        onPress={() =>
-          navigation.navigate("Book Detail", {
-            bookId: item.id,
-            ownerId: item.owner,
-          })
-        }
-      >
-        {item.bookName && <Text>Book Name : {item.bookName}</Text>}
-        {item.author && <Text>Author: {item.author}</Text>}
-        {item.owner && <Text>User: {item.ownerName}</Text>}
-      </CustomButton>
-    </View>
-  );
 
   return (
     <View style={styles.container}>
@@ -115,8 +98,13 @@ export default function Explore({ navigation }) {
           {books.length > 0 && (
             <FlatList
               data={books}
-              renderItem={renderItem}
-              keyExtractor={(item, index) => index.toString()}
+              renderItem={({ item }) => ( 
+                <ExploreBookCard
+                  item={item}
+                />
+              )}
+              keyExtractor={item => item.id.toString()}
+              numColumns={2} 
             />
           )}
         </>
@@ -129,14 +117,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
   search: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    padding: 10, 
+    width: "100%", 
+    alignItems: "center"
+
   },
 });

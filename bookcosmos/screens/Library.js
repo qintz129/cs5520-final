@@ -1,29 +1,28 @@
-import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
+import { StyleSheet, Text, View, FlatList, Alert} from "react-native";
 import React, { useState, useEffect } from "react";
-import { collection, onSnapshot, query, where } from "firebase/firestore";
+import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
-import { getAllDocs, deleteFromDB } from "../firebase-files/firestoreHelper";
-import Swipeable from "react-native-gesture-handler/Swipeable";
-import CustomButton from "../components/CustomButton";
-import { AntDesign } from "@expo/vector-icons";
+import {deleteFromDB } from "../firebase-files/firestoreHelper";
+import BookCard from "../components/BookCard";
+
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
-  const [books, setBooks] = useState([]);
+  const [books, setBooks] = useState([]);  
 
-  useEffect(() => {
+  useEffect(() => { 
     let booksQuery; 
     // Define the query to fetch books for my profile
     if (isMyLibrary) {
       booksQuery = query(
         collection(database, "books"),
-        where("owner", "==", userId)
+        where("owner", "==", userId),
       );
     } else { 
       // Define the query to fetch books for others' profiles
       booksQuery = query(
         collection(database, "books"),
         where("owner", "==", userId),
-        where("bookStatus", "==", "free")
+        where("bookStatus", "==", "free"), 
       );
     }
 
@@ -32,9 +31,14 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       const fetchedBooks = [];
       snapshot.forEach((doc) => {
         fetchedBooks.push({ id: doc.id, ...doc.data() });
-      });
+      });  
+      // Sort the fetched books by book name
+      fetchedBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
       // Update the state variable with the fetched books
-      setBooks(fetchedBooks);
+      setBooks(fetchedBooks); 
+    }, 
+    error => {
+      console.error("Error fetching books:", error);
     });
 
     // Clean up the subscription when the component unmounts
@@ -55,7 +59,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
             text: "Delete",
             onPress: async () => {
               // Call the deleteBookFromDB function to delete the book from the database
-              await deleteFromDB(item.id, "books");
+              await deleteFromDB(item.id, "books", null, null);
             },
           },
         ],
@@ -75,80 +79,29 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         ownerId: item.owner,
       });
     }
-  };
-  console.log(books);
-  const renderItem = ({ item }) => {
-    // Render the item inside a Swipeable component if it's not in exchange
-    if (item.bookStatus === "free" && isMyLibrary) {
-      return (
-        <Swipeable
-          renderRightActions={() => (
-            <CustomButton onPress={() => handleDeleteItem(item)}>
-              <Text style={styles.deleteButtonText}>Delete</Text>
-            </CustomButton>
-          )}
-        >
-          <View style={styles.item}>
-            <CustomButton onPress={() => handlePressBook(item)}>
-              {item.bookName && <Text>{item.bookName}</Text>}
-              {item.author && <Text>{item.author}</Text>}
-            </CustomButton>
-          </View>
-        </Swipeable>
-      );
-    } else if (item.bookStatus === "free" && !isMyLibrary) {
-      return (
-        <View style={styles.item}>
-          <CustomButton onPress={() => handlePressBook(item)}>
-            {item.bookName && <Text>{item.bookName}</Text>}
-            {item.author && <Text>{item.author}</Text>}
-          </CustomButton>
-        </View>
-      );
-    } else if (item.bookStatus === "pending") {
-      // Render the item inside a regular View component if it's pending
-      return (
-        <View style={styles.item}>
-          <CustomButton onPress={() => handlePressBook(item)}>
-            {item.bookName && <Text>{item.bookName}</Text>}
-            {item.author && <Text>{item.author}</Text>}
-            <AntDesign name="swapright" size={24} color="red" />
-          </CustomButton>
-        </View>
-      );
-    } else if (item.bookStatus === "inExchange") {
-      // Render the item inside a regular View component if it's in exchange
-      return (
-        <View style={styles.item}>
-          <CustomButton onPress={() => handlePressBook(item)}>
-            {item.bookName && <Text>{item.bookName}</Text>}
-            {item.author && <Text>{item.author}</Text>}
-            <AntDesign name="swap" size={24} color="red" />
-          </CustomButton>
-        </View>
-      );
-    }
-  };
+  }; 
+  console.log("books", books);
   return (
     <View style={styles.container}>
-      {books.length > 0 && (
         <FlatList
           data={books}
-          renderItem={renderItem}
-          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item }) => (
+            <BookCard
+              item={item}
+              isMyLibrary={isMyLibrary}
+              handleDeleteItem={handleDeleteItem}
+              handlePressBook={handlePressBook}
+            />
+          )}
+          keyExtractor={item => item.id.toString()}
         />
-      )}
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({  
-  item: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-  },
-  deleteButtonText: {
-    padding: 10,
-  },
+const styles = StyleSheet.create({   
+  container: {
+    flex: 1,
+  }, 
+
 });
