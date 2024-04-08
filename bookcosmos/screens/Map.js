@@ -1,4 +1,4 @@
-import { Modal, StyleSheet, Text, View } from "react-native";
+import { Modal, StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { FlatList } from "react-native-gesture-handler";
@@ -10,6 +10,7 @@ import { auth } from "../firebase-files/firebaseSetup";
 export default function Map() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
   // Get user's location
   useEffect(() => {
@@ -21,11 +22,12 @@ export default function Map() {
       }
       let location = await Location.getCurrentPositionAsync();
       setUserLocation(location.coords);
+      setLoading(false);
     }
     getUserLocation();
   }, [userLocation]);
 
-  // simulator location
+  // simulate location
   const userWithBooks = [
     {
       id: 1,
@@ -44,35 +46,39 @@ export default function Map() {
 
   return (
     <>
-      {userLocation && (
-        <MapView
-          style={styles.map}
-          initialRegion={{
-            latitude: userLocation.latitude,
-            longitude: userLocation.longitude,
-            latitudeDelta: 0.0922,
-            longitudeDelta: 0.0421,
-          }}
-          showsUserLocation={true}
-          onUserLocationChange={(event) =>
-            setUserLocation(event.nativeEvent.coordinate)
-          }
-        >
-          {userWithBooks.map((user) => (
-            <Marker
-              key={user.id}
-              coordinate={user.coordinate}
-              onPress={() => setSelectedUser(user)}
-              pinColor="red"
-            >
-              <View style={styles.marker}>
-                <Text style={styles.markerText}>
-                  {user.books === 1 ? "1 Book" : `${user.books} Books`}
-                </Text>
-              </View>
-            </Marker>
-          ))}
-        </MapView>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        userLocation && (
+          <MapView
+            style={styles.map}
+            initialRegion={{
+              latitude: userLocation.latitude,
+              longitude: userLocation.longitude,
+              latitudeDelta: 0.0922,
+              longitudeDelta: 0.0421,
+            }}
+            showsUserLocation={true}
+            onUserLocationChange={(event) =>
+              setUserLocation(event.nativeEvent.coordinate)
+            }
+          >
+            {userWithBooks.map((user) => (
+              <Marker
+                key={user.id}
+                coordinate={user.coordinate}
+                onPress={() => setSelectedUser(user)}
+                pinColor="red"
+              >
+                <View style={styles.marker}>
+                  <Text style={styles.markerText}>
+                    {user.books === 1 ? "1 Book" : `${user.books} Books`}
+                  </Text>
+                </View>
+              </Marker>
+            ))}
+          </MapView>
+        )
       )}
       {selectedUser && (
         <View style={styles.bottomContainer}>
