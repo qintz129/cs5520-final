@@ -34,11 +34,11 @@ export default function ExploreBookCard({item}) {
         }
     > 
     <View style={[styles.item, { width: bookCardWidth }]}>
-        <View style={styles.containerStyle}>
+        <View style={styles.cover}>
           {bookAvatar ? (
-              <Image source={{ uri: bookAvatar }} style={{width: '100%', height: 150}} />
+              <Image source={{ uri: bookAvatar }} style={{width: '100%', height: '100%'}} />
           ) : (
-              <AntDesign name="picture" size={100} color="grey" style={{width: '100%', height: 150}}/>
+              <AntDesign name="picture" size={100} color="grey"/>
           )}
         </View>
         <Text style={styles.title}>{item.bookName}</Text>
