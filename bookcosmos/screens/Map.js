@@ -1,12 +1,9 @@
-import { Modal, StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { FlatList } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 import { Feather } from "@expo/vector-icons";
-import { mapsApiKey } from "@env";
-import { getDocFromDB } from "../firebase-files/firestoreHelper";
-import { auth } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
 
 export default function Map() {
@@ -47,6 +44,7 @@ export default function Map() {
     },
   ];
 
+  // Handle region change
   function handleRegionChange(region) {
     setZoomLevel(region.latitudeDelta + region.longitudeDelta);
   }
@@ -105,7 +103,6 @@ export default function Map() {
             )}
             keyExtractor={(item, index) => index.toString()}
           />
-
           <CustomButton
             onPress={() => setSelectedUser(null)}
             customStyle={styles.closeButton}

@@ -17,6 +17,7 @@ import { CustomInput, MultilineInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import ImageManager from "../components/ImageManager";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import * as Location from "expo-location";
 
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
@@ -27,7 +28,22 @@ export default function AddABook({ navigation, route }) {
   const [downloadUri, setDownloadUri] = useState(null);
   const [uploadUri, setUploadUri] = useState(null);
   const [hasNewImage, setHasNewImage] = useState(false);
+  const [userLocation, setUserLocation] = useState(null);
   const { editMode, bookId } = route.params;
+
+  // Get user's location
+  useEffect(() => {
+    async function getUserLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync();
+      setUserLocation(location.coords);
+    }
+    getUserLocation();
+  }, []);
 
   // Render the header based on the edit mode
   useEffect(() => {
@@ -120,6 +136,7 @@ export default function AddABook({ navigation, route }) {
         author: author,
         description: description,
         bookStatus: BookStatus,
+        location: userLocation,
       };
 
       if (hasNewImage && uploadUri) {
