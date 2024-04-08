@@ -3,14 +3,17 @@ import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { FlatList } from "react-native-gesture-handler";
 import * as Location from "expo-location";
+import { Feather } from "@expo/vector-icons";
 import { mapsApiKey } from "@env";
 import { getDocFromDB } from "../firebase-files/firestoreHelper";
 import { auth } from "../firebase-files/firebaseSetup";
+import CustomButton from "../components/CustomButton";
 
 export default function Map() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
   const [isLoading, setLoading] = useState(true);
+  const [zoomLevel, setZoomLevel] = useState(0);
 
   // Get user's location
   useEffect(() => {
@@ -44,6 +47,10 @@ export default function Map() {
     },
   ];
 
+  function handleRegionChange(region) {
+    setZoomLevel(region.latitudeDelta + region.longitudeDelta);
+  }
+
   return (
     <>
       {isLoading ? (
@@ -62,19 +69,25 @@ export default function Map() {
             onUserLocationChange={(event) =>
               setUserLocation(event.nativeEvent.coordinate)
             }
+            onRegionChange={handleRegionChange}
           >
             {userWithBooks.map((user) => (
               <Marker
                 key={user.id}
                 coordinate={user.coordinate}
                 onPress={() => setSelectedUser(user)}
-                pinColor="red"
               >
-                <View style={styles.marker}>
+                <Feather
+                  name="book-open"
+                  size={24}
+                  color="black"
+                  style={styles.bookIcon}
+                />
+                {zoomLevel < 0.5 && (
                   <Text style={styles.markerText}>
                     {user.books === 1 ? "1 Book" : `${user.books} Books`}
                   </Text>
-                </View>
+                )}
               </Marker>
             ))}
           </MapView>
@@ -92,12 +105,13 @@ export default function Map() {
             )}
             keyExtractor={(item, index) => index.toString()}
           />
-          <Text
+
+          <CustomButton
             onPress={() => setSelectedUser(null)}
-            style={styles.closeButton}
+            customStyle={styles.closeButton}
           >
-            Close
-          </Text>
+            <Text>Close</Text>
+          </CustomButton>
         </View>
       )}
     </>
@@ -108,14 +122,15 @@ const styles = StyleSheet.create({
   map: {
     flex: 1,
   },
-  marker: {
-    backgroundColor: "pink",
-    padding: 5,
-    borderRadius: 5,
+  bookIcon: {
+    marginLeft: 16,
   },
   markerText: {
     fontWeight: "bold",
     color: "black",
+    backgroundColor: "lightblue",
+    padding: 5,
+    borderRadius: 5,
   },
   bottomContainer: {
     position: "absolute",
