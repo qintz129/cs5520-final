@@ -5,12 +5,20 @@ import { FlatList } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 import { Feather } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
+import {
+  fetchBooksAtLocation,
+  getAllDocs,
+} from "../firebase-files/firestoreHelper";
+import BookCard from "../components/BookCard";
+import { useNavigation } from "@react-navigation/native";
 
 export default function Map() {
-  const [selectedUser, setSelectedUser] = useState(null);
+  const navigation = useNavigation();
   const [userLocation, setUserLocation] = useState(null);
   const [isLoading, setLoading] = useState(true);
   const [zoomLevel, setZoomLevel] = useState(0);
+  const [booksLocations, setBooksLocations] = useState([]);
+  const [selectedBooks, setSelectedBooks] = useState(null);
 
   // Get user's location
   useEffect(() => {
@@ -27,26 +35,47 @@ export default function Map() {
     getUserLocation();
   }, [userLocation]);
 
-  // simulate location
-  const userWithBooks = [
-    {
-      id: 1,
-      coordinate: {
-        latitude: 49.227,
-        longitude: -122.98,
-      },
-      books: 3,
-    },
-    {
-      id: 2,
-      coordinate: { latitude: 49.22, longitude: -122.9968 },
-      books: 1,
-    },
-  ];
+  // Get books' locations
+  useEffect(() => {
+    const fetchBooksLocations = async () => {
+      try {
+        const books = await getAllDocs("books");
+        const locations = await Promise.all(
+          books.map(async (book) => {
+            if (book.location === undefined) return null;
+            const latitude = book.location.latitude;
+            const longitude = book.location.longitude;
+            const booksCount = (
+              await fetchBooksAtLocation({ latitude, longitude })
+            ).length;
+            const booksAtLocation = await fetchBooksAtLocation({
+              latitude,
+              longitude,
+            });
+            return { latitude, longitude, booksCount, booksAtLocation };
+          })
+        );
+        setBooksLocations(locations);
+      } catch (error) {
+        console.error("Error fetching books locations:", error);
+      }
+    };
+    fetchBooksLocations();
+  }, []);
 
   // Handle region change
   function handleRegionChange(region) {
     setZoomLevel(region.latitudeDelta + region.longitudeDelta);
+  }
+
+  // Handle marker press
+  function handleMarkerPress(location) {
+    setSelectedBooks(location.booksAtLocation);
+  }
+
+  // Handle press book
+  function handlePressBook(item) {
+    navigation.navigate("Book Detail", { bookId: item.id });
   }
 
   return (
@@ -69,11 +98,14 @@ export default function Map() {
             }
             onRegionChange={handleRegionChange}
           >
-            {userWithBooks.map((user) => (
+            {booksLocations.map((location, index) => (
               <Marker
-                key={user.id}
-                coordinate={user.coordinate}
-                onPress={() => setSelectedUser(user)}
+                key={index}
+                coordinate={{
+                  latitude: location.latitude,
+                  longitude: location.longitude,
+                }}
+                onPress={() => handleMarkerPress(location)}
               >
                 <Feather
                   name="book-open"
@@ -83,7 +115,9 @@ export default function Map() {
                 />
                 {zoomLevel < 0.5 && (
                   <Text style={styles.markerText}>
-                    {user.books === 1 ? "1 Book" : `${user.books} Books`}
+                    {location.booksCount === 1
+                      ? "1 Book"
+                      : `${location.booksCount} Books`}
                   </Text>
                 )}
               </Marker>
@@ -91,20 +125,18 @@ export default function Map() {
           </MapView>
         )
       )}
-      {selectedUser && (
+      {selectedBooks && (
         <View style={styles.bottomContainer}>
-          <Text style={styles.header}>Library of User {selectedUser?.id}</Text>
+          <Text style={styles.header}>Books at this location:</Text>
           <FlatList
-            data={Array(selectedUser?.books)
-              .fill()
-              .map((_, index) => ({ id: index }))}
+            data={selectedBooks}
             renderItem={({ item }) => (
-              <Text style={styles.bookItem}>Book {item.id + 1}</Text>
+              <BookCard item={item} handlePressBook={handlePressBook} />
             )}
-            keyExtractor={(item, index) => index.toString()}
+            keyExtractor={(item) => item.id}
           />
           <CustomButton
-            onPress={() => setSelectedUser(null)}
+            onPress={() => setSelectedBooks(null)}
             customStyle={styles.closeButton}
           >
             <Text>Close</Text>

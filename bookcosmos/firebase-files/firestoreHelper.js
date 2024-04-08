@@ -7,6 +7,8 @@ import {
   getDocs,
   updateDoc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { database, auth } from "./firebaseSetup";
 
@@ -187,4 +189,39 @@ export async function fetchExtra(doc) {
     offeredBookInfo,
     requestedBookInfo,
   };
+}
+
+export async function fetchBooksAtLocation(location) {
+  try {
+    console.log("Fetching books at location:", location);
+    const { latitude, longitude } = location;
+    const radius = 0.01;
+
+    // Define the query to fetch books within a certain radius
+    const minLatitude = latitude - radius;
+    const maxLatitude = latitude + radius;
+    const minLongitude = longitude - radius;
+    const maxLongitude = longitude + radius;
+
+    const q = query(
+      collection(database, "books"),
+      where("location.latitude", ">=", minLatitude),
+      where("location.latitude", "<=", maxLatitude),
+      where("location.longitude", ">=", minLongitude),
+      where("location.longitude", "<=", maxLongitude)
+    );
+
+    // Execute the query
+    const querySnapshot = await getDocs(q);
+
+    // Extract the book data from the query snapshot
+    const books = [];
+    querySnapshot.forEach((doc) => {
+      books.push({ id: doc.id, ...doc.data() });
+    });
+    console.log("Fetched books:", books);
+    return books;
+  } catch (error) {
+    console.error("Error fetching books at location:", error);
+  }
 }

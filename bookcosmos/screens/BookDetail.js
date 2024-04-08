@@ -1,14 +1,18 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
 import ChooseBookModal from "../components/ChooseBookModal";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import { ref, getDownloadURL } from "firebase/storage";
+import { storage } from "../firebase-files/firebaseSetup";
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
+  const [bookImageURI, setBookImageURI] = useState("");
   const [description, setDescription] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
@@ -16,12 +20,15 @@ export default function BookDetail({ route, navigation }) {
   const [bookStatus, setBookStatus] = useState("free");
   const { bookId, ownerId } = route.params;
   const [rating, setRating] = useState(0);
+  const [isLoading, setLoading] = useState(false);
+  const [bookAvatar, setBookAvatar] = useState(null);
 
   useEffect(() => {
     let bookData;
     // Fetch the book data from the database by bookId
     const fetchBookData = async () => {
       try {
+        setLoading(true);
         // Fetch the book data from the database
         const docRef = doc(database, "books", bookId);
         const docSnap = await getDoc(docRef);
@@ -29,6 +36,7 @@ export default function BookDetail({ route, navigation }) {
           bookData = docSnap.data();
           setBookName(bookData.bookName);
           setAuthor(bookData.author);
+          setBookImageURI(bookData.image);
           setDescription(bookData.description);
           setBookStatus(bookData.bookStatus);
 
@@ -56,6 +64,7 @@ export default function BookDetail({ route, navigation }) {
         console.error("Error fetching owner name:", error);
         setOwnerName("Unknown");
       }
+      setLoading(false);
     };
     fetchBookData();
   }, [bookId]);
@@ -108,47 +117,71 @@ export default function BookDetail({ route, navigation }) {
     setModalVisible(false);
   };
 
+  useEffect(() => {
+    if (bookImageURI) {
+      const imageRef = ref(storage, bookImageURI);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [bookImageURI]);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{bookName}</Text>
-      <Text style={styles.author}>{author}</Text>
-      <Text>{description}</Text>
-      <View>
-        <CustomButton
-          onPress={() =>
-            navigation.navigate("Other User Profile", {
-              ownerId: ownerId,
-              ownerName: ownerName,
-            })
-          }
-        >
-          <Text>User: {ownerName}</Text>
-          {rating > 0 && <Text>Rating: {rating}</Text>}
-        </CustomButton>
-      </View>
-      <View style={styles.goodReads}>
-        <CustomButton>
-          <Text>See more information from Goodreads</Text>
-        </CustomButton>
-      </View>
-      <View style={styles.buttonContainer}>
-        {!requestSent && bookStatus === "free" && (
-          <CustomButton onPress={handleSendRequest}>
-            <Text>Send Request</Text>
-          </CustomButton>
-        )}
-      </View>
-      <ChooseBookModal
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-        onSelectBook={handleSelectBook}
-        fromUserId={auth.currentUser.uid}
-        requestedBookId={bookId}
-        toUserId={ownerId}
-        requestSent={requestSent}
-        setRequestSent={setRequestSent}
-      />
-    </View>
+    <>
+      {isLoading ? (
+        <ActivityIndicator size="large" color="#0000ff" />
+      ) : (
+        <View style={styles.container}>
+          {bookAvatar ? (
+            <Image source={{ uri: bookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
+          <Text style={styles.title}>{bookName}</Text>
+          <Text style={styles.author}>{author}</Text>
+          <Text>{description}</Text>
+          <View>
+            <CustomButton
+              onPress={() =>
+                navigation.navigate("Other User Profile", {
+                  ownerId: ownerId,
+                  ownerName: ownerName,
+                })
+              }
+            >
+              <Text>User: {ownerName}</Text>
+              {rating > 0 && <Text>Rating: {rating}</Text>}
+            </CustomButton>
+          </View>
+          <View style={styles.goodReads}>
+            <CustomButton>
+              <Text>See more information from Goodreads</Text>
+            </CustomButton>
+          </View>
+          <View style={styles.buttonContainer}>
+            {!requestSent && bookStatus === "free" && (
+              <CustomButton onPress={handleSendRequest}>
+                <Text>Send Request</Text>
+              </CustomButton>
+            )}
+          </View>
+          <ChooseBookModal
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+            onSelectBook={handleSelectBook}
+            fromUserId={auth.currentUser.uid}
+            requestedBookId={bookId}
+            toUserId={ownerId}
+            requestSent={requestSent}
+            setRequestSent={setRequestSent}
+          />
+        </View>
+      )}
+    </>
   );
 }
 
@@ -156,6 +189,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+  },
+  image: {
+    width: 200,
+    height: 200,
+    borderRadius: 10,
   },
   title: {
     fontSize: 25,
