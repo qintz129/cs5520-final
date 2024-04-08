@@ -1,59 +1,79 @@
 import { Modal, StyleSheet, Text, View } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import { FlatList } from "react-native-gesture-handler";
+import * as Location from "expo-location";
+import { mapsApiKey } from "@env";
+import { getDocFromDB } from "../firebase-files/firestoreHelper";
+import { auth } from "../firebase-files/firebaseSetup";
 
 export default function Map() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [userLocation, setUserLocation] = useState(null);
+
+  // Get user's location
+  useEffect(() => {
+    async function getUserLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync();
+      setUserLocation(location.coords);
+    }
+    getUserLocation();
+  }, [userLocation]);
 
   // simulator location
   const userWithBooks = [
     {
       id: 1,
       coordinate: {
-        latitude: 37.78823,
-        longitude: -122.4321,
+        latitude: 49.227,
+        longitude: -122.98,
       },
       books: 3,
     },
     {
       id: 2,
-      coordinate: { latitude: 37.78822, longitude: -122.4 },
+      coordinate: { latitude: 49.22, longitude: -122.9968 },
       books: 1,
     },
   ];
 
   return (
     <>
-      <MapView
-        style={styles.map}
-        initialRegion={{
-          latitude: 37.78825,
-          longitude: -122.4324,
-          latitudeDelta: 0.0922,
-          longitudeDelta: 0.0421,
-        }}
-        showsUserLocation={true}
-        onUserLocationChange={(event) =>
-          setUserLocation(event.nativeEvent.coordinate)
-        }
-      >
-        {userWithBooks.map((user) => (
-          <Marker
-            key={user.id}
-            coordinate={user.coordinate}
-            onPress={() => setSelectedUser(user)}
-            pinColor="red"
-          >
-            <View style={styles.marker}>
-              <Text style={styles.markerText}>
-                {user.books === 1 ? "1 Book" : `${user.books} Books`}
-              </Text>
-            </View>
-          </Marker>
-        ))}
-      </MapView>
+      {userLocation && (
+        <MapView
+          style={styles.map}
+          initialRegion={{
+            latitude: userLocation.latitude,
+            longitude: userLocation.longitude,
+            latitudeDelta: 0.0922,
+            longitudeDelta: 0.0421,
+          }}
+          showsUserLocation={true}
+          onUserLocationChange={(event) =>
+            setUserLocation(event.nativeEvent.coordinate)
+          }
+        >
+          {userWithBooks.map((user) => (
+            <Marker
+              key={user.id}
+              coordinate={user.coordinate}
+              onPress={() => setSelectedUser(user)}
+              pinColor="red"
+            >
+              <View style={styles.marker}>
+                <Text style={styles.markerText}>
+                  {user.books === 1 ? "1 Book" : `${user.books} Books`}
+                </Text>
+              </View>
+            </Marker>
+          ))}
+        </MapView>
+      )}
       {selectedUser && (
         <View style={styles.bottomContainer}>
           <Text style={styles.header}>Library of User {selectedUser?.id}</Text>
