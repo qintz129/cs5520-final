@@ -48,7 +48,7 @@ export function CustomPassWordInput({
           secureTextEntry={secureTextEntry}
         />  
         <CustomButton onPress={onToggleVisibility} customStyle={styles.viewButton}> 
-          <Ionicons name={secureTextEntry ? 'eye' : 'eye-off'} size={24} color="grey" />
+          <Ionicons name={secureTextEntry ? 'eye-off' : 'eye'} size={24} color="grey" />
         </CustomButton>
       </View>
     </View>
