@@ -20,11 +20,11 @@ export default function Requests({ navigation }) {
   const [requests, setRequests] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
- 
-  // useFocusEffect hook to fetch the incoming and outgoing requests. 
-  // Similar to useEffect, but it specifically runs when the screen comes into focus or goes out of focus.  
+
+  // useFocusEffect hook to fetch the incoming and outgoing requests.
+  // Similar to useEffect, but it specifically runs when the screen comes into focus or goes out of focus.
   // It is useful when you delete a book and come back to the screen, the book should not be there anymore.
-  useFocusEffect( 
+  useFocusEffect(
     // Fetch the incoming and outgoing requests
     React.useCallback(() => {
       setLoading(true);

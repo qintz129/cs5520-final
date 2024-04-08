@@ -18,7 +18,7 @@ export default function Reviews({ userId }) {
           // update this to also add id of doc to the newArray
           newArray.push({ ...doc.data(), id: doc.id });
           // store this data in a new array
-        }); 
+        });
         newArray.sort((a, b) => {
           // Convert string timestamps to numerical timestamps and compare
           return Date.parse(b.date) - Date.parse(a.date);
@@ -27,7 +27,7 @@ export default function Reviews({ userId }) {
         const updatedArray = newArray.map((item) => ({
           ...item,
           date: convertTimestamp(item.date),
-        }));  
+        }));
 
         setReviews(updatedArray);
       },

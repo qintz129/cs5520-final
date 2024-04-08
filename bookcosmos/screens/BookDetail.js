@@ -1,9 +1,9 @@
 import { StyleSheet, Text, View } from "react-native";
 import React, { useState, useEffect } from "react";
-import { doc, getDoc, getDocs, collection} from "firebase/firestore";
-import { database, auth} from "../firebase-files/firebaseSetup";
+import { doc, getDoc, getDocs, collection } from "firebase/firestore";
+import { database, auth } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
-import ChooseBookModal from "../components/ChooseBookModal"; 
+import ChooseBookModal from "../components/ChooseBookModal";
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
@@ -12,9 +12,9 @@ export default function BookDetail({ route, navigation }) {
   const [description, setDescription] = useState("");
   const [ownerName, setOwnerName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [requestSent, setRequestSent] = useState(false); 
+  const [requestSent, setRequestSent] = useState(false);
   const [bookStatus, setBookStatus] = useState("free");
-  const { bookId, ownerId } = route.params; 
+  const { bookId, ownerId } = route.params;
   const [rating, setRating] = useState(0);
 
   useEffect(() => {
@@ -29,7 +29,7 @@ export default function BookDetail({ route, navigation }) {
           bookData = docSnap.data();
           setBookName(bookData.bookName);
           setAuthor(bookData.author);
-          setDescription(bookData.description); 
+          setDescription(bookData.description);
           setBookStatus(bookData.bookStatus);
 
           await fetchOwnerName(bookData.owner);
@@ -40,7 +40,7 @@ export default function BookDetail({ route, navigation }) {
         console.error("Error fetching book data:", error);
       }
     };
-    
+
     // Fetch the owner name from the database by ownerId
     const fetchOwnerName = async () => {
       try {
@@ -58,8 +58,8 @@ export default function BookDetail({ route, navigation }) {
       }
     };
     fetchBookData();
-  }, [bookId]);  
- 
+  }, [bookId]);
+
   // Function to fetch ratings from the database
   async function getRatings(path) {
     try {
@@ -74,34 +74,35 @@ export default function BookDetail({ route, navigation }) {
       return ratings;
     } catch (err) {
       console.error("Error fetching ratings:", err);
-      return []; 
+      return [];
     }
-  } 
+  }
 
   // Calculate the average rating of the owner
-  useEffect(() => {  
-    const fetchRatings = async () => { 
-      try { 
+  useEffect(() => {
+    const fetchRatings = async () => {
+      try {
         const ratings = await getRatings(`users/${ownerId}/reviews`);
         if (ratings.length === 0) {
-          setRating(0); 
+          setRating(0);
         } else {
-          const averageRating = ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length;
+          const averageRating =
+            ratings.reduce((acc, curr) => acc + curr, 0) / ratings.length;
           setRating(Math.round(averageRating * 10) / 10);
         }
-      } catch (error) { 
-        console.error("Error fetching ratings:", error); 
+      } catch (error) {
+        console.error("Error fetching ratings:", error);
       }
-    };  
-  
-    fetchRatings(); 
+    };
+
+    fetchRatings();
   }, [ownerId]);
 
   const handleSendRequest = () => {
     setModalVisible(true);
   };
-  
- // Function to handle the book selection, after the user selects a book, the modal will be closed
+
+  // Function to handle the book selection, after the user selects a book, the modal will be closed
   const handleSelectBook = (selectedBookId) => {
     console.log("Selected book ID:", selectedBookId);
     setModalVisible(false);
@@ -111,7 +112,7 @@ export default function BookDetail({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>{bookName}</Text>
       <Text style={styles.author}>{author}</Text>
-      <Text>{description}</Text>  
+      <Text>{description}</Text>
       <View>
         <CustomButton
           onPress={() =>
@@ -121,8 +122,8 @@ export default function BookDetail({ route, navigation }) {
             })
           }
         >
-          <Text>User: {ownerName}</Text> 
-          {rating > 0 && (<Text>Rating: {rating}</Text>)}
+          <Text>User: {ownerName}</Text>
+          {rating > 0 && <Text>Rating: {rating}</Text>}
         </CustomButton>
       </View>
       <View style={styles.goodReads}>
@@ -130,13 +131,12 @@ export default function BookDetail({ route, navigation }) {
           <Text>See more information from Goodreads</Text>
         </CustomButton>
       </View>
-      <View style={styles.buttonContainer}> 
-      {!requestSent && bookStatus === "free" && (
-        <CustomButton onPress={handleSendRequest}>
-        <Text>Send Request</Text>
-        </CustomButton>  
-      )
-      }
+      <View style={styles.buttonContainer}>
+        {!requestSent && bookStatus === "free" && (
+          <CustomButton onPress={handleSendRequest}>
+            <Text>Send Request</Text>
+          </CustomButton>
+        )}
       </View>
       <ChooseBookModal
         visible={modalVisible}
@@ -159,29 +159,29 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 25,
-    marginBottom: 10,  
-    fontWeight: 'bold',
-  }, 
-  author: { 
-    marginBottom: 10,  
-    fontSize: 20
+    marginBottom: 10,
+    fontWeight: "bold",
+  },
+  author: {
+    marginBottom: 10,
+    fontSize: 20,
   },
   button: {
-    backgroundColor: '#ff5a5f', // Airbnb红色
+    backgroundColor: "#ff5a5f", // Airbnb红色
     padding: 10,
     borderRadius: 5,
-    alignItems: 'center',
+    alignItems: "center",
     marginTop: 10,
   },
   buttonText: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   goodReads: {
     marginTop: 20,
   },
   buttonContainer: {
     marginTop: 20,
-  }
+  },
 });
