@@ -7,6 +7,8 @@ import {
   getDocs,
   updateDoc,
   getDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { database, auth } from "./firebaseSetup";
 
@@ -27,7 +29,7 @@ export async function writeToDB(data, col, docId, subCol) {
           bookNameLower: data.bookName.toLowerCase(),
         });
         const bookId = docRef.id;
-        await updateDoc(docRef, { id: bookId }); 
+        await updateDoc(docRef, { id: bookId });
         await updateUserBooks(bookId, auth.currentUser.uid);
         console.log("Book data written successfully");
       } else {
@@ -38,7 +40,7 @@ export async function writeToDB(data, col, docId, subCol) {
   } catch (err) {
     console.log(err);
   }
-} 
+}
 
 async function updateUserBooks(bookId, userId) {
   const userDocRef = doc(database, "users", userId);
@@ -48,7 +50,7 @@ async function updateUserBooks(bookId, userId) {
     const userData = userDoc.data();
     const books = userData.books ? [...userData.books, bookId] : [bookId];
     await updateDoc(userDocRef, {
-      books: books
+      books: books,
     });
     console.log("User data updated successfully with new book ID");
   } else {
@@ -60,18 +62,18 @@ async function updateUserBooks(bookId, userId) {
 export async function updateToDB(
   id,
   col,
-  docId=null, 
-  subCol=null,
+  docId = null,
+  subCol = null,
   updates
 ) {
   try {
     if (docId) {
       const docRef = doc(database, col, docId, subCol, id);
-      await updateDoc(docRef, updates); 
+      await updateDoc(docRef, updates);
     } else {
       const docRef = doc(database, col, id);
-      await updateDoc(docRef, updates); 
-    } 
+      await updateDoc(docRef, updates);
+    }
     console.log("Data updated successfully");
   } catch (err) {
     console.log(err);
@@ -87,6 +89,18 @@ export async function getAllDocs(path) {
       newArray.push(doc.data());
     });
     return newArray;
+  } catch (err) {
+    console.log(err);
+  }
+}
+
+// Function to get a document from the database
+export async function getDocFromDB(col, docId) {
+  try {
+    const docSnap = await getDoc(doc(database, col, docId));
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
   } catch (err) {
     console.log(err);
   }
@@ -117,16 +131,18 @@ export async function deleteFromDB(id, col, docId = null, subCol = null) {
   } catch (err) {
     console.error("Error deleting from DB:", err);
   }
-} 
+}
 
 async function removeBookFromUser(userId, bookId) {
   const userDocRef = doc(database, "users", userId);
   const userDoc = await getDoc(userDocRef);
   if (userDoc.exists()) {
     const userData = userDoc.data();
-    const books = userData.books ? userData.books.filter(bId => bId !== bookId) : [];
+    const books = userData.books
+      ? userData.books.filter((bId) => bId !== bookId)
+      : [];
     await updateDoc(userDocRef, {
-      books: books
+      books: books,
     });
     console.log("Book ID removed from user successfully");
   } else {
@@ -173,4 +189,39 @@ export async function fetchExtra(doc) {
     offeredBookInfo,
     requestedBookInfo,
   };
+}
+
+export async function fetchBooksAtLocation(location) {
+  try {
+    console.log("Fetching books at location:", location);
+    const { latitude, longitude } = location;
+    const radius = 0.01;
+
+    // Define the query to fetch books within a certain radius
+    const minLatitude = latitude - radius;
+    const maxLatitude = latitude + radius;
+    const minLongitude = longitude - radius;
+    const maxLongitude = longitude + radius;
+
+    const q = query(
+      collection(database, "books"),
+      where("location.latitude", ">=", minLatitude),
+      where("location.latitude", "<=", maxLatitude),
+      where("location.longitude", ">=", minLongitude),
+      where("location.longitude", "<=", maxLongitude)
+    );
+
+    // Execute the query
+    const querySnapshot = await getDocs(q);
+
+    // Extract the book data from the query snapshot
+    const books = [];
+    querySnapshot.forEach((doc) => {
+      books.push({ id: doc.id, ...doc.data() });
+    });
+    console.log("Fetched books:", books);
+    return books;
+  } catch (error) {
+    console.error("Error fetching books at location:", error);
+  }
 }

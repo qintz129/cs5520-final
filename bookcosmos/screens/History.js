@@ -22,7 +22,7 @@ import HistoryCard from "../components/HistoryCard";
 export default function History({ navigation }) {
   const [history, setHistory] = useState([]);
   const [isLoading, setLoading] = useState(false);
- // useEffect to fetch the history of exchanges
+  // useEffect to fetch the history of exchanges
   useEffect(() => {
     const fetchHistory = () => {
       try {

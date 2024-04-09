@@ -2,7 +2,7 @@ import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
-import { CustomInput, CustomPassWordInput} from "../components/InputHelper";
+import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import { writeToDB } from "../firebase-files/firestoreHelper";
 
@@ -10,15 +10,15 @@ import { writeToDB } from "../firebase-files/firestoreHelper";
 export default function Signup({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState(""); 
-  const [isEmpty, setIsEmpty] = useState(true); 
-  const [passwordError, setPasswordError] = useState(false); 
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isEmpty, setIsEmpty] = useState(true);
+  const [passwordError, setPasswordError] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const loginHandler = () => {
     navigation.replace("Login");
   };
-  
+
   const signupHandler = async () => {
     if (password !== confirmPassword) {
       setPasswordError(true);
@@ -30,7 +30,12 @@ export default function Signup({ navigation }) {
         email,
         password
       );
-      const newUser = { uid: userCred.user.uid, name: email, email: email, password: password };
+      const newUser = {
+        uid: userCred.user.uid,
+        name: email,
+        email: email,
+        password: password,
+      };
       writeToDB(newUser, "users");
     } catch (err) {
       console.log(err.code);
@@ -40,59 +45,59 @@ export default function Signup({ navigation }) {
         Alert.alert("Weak password, password should be at least 6 characters");
       }
     }
-  }; 
+  };
 
-  const emailHandler = (changedText) => { 
-    setEmail(changedText);  
+  const emailHandler = (changedText) => {
+    setEmail(changedText);
     setIsEmpty(changedText === "" || password === "" || confirmPassword === "");
-  } 
+  };
 
-  const passwordHandler = (changedText) => { 
-    setPassword(changedText); 
-    setPasswordError(false); 
+  const passwordHandler = (changedText) => {
+    setPassword(changedText);
+    setPasswordError(false);
     setIsEmpty(email === "" || changedText === "" || confirmPassword === "");
-  } 
+  };
 
-  const confirmPasswordHandler = (changedText) => { 
-    setConfirmPassword(changedText); 
-    setPasswordError(false);  
+  const confirmPasswordHandler = (changedText) => {
+    setConfirmPassword(changedText);
+    setPasswordError(false);
     setIsEmpty(email === "" || password === "" || changedText === "");
-  } 
+  };
 
-  const toggleVisibility = () => {  
+  const toggleVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
-  
+
   return (
-    <View style={styles.container}> 
+    <View style={styles.container}>
       <CustomInput
         title="Email"
         onChangeText={emailHandler}
         value={email}
         placeholder="Email"
-      />  
+      />
       <CustomPassWordInput
         title="Password"
         onChangeText={passwordHandler}
         value={password}
-        placeholder="Password" 
-        secureTextEntry={!passwordVisible} 
+        placeholder="Password"
+        secureTextEntry={!passwordVisible}
         onToggleVisibility={toggleVisibility}
-      />  
+      />
       {passwordError && <Text>Passwords do not match</Text>}
       <CustomPassWordInput
         title="Confirm Password"
         onChangeText={confirmPasswordHandler}
         value={confirmPassword}
-        placeholder="Password" 
-        secureTextEntry={!passwordVisible} 
+        placeholder="Password"
+        secureTextEntry={!passwordVisible}
         onToggleVisibility={toggleVisibility}
-      /> 
+      />
       {passwordError && <Text>Passwords do not match</Text>}
       <CustomButton onPress={signupHandler} disabled={isEmpty}>
-      <Text style={isEmpty ? styles.disabledText : styles.normalText}> 
-        Register 
-      </Text>
+        <Text style={isEmpty ? styles.disabledText : styles.normalText}>
+          Register
+        </Text>
       </CustomButton>
       <CustomButton onPress={loginHandler}>
         <Text>Already Registered? Login</Text>
@@ -107,7 +112,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     paddingHorizontal: 20,
     justifyContent: "center",
-  }, 
+  },
   disabledText: {
     color: "grey",
   },

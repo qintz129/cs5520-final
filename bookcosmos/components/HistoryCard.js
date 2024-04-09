@@ -13,7 +13,6 @@ export default function HistoryCard({
   exchangeId,
   isReviewed,
 }) {
-
   // Function to handle the review button
   const handleReview = () => {
     navigation.navigate("Add A Review", {
