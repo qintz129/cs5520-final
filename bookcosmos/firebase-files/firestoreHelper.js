@@ -195,7 +195,7 @@ export async function fetchBooksAtLocation(location, currentUserUid) {
   try {
     console.log("Fetching books at location:", location);
     const { latitude, longitude } = location;
-    const radius = 0.01;
+    const radius = 0.000001;
 
     // Define the query to fetch books within a certain radius
     const minLatitude = latitude - radius;

@@ -12,17 +12,33 @@ import { doc, getDoc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
+import * as Location from "expo-location";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState(null);
+
+  // Get the user's location
+  useEffect(() => {
+    async function getUserLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync();
+      setUserLocation(location.coords);
+      setLoading(false);
+    }
+    getUserLocation();
+  }, [userLocation]);
 
   useEffect(() => {
     const fetchBooks = () => {
       try {
-        setLoading(true);
         const booksCollection = collection(database, "books");
         let booksQuery = booksCollection;
 
