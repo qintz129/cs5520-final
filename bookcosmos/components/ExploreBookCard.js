@@ -62,9 +62,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3.84,
-    elevation: 5,
+    shadowOpacity: 0.1,  
+    shadowRadius: 2,       
   },
   cover: {
     width: "100%",
@@ -72,7 +71,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     borderRadius: 5,
-    overflow: "hidden",
+    overflow: "hidden",  
+    shadowColor: "#000",
   },
   title: {
     fontSize: 16,

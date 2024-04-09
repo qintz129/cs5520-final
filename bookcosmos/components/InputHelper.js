@@ -104,7 +104,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   multiline: {
-    borderWidth: 1.5,
+    borderWidth: 1.5, 
+    fontSize: 16,
     borderColor: "gray",
     borderRadius: 10,
     padding: 10,
