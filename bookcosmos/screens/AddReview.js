@@ -1,9 +1,9 @@
 import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
-import CustomButton from "../components/CustomButton"; 
+import CustomButton from "../components/CustomButton";
 import { MultilineInput } from "../components/InputHelper";
-import { useRoute} from "@react-navigation/native";
+import { useRoute } from "@react-navigation/native";
 import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { getDoc, doc } from "firebase/firestore";
@@ -78,11 +78,11 @@ export default function AddReview({ navigation }) {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Leave a Review for Your Book Partner</Text>
-      <AirbnbRating key={key} onFinishRating={ratingCompleted} /> 
-      <MultilineInput 
+      <AirbnbRating key={key} onFinishRating={ratingCompleted} />
+      <MultilineInput
         title="Comment"
         value={comment}
-        onChangeText={setComment}  
+        onChangeText={setComment}
         placeholder="Write your comment here..."
       />
       <View style={styles.buttonContainer}>

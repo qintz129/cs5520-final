@@ -14,10 +14,10 @@ import AddReview from "./screens/AddReview";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
-import CustomButton from "./components/CustomButton";  
-import { ActionSheetProvider } from '@expo/react-native-action-sheet';
-import { UserProvider } from "./hooks/UserContext"; 
-
+import CustomButton from "./components/CustomButton";
+import { ActionSheetProvider } from "@expo/react-native-action-sheet";
+import { UserProvider } from "./hooks/UserContext";
+import Map from "./screens/Map";
 
 const Stack = createNativeStackNavigator();
 export default function App() {
@@ -86,26 +86,27 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
+      <Stack.Screen name="Map" component={Map} />
     </>
   );
 
-  return ( 
-  <UserProvider> 
-    <ActionSheetProvider>
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName="Signup"
-          screenOptions={{
-            headerBackTitleVisible: false,
-          }}
-        >
-          {userLoggedIn ? AppStack : AuthStack}
-        </Stack.Navigator>
-      </NavigationContainer>
-    </GestureHandlerRootView>  
-    </ActionSheetProvider>
-  </UserProvider>
+  return (
+    <UserProvider>
+      <ActionSheetProvider>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <NavigationContainer>
+            <Stack.Navigator
+              initialRouteName="Signup"
+              screenOptions={{
+                headerBackTitleVisible: false,
+              }}
+            >
+              {userLoggedIn ? AppStack : AuthStack}
+            </Stack.Navigator>
+          </NavigationContainer>
+        </GestureHandlerRootView>
+      </ActionSheetProvider>
+    </UserProvider>
   );
 }
 

@@ -8,9 +8,9 @@ import {
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
-import { doc, getDoc} from "firebase/firestore";
+import { doc, getDoc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
-import { CustomInput } from "../components/InputHelper";  
+import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
 
 // Explore component to display the books available for exchange
@@ -65,7 +65,7 @@ export default function Explore({ navigation }) {
 
     return () => unsubscribe();
   }, [searchKeyword]);
- 
+
   // Function to get the owner name from the database by ownerId
   const getOwnerName = async (ownerId) => {
     try {
@@ -98,13 +98,9 @@ export default function Explore({ navigation }) {
           {books.length > 0 && (
             <FlatList
               data={books}
-              renderItem={({ item }) => ( 
-                <ExploreBookCard
-                  item={item}
-                />
-              )}
-              keyExtractor={item => item.id.toString()}
-              numColumns={2} 
+              renderItem={({ item }) => <ExploreBookCard item={item} />}
+              keyExtractor={(item) => item.id.toString()}
+              numColumns={2}
             />
           )}
         </>
@@ -118,9 +114,8 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   search: {
-    padding: 10, 
-    width: "100%", 
-    alignItems: "center"
-
+    padding: 10,
+    width: "100%",
+    alignItems: "center",
   },
 });

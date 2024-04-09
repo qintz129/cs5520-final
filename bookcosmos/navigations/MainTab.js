@@ -6,6 +6,9 @@ import Profile from "../screens/Profile";
 import { Ionicons } from "@expo/vector-icons";
 import { Foundation } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome5 } from "@expo/vector-icons";
+import CustomButton from "../components/CustomButton";
+import { StyleSheet } from "react-native";
 
 const Tab = createBottomTabNavigator();
 
@@ -19,6 +22,14 @@ export default function MainTab({ navigation }) {
         options={{
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search" size={size} color={color} />
+          ),
+          headerRight: () => (
+            <CustomButton
+              onPress={() => navigation.navigate("Map")}
+              customStyle={styles.headerRightButton}
+            >
+              <FontAwesome5 name="map-marked-alt" size={24} color="black" />
+            </CustomButton>
           ),
         }}
       />
@@ -52,3 +63,9 @@ export default function MainTab({ navigation }) {
     </Tab.Navigator>
   );
 }
+
+const styles = StyleSheet.create({
+  headerRightButton: {
+    marginRight: 15,
+  },
+});

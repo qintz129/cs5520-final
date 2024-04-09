@@ -31,8 +31,8 @@ export default function RequestCard({
       ownerId: owner,
     });
   };
-  
-  // Function to handle the cancel and reject button, 
+
+  // Function to handle the cancel and reject button,
   const handleCancelAndReject = async () => {
     try {
       // Wait for each delete operation to complete
@@ -54,7 +54,7 @@ export default function RequestCard({
       // Handle the error, possibly update UI to show an error message
     }
   };
- 
+
   // Function to handle the accept button
   const handleAccept = async () => {
     try {
@@ -92,10 +92,10 @@ export default function RequestCard({
       // Handle the error, possibly update UI to show an error message
     }
   };
-  
+
   // Function to handle the complete button
   const handleComplete = async () => {
-    try { 
+    try {
       // if the status is accepted, update the status to one user completed
       if (status === "accepted") {
         const updates = {
@@ -118,8 +118,8 @@ export default function RequestCard({
         );
 
         setUpdateTrigger((prev) => prev + 1);
-        setStatus("one user completed"); 
-      // if the status is one user completed, update the status to completed
+        setStatus("one user completed");
+        // if the status is one user completed, update the status to completed
       } else if (status === "one user completed") {
         const updates = {
           status: "completed",
