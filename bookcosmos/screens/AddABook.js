@@ -17,7 +17,8 @@ import { CustomInput, MultilineInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import ImageManager from "../components/ImageManager";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import * as Location from "expo-location";
+import * as Location from "expo-location"; 
+import { googleApi } from "@env";
 
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
@@ -200,6 +201,27 @@ export default function AddABook({ navigation, route }) {
     setAuthor("");
     setDescription("");
     Keyboard.dismiss();
+  }; 
+
+  const fetchBookDescription = async (name, author) => {
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(name)}+inauthor:${encodeURIComponent(author)}&key=${googleApi}`;
+    console.log('Fetching book details from:', url); 
+    console.log('name:', name); 
+    console.log('author:', author);
+    try {
+      const response = await fetch(url);
+      const json = await response.json();
+  
+      if (json.totalItems > 0) {
+        // Assuming you want to open the first result
+        const description = json.items[0].volumeInfo.description; 
+        setDescription(description);
+      } else {
+        Alert.alert( "Sorry, no books found with the given name and author.");
+      }
+    } catch (error) {
+      console.error('Failed to fetch book details:', error);
+    }
   };
 
   return (
@@ -210,29 +232,33 @@ export default function AddABook({ navigation, route }) {
         keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
       >
         <ScrollView>
-          <View style={styles.inner}>
-            <ImageManager
-              receiveImageUri={receiveImageUri}
-              receiveNewImage={receiveNewImage}
-              initialImageUri={downloadUri}
-              mode="book"
-            />
-            <CustomInput
-              title="Book Name*"
-              value={bookName}
-              onChangeText={setBookName}
-            />
-            <CustomInput
-              title="Author*"
-              value={author}
-              onChangeText={setAuthor}
-            />
-            <MultilineInput
-              title="Description"
-              onChangeText={setDescription}
-              value={description}
-              placeholder="Write your book description here..."
-            />
+          <View style={styles.inputContainer}>
+              <ImageManager
+                receiveImageUri={receiveImageUri}
+                receiveNewImage={receiveNewImage}
+                initialImageUri={downloadUri}
+                mode="book"
+              />
+              <CustomInput
+                title="Book Name*"
+                value={bookName}
+                onChangeText={setBookName}
+              />
+              <CustomInput
+                title="Author*"
+                value={author}
+                onChangeText={setAuthor}
+              />
+              <MultilineInput
+                title="Description"
+                onChangeText={setDescription}
+                value={description}
+                placeholder="Write your book description here..."
+              />   
+            </View>
+            <CustomButton onPress={() => fetchBookDescription(bookName, author)} customStyle={styles.fetchButton}> 
+              <Text>Fetch Description</Text> 
+            </CustomButton>
             <View style={styles.buttonContainer}>
               <CustomButton onPress={handleClear}>
                 <Text>Clear</Text>
@@ -241,7 +267,6 @@ export default function AddABook({ navigation, route }) {
                 <Text>Save</Text>
               </CustomButton>
             </View>
-          </View>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -252,7 +277,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  inner: {
+  inputContainer: {
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "center",
@@ -263,5 +288,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "100%",
     marginTop: 20,
+  }, 
+  fetchButton: {  
+    alignItems: "flex-start", 
+    marginLeft: 20
   },
 });
