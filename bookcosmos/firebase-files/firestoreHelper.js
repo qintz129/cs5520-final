@@ -192,37 +192,38 @@ export async function fetchExtra(doc) {
 }
 
 export async function fetchBooksAtLocation(location, currentUserUid) {
-  try {
-    console.log("Fetching books at location:", location);
-    const { latitude, longitude } = location;
-    const radius = 0.000001;
+  console.log("Fetching books at location:", location);
+  const { latitude, longitude } = location;
+  const radius = 0.0001;
 
-    // Define the query to fetch books within a certain radius
-    const minLatitude = latitude - radius;
-    const maxLatitude = latitude + radius;
-    const minLongitude = longitude - radius;
-    const maxLongitude = longitude + radius;
+  // Define the query to fetch books within a certain radius
+  const minLatitude = latitude - radius;
+  const maxLatitude = latitude + radius;
+  const minLongitude = longitude - radius;
+  const maxLongitude = longitude + radius;
 
-    const q = query(
-      collection(database, "books"),
-      where("location.latitude", ">=", minLatitude),
-      where("location.latitude", "<=", maxLatitude),
-      where("location.longitude", ">=", minLongitude),
-      where("location.longitude", "<=", maxLongitude),
-      where("owner", "!=", currentUserUid)
-    );
+  const q = query(
+    collection(database, "books"),
+    where("location.latitude", ">=", minLatitude),
+    where("location.latitude", "<=", maxLatitude),
+    where("location.longitude", ">=", minLongitude),
+    where("location.longitude", "<=", maxLongitude),
+    where("owner", "!=", currentUserUid),
+    where("bookStatus", "==", "free")
+  );
 
-    // Execute the query
-    const querySnapshot = await getDocs(q);
+  // Execute the query
+  const querySnapshot = await getDocs(q);
 
-    // Extract the book data from the query snapshot
-    const books = [];
-    querySnapshot.forEach((doc) => {
-      books.push({ id: doc.id, ...doc.data() });
-    });
-    console.log("Fetched books:", books);
+  // Extract the book data from the query snapshot
+  const books = [];
+  querySnapshot.forEach((doc) => {
+    books.push({ id: doc.id, ...doc.data() });
+  });
+  console.log("Fetched books:", books);
+  if (books.length === 0) {
+    return null;
+  } else {
     return books;
-  } catch (error) {
-    console.error("Error fetching books at location:", error);
   }
 }

@@ -36,7 +36,7 @@ export default function Map() {
       setLoading(false);
     }
     getUserLocation();
-  }, [userLocation]);
+  }, []);
 
   // Get books' locations
   useEffect(() => {
@@ -48,19 +48,12 @@ export default function Map() {
             if (book.location === undefined) return null;
             const latitude = book.location.latitude;
             const longitude = book.location.longitude;
-            const booksCount = (
-              await fetchBooksAtLocation(
-                { latitude, longitude },
-                auth.currentUser.uid
-              )
-            ).length;
-            const booksAtLocation = await fetchBooksAtLocation(
-              {
-                latitude,
-                longitude,
-              },
+            const booksLocation = await fetchBooksAtLocation(
+              { latitude, longitude },
               auth.currentUser.uid
             );
+            const booksCount = booksLocation ? booksLocation.length : 0;
+            const booksAtLocation = booksLocation ? booksLocation : null;
             return {
               latitude,
               longitude,
@@ -149,30 +142,33 @@ export default function Map() {
             }
             onRegionChange={handleRegionChange}
           >
-            {booksLocations.map((location, index) => (
-              <Marker
-                key={index}
-                coordinate={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                }}
-                onPress={() => handleMarkerPress(location)}
-              >
-                <Feather
-                  name="book-open"
-                  size={24}
-                  color="black"
-                  style={styles.bookIcon}
-                />
-                {zoomLevel < 0.5 && (
-                  <Text style={styles.markerText}>
-                    {location.booksCount === 1
-                      ? "1 Book"
-                      : `${location.booksCount} Books`}
-                  </Text>
-                )}
-              </Marker>
-            ))}
+            {booksLocations.map(
+              (location, index) =>
+                location.booksCount > 0 && (
+                  <Marker
+                    key={index}
+                    coordinate={{
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                    }}
+                    onPress={() => handleMarkerPress(location)}
+                  >
+                    <Feather
+                      name="book-open"
+                      size={24}
+                      color="black"
+                      style={styles.bookIcon}
+                    />
+                    {zoomLevel < 0.5 && (
+                      <Text style={styles.markerText}>
+                        {location.booksCount === 1
+                          ? "1 Book"
+                          : `${location.booksCount} Books`}
+                      </Text>
+                    )}
+                  </Marker>
+                )
+            )}
           </MapView>
         )
       )}

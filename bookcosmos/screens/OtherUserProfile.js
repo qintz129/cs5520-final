@@ -1,50 +1,55 @@
-import { StyleSheet, Text, View, Image} from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import CustomButton from "../components/CustomButton";
 import Library from "./Library";
 import Reviews from "./Reviews";
-import { Ionicons } from "@expo/vector-icons"; 
-import { onSnapshot, doc} from "firebase/firestore"; 
-import { database, storage} from "../firebase-files/firebaseSetup"; 
-import { ref, getDownloadURL} from "firebase/storage";
+import { Ionicons } from "@expo/vector-icons";
+import { onSnapshot, doc } from "firebase/firestore";
+import { database, storage } from "../firebase-files/firebaseSetup";
+import { ref, getDownloadURL } from "firebase/storage";
 
 // OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
-  const { ownerId, ownerName } = route.params; 
+  const { ownerId, ownerName } = route.params;
   const [userAvatar, setUserAvatar] = useState(null);
 
   useEffect(() => {
     navigation.setOptions({
       title: ownerName,
     });
-  }, [ownerName]); 
+  }, [ownerName]);
 
-  useEffect(() => { 
-      const unsubscribe = onSnapshot(doc(database, "users", ownerId), (doc) => {
+  useEffect(() => {
+    const unsubscribe = onSnapshot(
+      doc(database, "users", ownerId),
+      (doc) => {
         if (doc.exists()) {
-          const userData = doc.data(); 
+          const userData = doc.data();
           if (userData.image) {
             const imageRef = ref(storage, userData.image);
-            getDownloadURL(imageRef).then((url) => {
-              setUserAvatar(url);
-            }).catch((error) => {
-              console.log(error);
-            });
+            getDownloadURL(imageRef)
+              .then((url) => {
+                setUserAvatar(url);
+              })
+              .catch((error) => {
+                console.log(error);
+              });
           }
         } else {
           console.log("No such document!");
         }
-      }, (err) => {
+      },
+      (err) => {
         console.log(err);
-      });
-      return () => unsubscribe();
+      }
+    );
+    return () => unsubscribe();
   }, [ownerId]);
-
 
   return (
     <View style={styles.container}>
-      <View style={styles.userAvatar}> 
+      <View style={styles.userAvatar}>
         {userAvatar ? (
           <Image source={{ uri: userAvatar }} style={styles.Image} />
         ) : (
@@ -68,7 +73,7 @@ export default function OtherUserProfile({ navigation, route }) {
   );
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -80,7 +85,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginVertical: 10,
-  }, 
+  },
   Image: {
     width: 100,
     height: 100,
