@@ -52,7 +52,12 @@ export default function Map() {
               latitude,
               longitude,
             });
-            return { latitude, longitude, booksCount, booksAtLocation };
+            return {
+              latitude,
+              longitude,
+              booksCount,
+              booksAtLocation,
+            };
           })
         );
         setBooksLocations(locations);
@@ -75,7 +80,10 @@ export default function Map() {
 
   // Handle press book
   function handlePressBook(item) {
-    navigation.navigate("Book Detail", { bookId: item.id });
+    navigation.navigate("Book Detail", {
+      bookId: item.id,
+      ownerId: item.owner,
+    });
   }
 
   return (
