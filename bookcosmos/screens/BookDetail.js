@@ -111,7 +111,12 @@ export default function BookDetail({ route, navigation }) {
     <View style={styles.container}>
       <Text style={styles.title}>{bookName}</Text>
       <Text style={styles.author}>{author}</Text>
-      <Text>{description}</Text>  
+      <Text 
+        numberOfLines={10} // Display only 10 lines of the description 
+        ellipsizeMode="tail" // Add ellipsis at the end of the text if it is truncated
+      >  
+        {description} 
+      </Text>  
       <View>
         <CustomButton
           onPress={() =>
@@ -165,18 +170,6 @@ const styles = StyleSheet.create({
   author: { 
     marginBottom: 10,  
     fontSize: 20
-  },
-  button: {
-    backgroundColor: '#ff5a5f', // Airbnb红色
-    padding: 10,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  buttonText: {
-    color: 'white',
-    fontSize: 16,
-    fontWeight: 'bold',
   },
   goodReads: {
     marginTop: 20,
