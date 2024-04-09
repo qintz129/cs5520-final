@@ -5,6 +5,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
 import { storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
+import { Entypo } from "@expo/vector-icons";
 
 export default function ExploreBookCard({ item }) {
   const navigation = useNavigation();
@@ -31,6 +32,7 @@ export default function ExploreBookCard({ item }) {
         navigation.navigate("Book Detail", {
           bookId: item.id,
           ownerId: item.owner,
+          distance: item.distance,
         })
       }
     >
@@ -47,6 +49,10 @@ export default function ExploreBookCard({ item }) {
         </View>
         <Text style={styles.title}>{item.bookName}</Text>
         <Text style={styles.text}>{item.author}</Text>
+        <View style={styles.distanceContainer}>
+          <Entypo name="location-pin" size={24} color="black" />
+          <Text style={styles.text}>{item.distance} km</Text>
+        </View>
       </View>
     </CustomButton>
   );
@@ -83,6 +89,12 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 14,
     textAlign: "center",
+    padding: 5,
+  },
+  distanceContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 5,
   },
 });

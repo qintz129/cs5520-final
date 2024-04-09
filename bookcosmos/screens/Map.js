@@ -11,6 +11,8 @@ import {
 } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
 import { useNavigation } from "@react-navigation/native";
+import { auth } from "../firebase-files/firebaseSetup";
+import { Entypo } from "@expo/vector-icons";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -19,6 +21,7 @@ export default function Map() {
   const [zoomLevel, setZoomLevel] = useState(0);
   const [booksLocations, setBooksLocations] = useState([]);
   const [selectedBooks, setSelectedBooks] = useState(null);
+  const [selectedBooksDistance, setSelectedBooksDistance] = useState(null);
 
   // Get user's location
   useEffect(() => {
@@ -33,7 +36,7 @@ export default function Map() {
       setLoading(false);
     }
     getUserLocation();
-  }, [userLocation]);
+  }, []);
 
   // Get books' locations
   useEffect(() => {
@@ -45,13 +48,12 @@ export default function Map() {
             if (book.location === undefined) return null;
             const latitude = book.location.latitude;
             const longitude = book.location.longitude;
-            const booksCount = (
-              await fetchBooksAtLocation({ latitude, longitude })
-            ).length;
-            const booksAtLocation = await fetchBooksAtLocation({
-              latitude,
-              longitude,
-            });
+            const booksLocation = await fetchBooksAtLocation(
+              { latitude, longitude },
+              auth.currentUser.uid
+            );
+            const booksCount = booksLocation ? booksLocation.length : 0;
+            const booksAtLocation = booksLocation ? booksLocation : null;
             return {
               latitude,
               longitude,
@@ -75,16 +77,50 @@ export default function Map() {
 
   // Handle marker press
   function handleMarkerPress(location) {
+    const distance = calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      location.latitude,
+      location.longitude
+    );
+    setSelectedBooksDistance(distance);
     setSelectedBooks(location.booksAtLocation);
   }
 
   // Handle press book
   function handlePressBook(item) {
+    const distance = calculateDistance(
+      userLocation.latitude,
+      userLocation.longitude,
+      item.location.latitude,
+      item.location.longitude
+    );
     navigation.navigate("Book Detail", {
       bookId: item.id,
       ownerId: item.owner,
+      distance: distance,
     });
   }
+
+  // Function to calculate the distance between two locations using Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
+    return distance.toFixed(1);
+  };
+
+  const deg2rad = (deg) => {
+    return deg * (Math.PI / 180);
+  };
 
   return (
     <>
@@ -106,36 +142,43 @@ export default function Map() {
             }
             onRegionChange={handleRegionChange}
           >
-            {booksLocations.map((location, index) => (
-              <Marker
-                key={index}
-                coordinate={{
-                  latitude: location.latitude,
-                  longitude: location.longitude,
-                }}
-                onPress={() => handleMarkerPress(location)}
-              >
-                <Feather
-                  name="book-open"
-                  size={24}
-                  color="black"
-                  style={styles.bookIcon}
-                />
-                {zoomLevel < 0.5 && (
-                  <Text style={styles.markerText}>
-                    {location.booksCount === 1
-                      ? "1 Book"
-                      : `${location.booksCount} Books`}
-                  </Text>
-                )}
-              </Marker>
-            ))}
+            {booksLocations.map(
+              (location, index) =>
+                location.booksCount > 0 && (
+                  <Marker
+                    key={index}
+                    coordinate={{
+                      latitude: location.latitude,
+                      longitude: location.longitude,
+                    }}
+                    onPress={() => handleMarkerPress(location)}
+                  >
+                    <Feather
+                      name="book-open"
+                      size={24}
+                      color="black"
+                      style={styles.bookIcon}
+                    />
+                    {zoomLevel < 0.5 && (
+                      <Text style={styles.markerText}>
+                        {location.booksCount === 1
+                          ? "1 Book"
+                          : `${location.booksCount} Books`}
+                      </Text>
+                    )}
+                  </Marker>
+                )
+            )}
           </MapView>
         )
       )}
       {selectedBooks && (
         <View style={styles.bottomContainer}>
           <Text style={styles.header}>Books at this location:</Text>
+          <View style={styles.distanceContainer}>
+            <Entypo name="location-pin" size={24} color="black" />
+            <Text style={styles.distance}>{selectedBooksDistance} km</Text>
+          </View>
           <FlatList
             data={selectedBooks}
             renderItem={({ item }) => (
@@ -161,6 +204,11 @@ const styles = StyleSheet.create({
   },
   bookIcon: {
     marginLeft: 16,
+  },
+  distanceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 10,
   },
   markerText: {
     fontWeight: "bold",
