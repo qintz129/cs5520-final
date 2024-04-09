@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
   userAvatar: {
     alignItems: "center",
     marginVertical: 5,
+    rowGap: 15,
   },
   tabs: {
     flexDirection: "row",
