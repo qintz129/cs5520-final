@@ -7,6 +7,7 @@ import ChooseBookModal from "../components/ChooseBookModal";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase-files/firebaseSetup";
+import { Entypo } from "@expo/vector-icons";
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
@@ -18,7 +19,7 @@ export default function BookDetail({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [bookStatus, setBookStatus] = useState("free");
-  const { bookId, ownerId } = route.params;
+  const { bookId, ownerId, distance } = route.params;
   const [rating, setRating] = useState(0);
   const [isLoading, setLoading] = useState(false);
   const [bookAvatar, setBookAvatar] = useState(null);
@@ -144,12 +145,17 @@ export default function BookDetail({ route, navigation }) {
           <Text style={styles.title}>{bookName}</Text>
           <Text style={styles.author}>{author}</Text>
           <Text>{description}</Text>
+          <View style={styles.distanceContainer}>
+            <Entypo name="location-pin" size={24} color="black" />
+            <Text>{distance} km</Text>
+          </View>
           <View>
             <CustomButton
               onPress={() =>
                 navigation.navigate("Other User Profile", {
                   ownerId: ownerId,
                   ownerName: ownerName,
+                  rating: rating,
                 })
               }
             >
@@ -203,6 +209,11 @@ const styles = StyleSheet.create({
   author: {
     marginBottom: 10,
     fontSize: 20,
+  },
+  distanceContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 10,
   },
   button: {
     backgroundColor: '#ff5a5f', // Airbnb红色

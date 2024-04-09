@@ -12,17 +12,33 @@ import { doc, getDoc } from "firebase/firestore";
 import CustomButton from "../components/CustomButton";
 import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
+import * as Location from "expo-location";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
+  const [userLocation, setUserLocation] = useState(null);
+
+  // Get the user's location
+  useEffect(() => {
+    async function getUserLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync();
+      setUserLocation(location.coords);
+      setLoading(false);
+    }
+    getUserLocation();
+  }, [userLocation]);
 
   useEffect(() => {
     const fetchBooks = () => {
       try {
-        setLoading(true);
         const booksCollection = collection(database, "books");
         let booksQuery = booksCollection;
 
@@ -48,11 +64,23 @@ export default function Explore({ navigation }) {
 
           const promises = fetchedBooks.map(async (book) => {
             const ownerName = await getOwnerName(book.owner);
-            return { ...book, ownerName };
+            if (!userLocation)
+              return { ...book, ownerName, distance: "loading..." };
+            const distance = calculateDistance(
+              userLocation.latitude,
+              userLocation.longitude,
+              book.location.latitude,
+              book.location.longitude
+            );
+
+            return { ...book, ownerName, distance };
           });
 
           const booksWithOwnerName = await Promise.all(promises);
-          setBooks(booksWithOwnerName);
+          const sortedBooks = booksWithOwnerName.sort(
+            (a, b) => a.distance - b.distance
+          );
+          setBooks(sortedBooks);
           setLoading(false);
         });
         return unsubscribe;
@@ -64,7 +92,27 @@ export default function Explore({ navigation }) {
     const unsubscribe = fetchBooks();
 
     return () => unsubscribe();
-  }, [searchKeyword]);
+  }, [searchKeyword, userLocation]);
+
+  // Function to calculate the distance between two locations using Haversine formula
+  const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of the earth in km
+    const dLat = deg2rad(lat2 - lat1);
+    const dLon = deg2rad(lon2 - lon1);
+    const a =
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(deg2rad(lat1)) *
+        Math.cos(deg2rad(lat2)) *
+        Math.sin(dLon / 2) *
+        Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    const distance = R * c; // Distance in km
+    return distance.toFixed(1);
+  };
+
+  const deg2rad = (deg) => {
+    return deg * (Math.PI / 180);
+  };
 
   // Function to get the owner name from the database by ownerId
   const getOwnerName = async (ownerId) => {
