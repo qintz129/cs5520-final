@@ -11,7 +11,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 // OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
-  const { ownerId, ownerName } = route.params;
+  const { ownerId, ownerName, rating } = route.params;
   const [userAvatar, setUserAvatar] = useState(null);
 
   useEffect(() => {
@@ -55,6 +55,7 @@ export default function OtherUserProfile({ navigation, route }) {
         ) : (
           <Ionicons name="person-circle" size={100} color="black" />
         )}
+        {rating > 0 && <Text>Rating: {rating}</Text>}
       </View>
       <View style={styles.tabs}>
         <CustomButton onPress={() => setActiveTab("library")}>

@@ -155,6 +155,7 @@ export default function BookDetail({ route, navigation }) {
                 navigation.navigate("Other User Profile", {
                   ownerId: ownerId,
                   ownerName: ownerName,
+                  rating: rating,
                 })
               }
             >
