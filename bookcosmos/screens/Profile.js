@@ -1,19 +1,19 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect} from "react";
 import CustomButton from "../components/CustomButton";
 import Library from "./Library";
 import Reviews from "./Reviews";
-import { Ionicons } from "@expo/vector-icons";
-import { useUser } from "../hooks/UserContext";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, database, storage } from "../firebase-files/firebaseSetup";
+import { Ionicons } from "@expo/vector-icons"; 
+import { useUser } from "../hooks/UserContext"; 
+import { ref, uploadBytes, getDownloadURL} from "firebase/storage";   
+import { auth, database, storage} from "../firebase-files/firebaseSetup";
 
 // Profile component to display the profile of the user
-export default function Profile({ navigation }) {
-  const { userInfo } = useUser();
-  const [activeTab, setActiveTab] = useState("library");
-  const [imageUri, setImageUri] = useState(null);
-  const [downloadUri, setDownloadUri] = useState(null);
+export default function Profile({ navigation }) { 
+  const {userInfo} = useUser();
+  const [activeTab, setActiveTab] = useState("library"); 
+  const [imageUri, setImageUri] = useState(null);  
+  const [downloadUri, setDownloadUri] = useState(null);  
 
   useEffect(() => {
     setImageUri(userInfo.imageUri);
@@ -24,7 +24,7 @@ export default function Profile({ navigation }) {
       const imageRef = ref(storage, imageUri);
 
       try {
-        const url = await getDownloadURL(imageRef);
+        const url = await getDownloadURL(imageRef); 
         setDownloadUri(url);
       } catch (error) {
         console.log(error);
@@ -34,19 +34,18 @@ export default function Profile({ navigation }) {
     if (imageUri) {
       fetchImage();
     }
-  }, [imageUri]);
-  console.log(userInfo);
-  console.log("imageUri", imageUri);
-  console.log("downloadUri", downloadUri);
+  }, [imageUri]);  
+  
+  console.log(userInfo);  
   return (
     <View style={styles.container}>
-      <CustomButton onPress={() => navigation.navigate("User Info")}>
+      <CustomButton onPress={() => navigation.navigate("User Info")}> 
         <View style={styles.userAvatar}>
-          {downloadUri ? (
-            <Image source={{ uri: downloadUri }} style={styles.image} />
-          ) : (
-            <Ionicons name="person-circle" size={100} color="black" />
-          )}
+        {downloadUri? (  
+          <Image source={{ uri: downloadUri }} style={styles.image} />
+        ): ( 
+        <Ionicons name="person-circle" size={100} color="black" /> 
+          )} 
         </View>
       </CustomButton>
       <View style={styles.addABook}>
@@ -87,15 +86,15 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     marginVertical: 10,
-  },
-  image: {
+  }, 
+  image: { 
     width: 100,
     height: 100,
-    borderRadius: 50,
-  },
+    borderRadius: 50, 
+  }, 
   container: {
     flex: 1,
-  },
+  }, 
   userAvatar: {
     alignItems: "center",
     marginVertical: 5,

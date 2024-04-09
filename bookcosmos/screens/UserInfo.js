@@ -12,7 +12,8 @@ import {
 import { updateToDB } from "../firebase-files/firestoreHelper";
 import ImageManager from "../components/ImageManager";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useUser } from "../hooks/UserContext";
+import { useUser } from "../hooks/UserContext"; 
+
 
 // UserInfo component to display the user information
 export default function UserInfo({ navigation }) {
@@ -25,7 +26,8 @@ export default function UserInfo({ navigation }) {
   const [imageUri, setImageUri] = useState(userInfo.imageUri);
   const [downloadUri, setDownloadUri] = useState(null);
   const [uploadUri, setUploadUri] = useState(null);
-  const [hasNewImage, setHasNewImage] = useState(false);
+  const [hasNewImage, setHasNewImage] = useState(false); 
+  const [location, setLocation] = useState(null); 
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -58,7 +60,7 @@ export default function UserInfo({ navigation }) {
     } catch (err) {
       console.log(err);
     }
-  };
+  }; 
 
   const handleSave = () => {
     Alert.alert(
@@ -188,7 +190,7 @@ export default function UserInfo({ navigation }) {
       </CustomButton>
       <CustomButton onPress={signOutHandler}>
         <Text>Log out</Text>
-      </CustomButton>
+      </CustomButton> 
     </View>
   );
 }

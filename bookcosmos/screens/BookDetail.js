@@ -143,7 +143,7 @@ const fetchBookDetails = async (name, author) => {
     const response = await fetch(url);
     const json = await response.json();
 
-    if (json.totalItems > 0) {
+    if (json.totalItems > 0 && json.items[0].volumeInfo.infoLink) {
       // Assuming you want to open the first result
       const bookUrl = json.items[0].volumeInfo.infoLink;
       Linking.openURL(bookUrl);
