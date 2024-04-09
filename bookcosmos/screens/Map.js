@@ -11,6 +11,7 @@ import {
 } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
 import { useNavigation } from "@react-navigation/native";
+import { auth } from "../firebase-files/firebaseSetup";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -46,12 +47,18 @@ export default function Map() {
             const latitude = book.location.latitude;
             const longitude = book.location.longitude;
             const booksCount = (
-              await fetchBooksAtLocation({ latitude, longitude })
+              await fetchBooksAtLocation(
+                { latitude, longitude },
+                auth.currentUser.uid
+              )
             ).length;
-            const booksAtLocation = await fetchBooksAtLocation({
-              latitude,
-              longitude,
-            });
+            const booksAtLocation = await fetchBooksAtLocation(
+              {
+                latitude,
+                longitude,
+              },
+              auth.currentUser.uid
+            );
             return {
               latitude,
               longitude,

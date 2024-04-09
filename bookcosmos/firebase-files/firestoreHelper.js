@@ -191,7 +191,7 @@ export async function fetchExtra(doc) {
   };
 }
 
-export async function fetchBooksAtLocation(location) {
+export async function fetchBooksAtLocation(location, currentUserUid) {
   try {
     console.log("Fetching books at location:", location);
     const { latitude, longitude } = location;
@@ -208,7 +208,8 @@ export async function fetchBooksAtLocation(location) {
       where("location.latitude", ">=", minLatitude),
       where("location.latitude", "<=", maxLatitude),
       where("location.longitude", ">=", minLongitude),
-      where("location.longitude", "<=", maxLongitude)
+      where("location.longitude", "<=", maxLongitude),
+      where("owner", "!=", currentUserUid)
     );
 
     // Execute the query
