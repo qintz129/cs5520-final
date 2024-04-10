@@ -12,7 +12,8 @@ import {
 import { updateToDB } from "../firebase-files/firestoreHelper";
 import ImageManager from "../components/ImageManager";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { useUser } from "../hooks/UserContext"; 
+import { useUser } from "../hooks/UserContext";  
+import ChangePasswordModal from "../components/ChangePasswordModal";
 
 
 // UserInfo component to display the user information
@@ -26,8 +27,8 @@ export default function UserInfo({ navigation }) {
   const [imageUri, setImageUri] = useState(userInfo.imageUri);
   const [downloadUri, setDownloadUri] = useState(null);
   const [uploadUri, setUploadUri] = useState(null);
-  const [hasNewImage, setHasNewImage] = useState(false); 
-  const [location, setLocation] = useState(null); 
+  const [hasNewImage, setHasNewImage] = useState(false);  
+  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     const fetchImage = async () => {
@@ -48,10 +49,6 @@ export default function UserInfo({ navigation }) {
 
   const handleNameChange = (changedText) => {
     setName(changedText);
-  };
-
-  const handlePasswordChange = (changedText) => {
-    setPassword(changedText);
   };
 
   const signOutHandler = async () => {
@@ -166,6 +163,10 @@ export default function UserInfo({ navigation }) {
     } catch (err) {
       console.log(err);
     }
+  } 
+
+  function handlePasswordEdit() {  
+    setIsModalVisible(true);
   }
   // console.log(userInfo);
   return (
@@ -175,22 +176,30 @@ export default function UserInfo({ navigation }) {
         receiveNewImage={receiveNewImage}
         initialImageUri={downloadUri}
         mode="user"
-      />
-      <CustomInput title="Email" value={email} editable={false} />
+      /> 
       <CustomInput title="Name" onChangeText={handleNameChange} value={name} />
+      <CustomInput title="Email" value={email} editable={false} />  
       <CustomPassWordInput
         title="Password"
         value={password}
-        onChangeText={handlePasswordChange}
         secureTextEntry={!passwordVisible}
-        onToggleVisibility={toggleVisibility}
+        onToggleVisibility={toggleVisibility} 
+        editable={false} 
+        editButton={true} 
+        editFunction={handlePasswordEdit}
+      />     
+      <ChangePasswordModal
+        isVisible={isModalVisible}
+        onClose={() => setIsModalVisible(false)}
+        onSave={(newPassword) => setPassword(newPassword)}  
       />
       <CustomButton onPress={handleSave}>
         <Text>Save</Text>
-      </CustomButton>
+      </CustomButton>  
+      <Text>Settings</Text>
       <CustomButton onPress={signOutHandler}>
         <Text>Log out</Text>
-      </CustomButton> 
+      </CustomButton>   
     </View>
   );
 }
@@ -198,6 +207,7 @@ export default function UserInfo({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 20,
-  },
+    paddingHorizontal: 10,  
+    marginRight: 10,
+  }, 
 });

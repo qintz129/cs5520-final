@@ -10,7 +10,7 @@ import UserInfo from "./screens/UserInfo";
 import AddABook from "./screens/AddABook";
 import BookDetail from "./screens/BookDetail";
 import OtherUserProfile from "./screens/OtherUserProfile";
-import AddReview from "./screens/AddReview";
+import AddReview from "./screens/AddReview"; 
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
@@ -86,7 +86,7 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
-      <Stack.Screen name="Map" component={Map} />
+      <Stack.Screen name="Map" component={Map} /> 
     </>
   );
 
