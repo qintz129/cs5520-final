@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ActivityIndicator, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Alert, Linking, ActivityIndicator,ScrollView} from "react-native";
 import React, { useState, useEffect } from "react";
 import { doc, getDoc, getDocs, collection } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
@@ -7,7 +7,8 @@ import ChooseBookModal from "../components/ChooseBookModal";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase-files/firebaseSetup";
-import { Entypo } from "@expo/vector-icons";
+import { Entypo } from "@expo/vector-icons"; 
+import { googleApi } from "@env";
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
@@ -24,6 +25,7 @@ export default function BookDetail({ route, navigation }) {
   const [isLoading, setLoading] = useState(false);
   const [bookAvatar, setBookAvatar] = useState(null);
 
+  
   useEffect(() => {
     let bookData;
     // Fetch the book data from the database by bookId
@@ -129,10 +131,34 @@ export default function BookDetail({ route, navigation }) {
           console.error("Failed to load image:", error);
         });
     }
-  }, [bookImageURI]);
+  }, [bookImageURI]); 
+
+
+
+
+const fetchBookDetails = async (name, author) => {
+  const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(name)}+inauthor:${encodeURIComponent(author)}&key=${googleApi}`;
+  console.log('Fetching book details from:', url);
+  try {
+    const response = await fetch(url);
+    const json = await response.json();
+
+    if (json.totalItems > 0 && json.items[0].volumeInfo.infoLink) {
+      // Assuming you want to open the first result
+      const bookUrl = json.items[0].volumeInfo.infoLink;
+      Linking.openURL(bookUrl);
+    } else {
+      Alert.alert( "Sorry, no books found with the given name and author.");
+    }
+  } catch (error) {
+    console.error('Failed to fetch book details:', error);
+  }
+};
+
 
   return (
-    <>
+    <View> 
+      <ScrollView>
       {isLoading ? (
         <ActivityIndicator size="large" color="#0000ff" />
       ) : (
@@ -141,14 +167,14 @@ export default function BookDetail({ route, navigation }) {
             <Image source={{ uri: bookAvatar }} style={styles.image} />
           ) : (
             <AntDesign name="picture" size={50} color="grey" />
-          )}
-          <Text style={styles.title}>{bookName}</Text>
-          <Text style={styles.author}>{author}</Text>
-          <Text>{description}</Text>
+          )} 
           <View style={styles.distanceContainer}>
             <Entypo name="location-pin" size={24} color="black" />
             <Text>{distance} km</Text>
           </View>
+          <Text style={styles.title}>{bookName}</Text>
+          <Text style={styles.author}>{author}</Text>
+          <Text>{description}</Text>
           <View>
             <CustomButton
               onPress={() =>
@@ -163,9 +189,9 @@ export default function BookDetail({ route, navigation }) {
               {rating > 0 && <Text>Rating: {rating}</Text>}
             </CustomButton>
           </View>
-          <View style={styles.goodReads}>
-            <CustomButton>
-              <Text>See more information from Goodreads</Text>
+          <View style={styles.googleBooks}>
+            <CustomButton onPress={() => fetchBookDetails(bookName, author)}>
+              <Text>See more information from Google Books</Text>
             </CustomButton>
           </View>
           <View style={styles.buttonContainer}>
@@ -186,8 +212,9 @@ export default function BookDetail({ route, navigation }) {
             setRequestSent={setRequestSent}
           />
         </View>
-      )}
-    </>
+      )} 
+      </ScrollView>
+    </View>
   );
 }
 
@@ -198,7 +225,7 @@ const styles = StyleSheet.create({
   },
   image: {
     width: 200,
-    height: 200,
+    height: 250,
     borderRadius: 10,
   },
   title: {
@@ -215,19 +242,12 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginTop: 10,
   },
-  button: {
-    backgroundColor: "#ff5a5f", // Airbnb红色
-    padding: 10,
-    borderRadius: 5,
-    alignItems: "center",
-    marginTop: 10,
-  },
   buttonText: {
-    color: "white",
+    color: 'white',
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: 'bold',
   },
-  goodReads: {
+  googleBooks: {
     marginTop: 20,
   },
   buttonContainer: {

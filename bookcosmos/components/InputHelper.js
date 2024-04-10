@@ -1,7 +1,8 @@
 import { StyleSheet, TextInput, View, Text } from "react-native";
 import CustomButton from "./CustomButton";
 import React from "react";
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons"; 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 // CustomInput component to achieve the input for all screens
 export function CustomInput({
@@ -9,11 +10,22 @@ export function CustomInput({
   onChangeText,
   value,
   placeholder = "",
-  editable = true,
+  editable = true,  
+  pressable = false,
+  fetch = false, 
+  fetchFunction
 }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{title}</Text>
+      <View style={styles.fetch}>
+          <Text style={[styles.title, fetch && styles.fetchTitle]}>{title}</Text> 
+          {fetch && ( 
+            <CustomButton onPress={fetchFunction} disabled={!pressable} > 
+              <MaterialCommunityIcons name="application-import" size={24} color="black" />
+            </CustomButton>  
+          ) 
+          } 
+        </View>
       <TextInput
         style={[styles.input, !editable && styles.nonEditable]}
         onChangeText={onChangeText}
@@ -37,7 +49,7 @@ export function CustomPassWordInput({
 }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{title}</Text>
+      <Text style={styles.title}>{title}</Text>
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, !editable && styles.nonEditable]}
@@ -67,11 +79,21 @@ export function MultilineInput({
   onChangeText,
   value,
   placeholder = "",
-  editable = true,
+  editable = true, 
+  fetch = false, 
+  fetchFunction
 }) {
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{title}</Text>
+    <View style={styles.container}> 
+    <View style={styles.fetch}>
+        <Text style={[styles.title, fetch && styles.fetchTitle]}>{title}</Text> 
+        {fetch && ( 
+          <CustomButton onPress={fetchFunction}> 
+            <MaterialCommunityIcons name="application-import" size={24} color="black" />
+          </CustomButton>  
+        ) 
+        } 
+      </View>
       <TextInput
         style={[styles.multiline, !editable && styles.nonEditable]}
         onChangeText={onChangeText}
@@ -90,8 +112,12 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     marginTop: 10,
   },
-  text: {
-    fontWeight: "bold",
+  title: {
+    fontWeight: "bold", 
+  }, 
+  fetchTitle: {
+   alignSelf: "center", 
+   marginRight: 10,
   },
   input: {
     height: 40,
@@ -104,13 +130,15 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   multiline: {
-    borderWidth: 1.5,
+    borderWidth: 1.5, 
+    fontSize: 16,
     borderColor: "gray",
     borderRadius: 10,
-    padding: 10,
     marginBottom: 10,
     marginTop: 5,
-    minHeight: 100,
+    minHeight: 150,  
+    paddingHorizontal: 10, 
+    width: "100%",
   },
   inputContainer: {
     flexDirection: "row",
@@ -123,5 +151,8 @@ const styles = StyleSheet.create({
   nonEditable: {
     borderWidth: 0,
     backgroundColor: "#f0f0f0",
+  }, 
+  fetch: {
+    flexDirection: "row",
   },
 });

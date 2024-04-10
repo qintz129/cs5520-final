@@ -5,10 +5,10 @@ import { FlatList } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 import { Feather } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
-import {
+import { 
   fetchBooksAtLocation,
   getAllDocs,
-} from "../firebase-files/firestoreHelper";
+ } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase-files/firebaseSetup";
@@ -155,16 +155,18 @@ export default function Map() {
                   >
                     <Feather
                       name="book-open"
-                      size={24}
-                      color="black"
+                      size={27}
+                      color="black" 
                       style={styles.bookIcon}
                     />
-                    {zoomLevel < 0.5 && (
+                    {zoomLevel < 0.5 && ( 
+                    <View style={styles.markerTextContainer}>
                       <Text style={styles.markerText}>
                         {location.booksCount === 1
                           ? "1 Book"
                           : `${location.booksCount} Books`}
-                      </Text>
+                      </Text> 
+                    </View>
                     )}
                   </Marker>
                 )
@@ -203,19 +205,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bookIcon: {
-    marginLeft: 16,
+    marginLeft: 16, 
   },
   distanceContainer: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
   },
+  markerTextContainer: {
+    backgroundColor: "lightblue",
+    borderRadius: 8,
+    padding: 5,
+  },
   markerText: {
     fontWeight: "bold",
     color: "black",
-    backgroundColor: "lightblue",
-    padding: 5,
-    borderRadius: 5,
   },
   bottomContainer: {
     position: "absolute",

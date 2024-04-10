@@ -34,7 +34,7 @@ export default function Explore({ navigation }) {
       setLoading(false);
     }
     getUserLocation();
-  }, [userLocation]);
+  }, []);
 
   useEffect(() => {
     const fetchBooks = () => {
