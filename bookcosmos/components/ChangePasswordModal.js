@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Modal} from 'react-native'
+import { StyleSheet, Text, View, Modal, Alert} from 'react-native'
 import { useState } from "react"; 
 import { CustomPassWordInput } from './InputHelper'; 
 import CustomButton from './CustomButton';
@@ -13,9 +13,17 @@ export default function ChangePassword({ isVisible, onClose, onSave }){
     if (newPassword !== confirmPassword) { 
       setPasswordError(true);  
       return; 
+    } 
+    if (newPassword === "") { 
+      Alert.alert("Password cannot be empty"); 
+      return; 
+    } 
+    if (newPassword.length < 6) { 
+      Alert.alert("Password should be at least 6 characters"); 
+      return; 
     }
-    onSave(newPassword);  
-    setNewPassword("");
+    onSave(newPassword);   
+    setNewPassword(""); 
     setConfirmPassword(""); 
     onClose();
   }; 
