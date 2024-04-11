@@ -161,14 +161,18 @@ Hanyi Zhou:
 ### Authentication
 
 Most parts are implemented in the first iteration. We added a new modal to allow users to change their passwords.
+
 Screenshots:
+
 ![ChangePassword](readmeFiles/ChangePassword.PNG)
 
 ### Camera use
 
 We added a new feature to allow users to take a photo or choose a photo from the gallery to set their avatar and book covers, all pictures are stored in firebase storage.
 Then we added pictures to Explore, BookDetail, Requests, History, Library and UserInfo screens.
+
 Screenshots:
+
 ![EditUserAvatar](readmeFiles/EditUserAvatar.PNG)
 ![EditBookAvatar](readmeFiles/EditBookAvatar.PNG)
 ![ExploreImage](readmeFiles/ExploreImage.PNG)
@@ -182,7 +186,9 @@ Screenshots:
 
 We added a new feature to allow users to set the location of their books, either by typing the address or by automatically getting the current location.
 Then we added an interactive map to show the number of books in a certain area. When users click on the marker, they can see the book details.
+
 Screenshots:
+
 ![Map](readmeFiles/Map.PNG)
 ![BooksLocation](readmeFiles/BooksLocation.PNG)
 
@@ -190,7 +196,9 @@ Screenshots:
 
 We added a switch button in UserInfo screen to allow users to turn on or off the notification.
 Then we added a new feature to allow users to receive notifications when they send a request, if the notification function is enabled, after a certain time window, they will receive the reminder to check the status of the request. For test purpose, we set the time window to 3 seconds. When users click on the notification, they will be directed to the outgoing requests screen.
+
 Screenshots:
+
 ![AllowNotification](readmeFiles/AllowNotification.PNG)
 ![Notification](readmeFiles/Notification.PNG)
 
@@ -198,7 +206,9 @@ Screenshots:
 
 1. We used google books API to get descriptions when users add a book. And users could go to the google book detailed page in the book details screen when they click on the get more info button.
 2. We uses google geocoding API to get the latitude and longitude of the address users typed in and vice versa.
+
 Screenshots:
+
 ![MapAndGoogleBooksAPI](readmeFiles/MapAndGoogleBooksAPI.PNG)
 ![ExternalAPI](readmeFiles/ExternalAPI.PNG)
 
