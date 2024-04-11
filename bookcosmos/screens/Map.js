@@ -5,14 +5,15 @@ import { FlatList } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 import { Feather } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
-import { 
+import {
   fetchBooksAtLocation,
   getAllDocs,
- } from "../firebase-files/firestoreHelper";
+} from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons";
+import { calculateDistance } from "../Utils";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -102,26 +103,6 @@ export default function Map() {
     });
   }
 
-  // Function to calculate the distance between two locations using Haversine formula
-  const calculateDistance = (lat1, lon1, lat2, lon2) => {
-    const R = 6371; // Radius of the earth in km
-    const dLat = deg2rad(lat2 - lat1);
-    const dLon = deg2rad(lon2 - lon1);
-    const a =
-      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-      Math.cos(deg2rad(lat1)) *
-        Math.cos(deg2rad(lat2)) *
-        Math.sin(dLon / 2) *
-        Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    const distance = R * c; // Distance in km
-    return distance.toFixed(1);
-  };
-
-  const deg2rad = (deg) => {
-    return deg * (Math.PI / 180);
-  };
-
   return (
     <>
       {isLoading ? (
@@ -156,17 +137,17 @@ export default function Map() {
                     <Feather
                       name="book-open"
                       size={27}
-                      color="black" 
+                      color="black"
                       style={styles.bookIcon}
                     />
-                    {zoomLevel < 0.5 && ( 
-                    <View style={styles.markerTextContainer}>
-                      <Text style={styles.markerText}>
-                        {location.booksCount === 1
-                          ? "1 Book"
-                          : `${location.booksCount} Books`}
-                      </Text> 
-                    </View>
+                    {zoomLevel < 0.5 && (
+                      <View style={styles.markerTextContainer}>
+                        <Text style={styles.markerText}>
+                          {location.booksCount === 1
+                            ? "1 Book"
+                            : `${location.booksCount} Books`}
+                        </Text>
+                      </View>
                     )}
                   </Marker>
                 )
@@ -205,7 +186,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bookIcon: {
-    marginLeft: 16, 
+    marginLeft: 16,
   },
   distanceContainer: {
     flexDirection: "row",
