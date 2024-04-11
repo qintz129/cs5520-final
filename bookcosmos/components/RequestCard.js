@@ -76,7 +76,7 @@ export default function RequestCard({
         "Updated offered book status to inExchange",
         offeredBookInfo.bookName
       );
-      setUpdateTrigger((prev) => prev + 1);
+      
 
       await updateToDB(requestedBookInfo.id, "books", null, null, {
         bookStatus: "inExchange",
@@ -86,7 +86,44 @@ export default function RequestCard({
         requestedBookInfo.bookName
       );
 
-      setStatus("accepted"); // Assuming setStatus updates the component state
+      setStatus("accepted"); // Assuming setStatus updates the component state 
+      setUpdateTrigger((prev) => prev + 1);
+    } catch (err) {
+      console.error("Failed to accept the exchange request:", err);
+      // Handle the error, possibly update UI to show an error message
+    }
+  }; 
+
+  const handleAcceptAfterCancel = async () => {
+    try {
+      // Wait for each update operation to complete
+      await updateToDB(requestId, "users", toUserId, "receivedRequests", {
+        status: "unaccepted",
+      });
+      console.log("Updated received request status to unaccepted");
+
+      await updateToDB(requestId, "users", fromUserId, "sentRequests", {
+        status: "unaccepted",
+      });
+      console.log("Updated sent request status to accepted");
+      // Update the book status to inExchange
+      await updateToDB(offeredBookInfo.id, "books", null, null, {
+        bookStatus: "free",
+      });
+      console.log(
+        "Updated offered book status to free",
+        offeredBookInfo.bookName
+      );
+      
+      await updateToDB(requestedBookInfo.id, "books", null, null, {
+        bookStatus: "free",
+      });
+      console.log(
+        "Updated requested book status to free",
+        requestedBookInfo.bookName
+      ); 
+      setStatus("unaccepted"); // Assuming setStatus updates the component state 
+      setUpdateTrigger((prev) => prev + 1);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
@@ -145,8 +182,9 @@ export default function RequestCard({
         await updateToDB(offeredBookInfo.id, "books", null, null, {
           bookStatus: "completed",
         });
+        
+        setStatus("completed"); 
         setUpdateTrigger((prev) => prev + 1);
-        setStatus("completed");
 
         // Write exchange history for both users
         const historyEntryFrom = {
@@ -247,10 +285,15 @@ export default function RequestCard({
             <Text>Reject</Text>
           </CustomButton>
         </View>
-      ) : status === "accepted" ? (
-        <CustomButton onPress={() => handleComplete()}>
-          <Text style={styles.text}>Complete</Text>
-        </CustomButton>
+      ) : status === "accepted" ? ( 
+          <View style={styles.buttonView}>
+          <CustomButton onPress={() => handleComplete()}>
+            <Text style={styles.text}>Complete</Text>
+          </CustomButton> 
+          <CustomButton onPress={() => handleAcceptAfterCancel()}>
+          <Text style={styles.text}>Cancel</Text>
+        </CustomButton> 
+        </View>
       ) : status === "one user completed" &&
         initialCompletedUser === auth.currentUser.uid ? (
         <Text style={styles.waiting}>
