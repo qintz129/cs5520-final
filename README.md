@@ -11,13 +11,13 @@ github accounts: hanyi-zhou
 ### <font color=red>Important!</font>
 Since we add index on different fields in the database, the app may not work properly if you run it on your own firebase project. Please use the firebase project we provided.  
 
-apiKey="AIzaSyDFqxOpDNx6mkVk_kvwRt7jCxb7ABYWlwk"   
-authDomain="cs5520-e585d.firebaseapp.com"  
-projectId="cs5520-e585d"     
-storageBucket="cs5520-e585d.appspot.com"    
-messagingSenderId="215400770313"      
-appId="1:215400770313:web:e81b17838b2a20c8a101d8"      
-mapsApiKey="AIzaSyA9iCzWQD8xocNjStz50whB5oE9VCbXJ-Q"     
+apiKey="AIzaSyBEaicN_9yLqghPZxfbQjV6eJZq2S2Jnvc"    
+authDomain="bookcosmos-2a13a.firebaseapp.com"    
+projectId="bookcosmos-2a13a"    
+storageBucket="bookcosmos-2a13a.appspot.com"    
+messagingSenderId="1097918408997"    
+appId="1:1097918408997:web:43a3cacdd4549c648492cc"      
+googleApi="AIzaSyA9iCzWQD8xocNjStz50whB5oE9VCbXJ-Q"          
 
 ## Data Structure  
 ### Overview
