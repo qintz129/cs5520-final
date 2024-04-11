@@ -12,13 +12,12 @@ github accounts: hanyi-zhou
 Since we add index on different fields in the database, the app may not work properly if you run it on your own firebase project. Please use the firebase project we provided.  
 
 apiKey="AIzaSyDFqxOpDNx6mkVk_kvwRt7jCxb7ABYWlwk"   
-
 authDomain="cs5520-e585d.firebaseapp.com"  
-projectId="cs5520-e585d"
-storageBucket="cs5520-e585d.appspot.com"
-messagingSenderId="215400770313"
-appId="1:215400770313:web:e81b17838b2a20c8a101d8" 
-mapsApiKey="AIzaSyA9iCzWQD8xocNjStz50whB5oE9VCbXJ-Q"
+projectId="cs5520-e585d"     
+storageBucket="cs5520-e585d.appspot.com"    
+messagingSenderId="215400770313"      
+appId="1:215400770313:web:e81b17838b2a20c8a101d8"      
+mapsApiKey="AIzaSyA9iCzWQD8xocNjStz50whB5oE9VCbXJ-Q"     
 
 ## Data Structure  
 ### Overview
