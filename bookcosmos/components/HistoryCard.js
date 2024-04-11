@@ -1,6 +1,9 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import CustomButton from "./CustomButton";
+import { storage } from "../firebase-files/firebaseSetup";
+import { ref, getDownloadURL } from "firebase/storage";
+import { AntDesign } from "@expo/vector-icons";
 
 // HistoryCard component to display the history of exchanges
 export default function HistoryCard({
@@ -13,6 +16,35 @@ export default function HistoryCard({
   exchangeId,
   isReviewed,
 }) {
+  const [myBookAvatar, setMyBookAvatar] = useState(null);
+  const [theirBookAvatar, setTheirBookAvatar] = useState(null);
+
+  useEffect(() => {
+    if (myBook.image) {
+      const imageRef = ref(storage, myBook.image);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setMyBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [myBook.image]);
+
+  useEffect(() => {
+    if (theirBook.image) {
+      const imageRef = ref(storage, theirBook.image);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setTheirBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [theirBook.image]);
+
   // Function to handle the review button
   const handleReview = () => {
     navigation.navigate("Add A Review", {
@@ -29,11 +61,21 @@ export default function HistoryCard({
       <View style={styles.books}>
         <View style={styles.bookItem}>
           <Text>My book:</Text>
-          <Text>{myBook}</Text>
+          {myBookAvatar ? (
+            <Image source={{ uri: myBookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
+          <Text>{myBook.bookName}</Text>
         </View>
         <View style={styles.bookItem}>
           <Text>Their book:</Text>
-          <Text>{theirBook}</Text>
+          {theirBookAvatar ? (
+            <Image source={{ uri: theirBookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
+          <Text>{theirBook.bookName}</Text>
         </View>
       </View>
       <CustomButton onPress={handleReview} disabled={isReviewed}>
@@ -51,6 +93,11 @@ const styles = StyleSheet.create({
   bookItem: {
     width: "45%",
     alignItems: "center",
+  },
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 10,
   },
   container: {
     padding: 10,

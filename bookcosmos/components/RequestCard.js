@@ -217,16 +217,16 @@ export default function RequestCard({
 
         // Write exchange history for both users
         const historyEntryFrom = {
-          myBook: offeredBookInfo.bookName,
-          requestedBook: requestedBookInfo.bookName,
+          myBook: offeredBookInfo,
+          requestedBook: requestedBookInfo,
           fromUser: fromUserId,
           toUser: toUserId,
           isReviewed: false,
           date: new Date().toISOString(),
         };
         const historyEntryTo = {
-          myBook: requestedBookInfo.bookName,
-          requestedBook: offeredBookInfo.bookName,
+          myBook: requestedBookInfo,
+          requestedBook: offeredBookInfo,
           fromUser: toUserId,
           toUser: fromUserId,
           isReviewed: false,
