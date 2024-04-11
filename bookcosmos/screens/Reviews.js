@@ -42,7 +42,7 @@ export default function Reviews({ userId }) {
 
   console.log(reviews);
   return (
-    <View>
+    <View style={styles.container}>
       <FlatList
         data={reviews}
         keyExtractor={(item) => item.id}
@@ -52,4 +52,9 @@ export default function Reviews({ userId }) {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({ 
+  container: {
+    flex: 1,
+    padding: 5,
+  },
+});
