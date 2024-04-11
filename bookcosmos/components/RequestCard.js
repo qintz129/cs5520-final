@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import {
@@ -63,22 +63,57 @@ export default function RequestCard({
   };
 
   // Function to handle the cancel and reject button,
-  const handleCancelAndReject = async () => {
+  const handleCancelAndReject = async (action) => {
     try {
-      // Wait for each delete operation to complete
-      await deleteFromDB(requestId, "users", fromUserId, "sentRequests");
-      console.log("Deleted from sentRequests");
+      // Show a confirmation dialog before proceeding
+      const confirmationText =
+        action === "cancel"
+          ? "Are you sure you want to cancel this request?"
+          : "Are you sure you want to reject this request?";
 
-      await deleteFromDB(requestId, "users", toUserId, "receivedRequests");
-      console.log("Deleted from receivedRequests");
+      // Show an alert dialog to confirm the action
+      Alert.alert("Confirm", confirmationText, [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            // Wait for each delete operation to complete
+            await deleteFromDB(requestId, "users", fromUserId, "sentRequests");
+            console.log("Deleted from sentRequests");
 
-      // Check if offeredBookInfo exists and its status before updating, update the offered book status to free
-      if (offeredBookInfo && offeredBookInfo.bookStatus !== "inExchange") {
-        await updateToDB(offeredBookInfo.id, "books", null, null, {
-          bookStatus: "free",
-        });
-        console.log("Updated offered book status to free");
-      }
+            await deleteFromDB(
+              requestId,
+              "users",
+              toUserId,
+              "receivedRequests"
+            );
+            console.log("Deleted from receivedRequests");
+
+            // Check if offeredBookInfo exists and its status before updating, update the offered book status to free
+            if (
+              offeredBookInfo &&
+              offeredBookInfo.bookStatus !== "inExchange"
+            ) {
+              await updateToDB(offeredBookInfo.id, "books", null, null, {
+                bookStatus: "free",
+              });
+              console.log("Updated offered book status to free");
+            }
+
+            if (action === "cancel") {
+              Alert.alert(
+                "Request Cancelled",
+                "The request has been cancelled"
+              );
+            } else if (action === "reject") {
+              Alert.alert("Request Rejected", "The request has been rejected");
+            }
+          },
+        },
+      ]);
     } catch (err) {
       console.error("Failed to cancel the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
@@ -307,7 +342,7 @@ export default function RequestCard({
         </View>
       </View>
       {tab === "outgoing" && status === "unaccepted" ? (
-        <CustomButton onPress={() => handleCancelAndReject()}>
+        <CustomButton onPress={() => handleCancelAndReject("cancel")}>
           <Text style={styles.text}>Cancel</Text>
         </CustomButton>
       ) : tab === "incoming" && status === "unaccepted" ? (
@@ -320,7 +355,7 @@ export default function RequestCard({
                 <Text>Accept</Text>
               </CustomButton>
             )}
-          <CustomButton onPress={() => handleCancelAndReject()}>
+          <CustomButton onPress={() => handleCancelAndReject("reject")}>
             <Text>Reject</Text>
           </CustomButton>
         </View>
