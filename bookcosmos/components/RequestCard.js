@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image } from "react-native";
 import React, { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import {
@@ -8,6 +8,8 @@ import {
 } from "../firebase-files/firestoreHelper";
 import { AntDesign } from "@expo/vector-icons";
 import { auth } from "../firebase-files/firebaseSetup";
+import { storage } from "../firebase-files/firebaseSetup";
+import { ref, getDownloadURL } from "firebase/storage";
 
 // RequestCard component to display the exchange requests
 export default function RequestCard({
@@ -24,6 +26,34 @@ export default function RequestCard({
   setUpdateTrigger,
 }) {
   const [status, setStatus] = useState(initialStatus);
+  const [offeredBookAvatar, setOfferedBookAvatar] = useState(null);
+  const [requestedBookAvatar, setRequestedBookAvatar] = useState(null);
+
+  useEffect(() => {
+    if (offeredBookInfo.image) {
+      const imageRef = ref(storage, offeredBookInfo.image);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setOfferedBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [offeredBookInfo.image]);
+
+  useEffect(() => {
+    if (requestedBookInfo.image) {
+      const imageRef = ref(storage, requestedBookInfo.image);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setRequestedBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [requestedBookInfo.image]);
 
   const handlePressBook = ({ id, owner }) => {
     navigation.navigate("Book Detail", {
@@ -76,7 +106,6 @@ export default function RequestCard({
         "Updated offered book status to inExchange",
         offeredBookInfo.bookName
       );
-      
 
       await updateToDB(requestedBookInfo.id, "books", null, null, {
         bookStatus: "inExchange",
@@ -86,13 +115,13 @@ export default function RequestCard({
         requestedBookInfo.bookName
       );
 
-      setStatus("accepted"); // Assuming setStatus updates the component state 
+      setStatus("accepted"); // Assuming setStatus updates the component state
       setUpdateTrigger((prev) => prev + 1);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
     }
-  }; 
+  };
 
   const handleAcceptAfterCancel = async () => {
     try {
@@ -114,15 +143,15 @@ export default function RequestCard({
         "Updated offered book status to free",
         offeredBookInfo.bookName
       );
-      
+
       await updateToDB(requestedBookInfo.id, "books", null, null, {
         bookStatus: "free",
       });
       console.log(
         "Updated requested book status to free",
         requestedBookInfo.bookName
-      ); 
-      setStatus("unaccepted"); // Assuming setStatus updates the component state 
+      );
+      setStatus("unaccepted"); // Assuming setStatus updates the component state
       setUpdateTrigger((prev) => prev + 1);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
@@ -182,8 +211,8 @@ export default function RequestCard({
         await updateToDB(offeredBookInfo.id, "books", null, null, {
           bookStatus: "completed",
         });
-        
-        setStatus("completed"); 
+
+        setStatus("completed");
         setUpdateTrigger((prev) => prev + 1);
 
         // Write exchange history for both users
@@ -224,6 +253,11 @@ export default function RequestCard({
       <View style={styles.books}>
         <View style={styles.bookItem}>
           <Text>Offered:</Text>
+          {offeredBookAvatar ? (
+            <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
           {offeredBookInfo ? (
             <View style={styles.bookLabel}>
               <CustomButton
@@ -246,6 +280,11 @@ export default function RequestCard({
         </View>
         <View style={styles.bookItem}>
           <Text>Requested:</Text>
+          {requestedBookAvatar ? (
+            <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
           {requestedBookInfo ? (
             <View style={styles.bookLabel}>
               <CustomButton
@@ -285,14 +324,14 @@ export default function RequestCard({
             <Text>Reject</Text>
           </CustomButton>
         </View>
-      ) : status === "accepted" ? ( 
-          <View style={styles.buttonView}>
+      ) : status === "accepted" ? (
+        <View style={styles.buttonView}>
           <CustomButton onPress={() => handleComplete()}>
             <Text style={styles.text}>Complete</Text>
-          </CustomButton> 
+          </CustomButton>
           <CustomButton onPress={() => handleAcceptAfterCancel()}>
-          <Text style={styles.text}>Cancel</Text>
-        </CustomButton> 
+            <Text style={styles.text}>Cancel</Text>
+          </CustomButton>
         </View>
       ) : status === "one user completed" &&
         initialCompletedUser === auth.currentUser.uid ? (
@@ -336,6 +375,11 @@ const styles = StyleSheet.create({
   bookItem: {
     width: "45%",
     alignItems: "center",
+  },
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 10,
   },
   buttonView: {
     flexDirection: "row",
