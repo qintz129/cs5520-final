@@ -11,7 +11,8 @@ export const UserProvider = ({ children }) => {
     name: "",
     email: "",
     imageUri: null,
-    password: "",
+    password: "", 
+    notification: false,
   });
   useEffect(() => {
     if (auth.currentUser) {
@@ -24,7 +25,8 @@ export const UserProvider = ({ children }) => {
               name: userData.name,
               email: userData.email,
               password: userData.password,
-              imageUri: userData.image ? userData.image : null,
+              imageUri: userData.image ? userData.image : null, 
+              notification: userData.notification ? userData.notification : false,
             });
           } else {
             console.log("No such document!");
@@ -41,7 +43,8 @@ export const UserProvider = ({ children }) => {
         name: "",
         email: "",
         imageUri: null,
-        password: "",
+        password: "", 
+        notification: false,
       });
     }
   }, [auth.currentUser]);

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { StyleSheet, Text, View, Alert} from "react-native";
 import React, { useEffect, useState } from "react";
 import { auth, database, storage } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
@@ -13,7 +13,8 @@ import { updateToDB } from "../firebase-files/firestoreHelper";
 import ImageManager from "../components/ImageManager";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useUser } from "../hooks/UserContext";  
-import ChangePasswordModal from "../components/ChangePasswordModal";
+import ChangePasswordModal from "../components/ChangePasswordModal";  
+import NotificationManager from "../components/NotificationManager";
 
 
 // UserInfo component to display the user information
@@ -22,14 +23,16 @@ export default function UserInfo({ navigation }) {
   const [name, setName] = useState(userInfo.name);
   const [initialPassword, setInitialPassword] = useState(userInfo.password);
   const [email, setEmail] = useState(userInfo.email);
-  const [password, setPassword] = useState(userInfo.password);
+  const [password, setPassword] = useState(userInfo.password); 
+  const [notification, setNotification] = useState(userInfo.notification);
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [imageUri, setImageUri] = useState(userInfo.imageUri);
   const [downloadUri, setDownloadUri] = useState(null);
   const [uploadUri, setUploadUri] = useState(null);
-  const [hasNewImage, setHasNewImage] = useState(false);  
+  const [hasNewImage, setHasNewImage] = useState(false);   
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  
   useEffect(() => {
     const fetchImage = async () => {
       const imageRef = ref(storage, imageUri);
@@ -101,7 +104,7 @@ export default function UserInfo({ navigation }) {
                       "users",
                       null,
                       null,
-                      { name: name, image: newImageUri }
+                      { name: name, notification:notification, image: newImageUri }
                     );
                   } else {
                     await updateToDB(
@@ -109,7 +112,7 @@ export default function UserInfo({ navigation }) {
                       "users",
                       null,
                       null,
-                      { name: name, password: password, image: newImageUri }
+                      { name: name, notification:notification, password: password, image: newImageUri }
                     );
                   }
                 } catch (error) {
@@ -121,11 +124,13 @@ export default function UserInfo({ navigation }) {
               } else {
                 if (initialPassword === password) {
                   await updateToDB(auth.currentUser.uid, "users", null, null, {
-                    name: name,
+                    name: name, 
+                    notification:notification,
                   });
                 } else {
                   await updateToDB(auth.currentUser.uid, "users", null, null, {
-                    name: name,
+                    name: name, 
+                    notification:notification,
                     password: password,
                   });
                 }
@@ -142,7 +147,7 @@ export default function UserInfo({ navigation }) {
 
   const toggleVisibility = () => {
     setPasswordVisible(!passwordVisible);
-  };
+  }; 
 
   const receiveImageUri = (takenImageUri) => {
     setUploadUri(takenImageUri);
@@ -167,8 +172,13 @@ export default function UserInfo({ navigation }) {
 
   function handlePasswordEdit() {  
     setIsModalVisible(true);
-  }
-  // console.log(userInfo);
+  }  
+
+  const receiveNotification = (notification) => { 
+    setNotification(notification); 
+    console.log("notification", notification);
+  }; 
+
   return (
     <View style={styles.container}>
       <ImageManager
@@ -192,11 +202,14 @@ export default function UserInfo({ navigation }) {
         isVisible={isModalVisible}
         onClose={() => setIsModalVisible(false)}
         onSave={(newPassword) => setPassword(newPassword)}  
+      /> 
+      <NotificationManager   
+       initialNotification={notification}  
+       notificationHandler={receiveNotification}
       />
       <CustomButton onPress={handleSave}>
         <Text>Save</Text>
       </CustomButton>  
-      <Text>Settings</Text>
       <CustomButton onPress={signOutHandler}>
         <Text>Log out</Text>
       </CustomButton>   
@@ -209,5 +222,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 10,  
     marginRight: 10,
-  }, 
+  },  
 });

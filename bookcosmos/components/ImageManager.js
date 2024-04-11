@@ -112,9 +112,9 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   userImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 100,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
   },
   bookImage: {
     width: 150,

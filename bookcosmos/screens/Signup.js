@@ -34,7 +34,8 @@ export default function Signup({ navigation }) {
         uid: userCred.user.uid,
         name: email,
         email: email,
-        password: password,
+        password: password, 
+        notification: false,
       };
       writeToDB(newUser, "users");
     } catch (err) {

@@ -8,7 +8,8 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons"; 
-import { googleApi } from "@env";
+import { googleApi } from "@env"; 
+
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
@@ -23,9 +24,8 @@ export default function BookDetail({ route, navigation }) {
   const { bookId, ownerId, distance } = route.params;
   const [rating, setRating] = useState(0);
   const [isLoading, setLoading] = useState(false);
-  const [bookAvatar, setBookAvatar] = useState(null);
+  const [bookAvatar, setBookAvatar] = useState(null); 
 
-  
   useEffect(() => {
     let bookData;
     // Fetch the book data from the database by bookId

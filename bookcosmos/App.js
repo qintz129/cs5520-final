@@ -17,11 +17,22 @@ import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "./components/CustomButton";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { UserProvider } from "./hooks/UserContext";
-import Map from "./screens/Map";
+import Map from "./screens/Map"; 
+import * as Notifications from 'expo-notifications'  
+import NotificationListener from "./components/NotificationListener";
+
+Notifications.setNotificationHandler({ 
+  handleNotification:async function(notification){ 
+  return { 
+    shouldShowAlert:true, 
+    shouldPlaySound:true,
+  }; 
+} 
+});
 
 const Stack = createNativeStackNavigator();
 export default function App() {
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [userLoggedIn, setUserLoggedIn] = useState(false);  
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -86,7 +97,7 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
-      <Stack.Screen name="Map" component={Map} /> 
+      <Stack.Screen name="Map" component={Map} />  
     </>
   );
 
@@ -94,7 +105,8 @@ export default function App() {
     <UserProvider>
       <ActionSheetProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <NavigationContainer>
+          <NavigationContainer> 
+            <NotificationListener />
             <Stack.Navigator
               initialRouteName="Signup"
               screenOptions={{
