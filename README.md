@@ -11,8 +11,9 @@ github accounts: hanyi-zhou
 ### <font color=red>Important!</font>
 Since we add index on different fields in the database, the app may not work properly if you run it on your own firebase project. Please use the firebase project we provided.  
 
-apiKey="AIzaSyDFqxOpDNx6mkVk_kvwRt7jCxb7ABYWlwk"
-authDomain="cs5520-e585d.firebaseapp.com"
+apiKey="AIzaSyDFqxOpDNx6mkVk_kvwRt7jCxb7ABYWlwk"   
+
+authDomain="cs5520-e585d.firebaseapp.com"  
 projectId="cs5520-e585d"
 storageBucket="cs5520-e585d.appspot.com"
 messagingSenderId="215400770313"
