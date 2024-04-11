@@ -123,35 +123,48 @@ export default function RequestCard({
   // Function to handle the accept button
   const handleAccept = async () => {
     try {
-      // Wait for each update operation to complete
-      await updateToDB(requestId, "users", toUserId, "receivedRequests", {
-        status: "accepted",
-      });
-      console.log("Updated received request status to accepted");
+      Alert.alert("Confirm", "Are you sure you want to accept this request?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            // Wait for each update operation to complete
+            await updateToDB(requestId, "users", toUserId, "receivedRequests", {
+              status: "accepted",
+            });
+            console.log("Updated received request status to accepted");
 
-      await updateToDB(requestId, "users", fromUserId, "sentRequests", {
-        status: "accepted",
-      });
-      console.log("Updated sent request status to accepted");
-      // Update the book status to inExchange
-      await updateToDB(offeredBookInfo.id, "books", null, null, {
-        bookStatus: "inExchange",
-      });
-      console.log(
-        "Updated offered book status to inExchange",
-        offeredBookInfo.bookName
-      );
+            await updateToDB(requestId, "users", fromUserId, "sentRequests", {
+              status: "accepted",
+            });
+            console.log("Updated sent request status to accepted");
+            // Update the book status to inExchange
+            await updateToDB(offeredBookInfo.id, "books", null, null, {
+              bookStatus: "inExchange",
+            });
+            console.log(
+              "Updated offered book status to inExchange",
+              offeredBookInfo.bookName
+            );
 
-      await updateToDB(requestedBookInfo.id, "books", null, null, {
-        bookStatus: "inExchange",
-      });
-      console.log(
-        "Updated requested book status to inExchange",
-        requestedBookInfo.bookName
-      );
+            await updateToDB(requestedBookInfo.id, "books", null, null, {
+              bookStatus: "inExchange",
+            });
+            console.log(
+              "Updated requested book status to inExchange",
+              requestedBookInfo.bookName
+            );
 
-      setStatus("accepted"); // Assuming setStatus updates the component state
-      setUpdateTrigger((prev) => prev + 1);
+            setStatus("accepted"); // Assuming setStatus updates the component state
+            setUpdateTrigger((prev) => prev + 1);
+
+            Alert.alert("Request Accepted", "The request has been accepted");
+          },
+        },
+      ]);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
