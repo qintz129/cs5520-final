@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, Text, View, Image, Alert } from "react-native";
 import React, { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import {
@@ -8,6 +8,8 @@ import {
 } from "../firebase-files/firestoreHelper";
 import { AntDesign } from "@expo/vector-icons";
 import { auth } from "../firebase-files/firebaseSetup";
+import { storage } from "../firebase-files/firebaseSetup";
+import { ref, getDownloadURL } from "firebase/storage";
 
 // RequestCard component to display the exchange requests
 export default function RequestCard({
@@ -24,6 +26,34 @@ export default function RequestCard({
   setUpdateTrigger,
 }) {
   const [status, setStatus] = useState(initialStatus);
+  const [offeredBookAvatar, setOfferedBookAvatar] = useState(null);
+  const [requestedBookAvatar, setRequestedBookAvatar] = useState(null);
+
+  useEffect(() => {
+    if (offeredBookInfo.image) {
+      const imageRef = ref(storage, offeredBookInfo.image);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setOfferedBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [offeredBookInfo.image]);
+
+  useEffect(() => {
+    if (requestedBookInfo.image) {
+      const imageRef = ref(storage, requestedBookInfo.image);
+      getDownloadURL(imageRef)
+        .then((url) => {
+          setRequestedBookAvatar(url);
+        })
+        .catch((error) => {
+          console.error("Failed to load image:", error);
+        });
+    }
+  }, [requestedBookInfo.image]);
 
   const handlePressBook = ({ id, owner }) => {
     navigation.navigate("Book Detail", {
@@ -33,22 +63,57 @@ export default function RequestCard({
   };
 
   // Function to handle the cancel and reject button,
-  const handleCancelAndReject = async () => {
+  const handleCancelAndReject = async (action) => {
     try {
-      // Wait for each delete operation to complete
-      await deleteFromDB(requestId, "users", fromUserId, "sentRequests");
-      console.log("Deleted from sentRequests");
+      // Show a confirmation dialog before proceeding
+      const confirmationText =
+        action === "cancel"
+          ? "Are you sure you want to cancel this request?"
+          : "Are you sure you want to reject this request?";
 
-      await deleteFromDB(requestId, "users", toUserId, "receivedRequests");
-      console.log("Deleted from receivedRequests");
+      // Show an alert dialog to confirm the action
+      Alert.alert("Confirm", confirmationText, [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            // Wait for each delete operation to complete
+            await deleteFromDB(requestId, "users", fromUserId, "sentRequests");
+            console.log("Deleted from sentRequests");
 
-      // Check if offeredBookInfo exists and its status before updating, update the offered book status to free
-      if (offeredBookInfo && offeredBookInfo.bookStatus !== "inExchange") {
-        await updateToDB(offeredBookInfo.id, "books", null, null, {
-          bookStatus: "free",
-        });
-        console.log("Updated offered book status to free");
-      }
+            await deleteFromDB(
+              requestId,
+              "users",
+              toUserId,
+              "receivedRequests"
+            );
+            console.log("Deleted from receivedRequests");
+
+            // Check if offeredBookInfo exists and its status before updating, update the offered book status to free
+            if (
+              offeredBookInfo &&
+              offeredBookInfo.bookStatus !== "inExchange"
+            ) {
+              await updateToDB(offeredBookInfo.id, "books", null, null, {
+                bookStatus: "free",
+              });
+              console.log("Updated offered book status to free");
+            }
+
+            if (action === "cancel") {
+              Alert.alert(
+                "Request Cancelled",
+                "The request has been cancelled"
+              );
+            } else if (action === "reject") {
+              Alert.alert("Request Rejected", "The request has been rejected");
+            }
+          },
+        },
+      ]);
     } catch (err) {
       console.error("Failed to cancel the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
@@ -58,72 +123,97 @@ export default function RequestCard({
   // Function to handle the accept button
   const handleAccept = async () => {
     try {
-      // Wait for each update operation to complete
-      await updateToDB(requestId, "users", toUserId, "receivedRequests", {
-        status: "accepted",
-      });
-      console.log("Updated received request status to accepted");
+      Alert.alert("Confirm", "Are you sure you want to accept this request?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            // Wait for each update operation to complete
+            await updateToDB(requestId, "users", toUserId, "receivedRequests", {
+              status: "accepted",
+            });
+            console.log("Updated received request status to accepted");
 
-      await updateToDB(requestId, "users", fromUserId, "sentRequests", {
-        status: "accepted",
-      });
-      console.log("Updated sent request status to accepted");
-      // Update the book status to inExchange
-      await updateToDB(offeredBookInfo.id, "books", null, null, {
-        bookStatus: "inExchange",
-      });
-      console.log(
-        "Updated offered book status to inExchange",
-        offeredBookInfo.bookName
-      );
-      
+            await updateToDB(requestId, "users", fromUserId, "sentRequests", {
+              status: "accepted",
+            });
+            console.log("Updated sent request status to accepted");
+            // Update the book status to inExchange
+            await updateToDB(offeredBookInfo.id, "books", null, null, {
+              bookStatus: "inExchange",
+            });
+            console.log(
+              "Updated offered book status to inExchange",
+              offeredBookInfo.bookName
+            );
 
-      await updateToDB(requestedBookInfo.id, "books", null, null, {
-        bookStatus: "inExchange",
-      });
-      console.log(
-        "Updated requested book status to inExchange",
-        requestedBookInfo.bookName
-      );
+            await updateToDB(requestedBookInfo.id, "books", null, null, {
+              bookStatus: "inExchange",
+            });
+            console.log(
+              "Updated requested book status to inExchange",
+              requestedBookInfo.bookName
+            );
 
-      setStatus("accepted"); // Assuming setStatus updates the component state 
-      setUpdateTrigger((prev) => prev + 1);
+            setStatus("accepted"); // Assuming setStatus updates the component state
+            setUpdateTrigger((prev) => prev + 1);
+
+            Alert.alert("Request Accepted", "The request has been accepted");
+          },
+        },
+      ]);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
     }
-  }; 
+  };
 
   const handleAcceptAfterCancel = async () => {
     try {
-      // Wait for each update operation to complete
-      await updateToDB(requestId, "users", toUserId, "receivedRequests", {
-        status: "unaccepted",
-      });
-      console.log("Updated received request status to unaccepted");
+      Alert.alert("Confirm", "Are you sure you want to cancel this request?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            // Wait for each update operation to complete
+            await updateToDB(requestId, "users", toUserId, "receivedRequests", {
+              status: "unaccepted",
+            });
+            console.log("Updated received request status to unaccepted");
 
-      await updateToDB(requestId, "users", fromUserId, "sentRequests", {
-        status: "unaccepted",
-      });
-      console.log("Updated sent request status to accepted");
-      // Update the book status to inExchange
-      await updateToDB(offeredBookInfo.id, "books", null, null, {
-        bookStatus: "free",
-      });
-      console.log(
-        "Updated offered book status to free",
-        offeredBookInfo.bookName
-      );
-      
-      await updateToDB(requestedBookInfo.id, "books", null, null, {
-        bookStatus: "free",
-      });
-      console.log(
-        "Updated requested book status to free",
-        requestedBookInfo.bookName
-      ); 
-      setStatus("unaccepted"); // Assuming setStatus updates the component state 
-      setUpdateTrigger((prev) => prev + 1);
+            await updateToDB(requestId, "users", fromUserId, "sentRequests", {
+              status: "unaccepted",
+            });
+            console.log("Updated sent request status to accepted");
+            // Update the book status to inExchange
+            await updateToDB(offeredBookInfo.id, "books", null, null, {
+              bookStatus: "free",
+            });
+            console.log(
+              "Updated offered book status to free",
+              offeredBookInfo.bookName
+            );
+
+            await updateToDB(requestedBookInfo.id, "books", null, null, {
+              bookStatus: "free",
+            });
+            console.log(
+              "Updated requested book status to free",
+              requestedBookInfo.bookName
+            );
+            setStatus("unaccepted"); // Assuming setStatus updates the component state
+            setUpdateTrigger((prev) => prev + 1);
+
+            Alert.alert("Request Cancelled", "The request has been cancelled");
+          },
+        },
+      ]);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
@@ -133,79 +223,103 @@ export default function RequestCard({
   // Function to handle the complete button
   const handleComplete = async () => {
     try {
-      // if the status is accepted, update the status to one user completed
-      if (status === "accepted") {
-        const updates = {
-          status: "one user completed",
-          completedUser: auth.currentUser.uid,
-        };
-        await updateToDB(
-          requestId,
-          "users",
-          fromUserId,
-          "sentRequests",
-          updates
-        );
-        await updateToDB(
-          requestId,
-          "users",
-          toUserId,
-          "receivedRequests",
-          updates
-        );
+      Alert.alert(
+        "Confirm",
+        "Are you sure you want to complete this request?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Confirm",
+            onPress: async () => {
+              // if the status is accepted, update the status to one user completed
+              if (status === "accepted") {
+                const updates = {
+                  status: "one user completed",
+                  completedUser: auth.currentUser.uid,
+                };
+                await updateToDB(
+                  requestId,
+                  "users",
+                  fromUserId,
+                  "sentRequests",
+                  updates
+                );
+                await updateToDB(
+                  requestId,
+                  "users",
+                  toUserId,
+                  "receivedRequests",
+                  updates
+                );
 
-        setUpdateTrigger((prev) => prev + 1);
-        setStatus("one user completed");
-        // if the status is one user completed, update the status to completed
-      } else if (status === "one user completed") {
-        const updates = {
-          status: "completed",
-          completedUser: "all",
-        };
-        await updateToDB(
-          requestId,
-          "users",
-          fromUserId,
-          "sentRequests",
-          updates
-        );
-        await updateToDB(
-          requestId,
-          "users",
-          toUserId,
-          "receivedRequests",
-          updates
-        );
-        await updateToDB(requestedBookInfo.id, "books", null, null, {
-          bookStatus: "completed",
-        });
-        await updateToDB(offeredBookInfo.id, "books", null, null, {
-          bookStatus: "completed",
-        });
-        
-        setStatus("completed"); 
-        setUpdateTrigger((prev) => prev + 1);
+                setUpdateTrigger((prev) => prev + 1);
+                setStatus("one user completed");
+                // if the status is one user completed, update the status to completed
+              } else if (status === "one user completed") {
+                const updates = {
+                  status: "completed",
+                  completedUser: "all",
+                };
+                await updateToDB(
+                  requestId,
+                  "users",
+                  fromUserId,
+                  "sentRequests",
+                  updates
+                );
+                await updateToDB(
+                  requestId,
+                  "users",
+                  toUserId,
+                  "receivedRequests",
+                  updates
+                );
+                await updateToDB(requestedBookInfo.id, "books", null, null, {
+                  bookStatus: "completed",
+                });
+                await updateToDB(offeredBookInfo.id, "books", null, null, {
+                  bookStatus: "completed",
+                });
 
-        // Write exchange history for both users
-        const historyEntryFrom = {
-          myBook: offeredBookInfo.bookName,
-          requestedBook: requestedBookInfo.bookName,
-          fromUser: fromUserId,
-          toUser: toUserId,
-          isReviewed: false,
-          date: new Date().toISOString(),
-        };
-        const historyEntryTo = {
-          myBook: requestedBookInfo.bookName,
-          requestedBook: offeredBookInfo.bookName,
-          fromUser: toUserId,
-          toUser: fromUserId,
-          isReviewed: false,
-          date: new Date().toISOString(),
-        };
-        await writeToDB(historyEntryFrom, "users", fromUserId, "history");
-        await writeToDB(historyEntryTo, "users", toUserId, "history");
-      }
+                setStatus("completed");
+                setUpdateTrigger((prev) => prev + 1);
+
+                // Write exchange history for both users
+                const historyEntryFrom = {
+                  myBook: offeredBookInfo,
+                  requestedBook: requestedBookInfo,
+                  fromUser: fromUserId,
+                  toUser: toUserId,
+                  isReviewed: false,
+                  date: new Date().toISOString(),
+                };
+                const historyEntryTo = {
+                  myBook: requestedBookInfo,
+                  requestedBook: offeredBookInfo,
+                  fromUser: toUserId,
+                  toUser: fromUserId,
+                  isReviewed: false,
+                  date: new Date().toISOString(),
+                };
+                await writeToDB(
+                  historyEntryFrom,
+                  "users",
+                  fromUserId,
+                  "history"
+                );
+                await writeToDB(historyEntryTo, "users", toUserId, "history");
+              }
+              Alert.alert(
+                "Request Completed",
+                "The request has been completed"
+              );
+            },
+          },
+        ]
+      );
     } catch (error) {
       console.error("Failed to complete the exchange request:", error);
       // Handle the error appropriately
@@ -224,6 +338,11 @@ export default function RequestCard({
       <View style={styles.books}>
         <View style={styles.bookItem}>
           <Text>Offered:</Text>
+          {offeredBookAvatar ? (
+            <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
           {offeredBookInfo ? (
             <View style={styles.bookLabel}>
               <CustomButton
@@ -246,6 +365,11 @@ export default function RequestCard({
         </View>
         <View style={styles.bookItem}>
           <Text>Requested:</Text>
+          {requestedBookAvatar ? (
+            <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
+          ) : (
+            <AntDesign name="picture" size={50} color="grey" />
+          )}
           {requestedBookInfo ? (
             <View style={styles.bookLabel}>
               <CustomButton
@@ -268,7 +392,7 @@ export default function RequestCard({
         </View>
       </View>
       {tab === "outgoing" && status === "unaccepted" ? (
-        <CustomButton onPress={() => handleCancelAndReject()}>
+        <CustomButton onPress={() => handleCancelAndReject("cancel")}>
           <Text style={styles.text}>Cancel</Text>
         </CustomButton>
       ) : tab === "incoming" && status === "unaccepted" ? (
@@ -281,18 +405,18 @@ export default function RequestCard({
                 <Text>Accept</Text>
               </CustomButton>
             )}
-          <CustomButton onPress={() => handleCancelAndReject()}>
+          <CustomButton onPress={() => handleCancelAndReject("reject")}>
             <Text>Reject</Text>
           </CustomButton>
         </View>
-      ) : status === "accepted" ? ( 
-          <View style={styles.buttonView}>
+      ) : status === "accepted" ? (
+        <View style={styles.buttonView}>
           <CustomButton onPress={() => handleComplete()}>
             <Text style={styles.text}>Complete</Text>
-          </CustomButton> 
+          </CustomButton>
           <CustomButton onPress={() => handleAcceptAfterCancel()}>
-          <Text style={styles.text}>Cancel</Text>
-        </CustomButton> 
+            <Text style={styles.text}>Cancel</Text>
+          </CustomButton>
         </View>
       ) : status === "one user completed" &&
         initialCompletedUser === auth.currentUser.uid ? (
@@ -336,6 +460,11 @@ const styles = StyleSheet.create({
   bookItem: {
     width: "45%",
     alignItems: "center",
+  },
+  image: {
+    width: 70,
+    height: 70,
+    borderRadius: 10,
   },
   buttonView: {
     flexDirection: "row",
