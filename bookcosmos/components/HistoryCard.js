@@ -14,7 +14,8 @@ export default function HistoryCard({
   reviewee,
   reviewer,
   exchangeId,
-  isReviewed,
+  isReviewed, 
+  status
 }) {
   const [myBookAvatar, setMyBookAvatar] = useState(null);
   const [theirBookAvatar, setTheirBookAvatar] = useState(null);
@@ -77,10 +78,16 @@ export default function HistoryCard({
           )}
           <Text>{theirBook.bookName}</Text>
         </View>
-      </View>
+      </View>  
+      {
+      status === "completed" ? (
       <CustomButton onPress={handleReview} disabled={isReviewed}>
         <Text>{isReviewed ? "Reviewed" : "Review"}</Text>
-      </CustomButton>
+      </CustomButton> 
+      ): ( 
+        <Text style={styles.reject}>Rejected</Text>
+      )
+      }
     </View>
   );
 }
@@ -114,5 +121,9 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 1.41,
     elevation: 2,
+  }, 
+  reject: {
+    color: "grey", 
+    alignSelf: "center",
   },
 });
