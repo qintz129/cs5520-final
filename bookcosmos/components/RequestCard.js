@@ -173,34 +173,47 @@ export default function RequestCard({
 
   const handleAcceptAfterCancel = async () => {
     try {
-      // Wait for each update operation to complete
-      await updateToDB(requestId, "users", toUserId, "receivedRequests", {
-        status: "unaccepted",
-      });
-      console.log("Updated received request status to unaccepted");
+      Alert.alert("Confirm", "Are you sure you want to cancel this request?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm",
+          onPress: async () => {
+            // Wait for each update operation to complete
+            await updateToDB(requestId, "users", toUserId, "receivedRequests", {
+              status: "unaccepted",
+            });
+            console.log("Updated received request status to unaccepted");
 
-      await updateToDB(requestId, "users", fromUserId, "sentRequests", {
-        status: "unaccepted",
-      });
-      console.log("Updated sent request status to accepted");
-      // Update the book status to inExchange
-      await updateToDB(offeredBookInfo.id, "books", null, null, {
-        bookStatus: "free",
-      });
-      console.log(
-        "Updated offered book status to free",
-        offeredBookInfo.bookName
-      );
+            await updateToDB(requestId, "users", fromUserId, "sentRequests", {
+              status: "unaccepted",
+            });
+            console.log("Updated sent request status to accepted");
+            // Update the book status to inExchange
+            await updateToDB(offeredBookInfo.id, "books", null, null, {
+              bookStatus: "free",
+            });
+            console.log(
+              "Updated offered book status to free",
+              offeredBookInfo.bookName
+            );
 
-      await updateToDB(requestedBookInfo.id, "books", null, null, {
-        bookStatus: "free",
-      });
-      console.log(
-        "Updated requested book status to free",
-        requestedBookInfo.bookName
-      );
-      setStatus("unaccepted"); // Assuming setStatus updates the component state
-      setUpdateTrigger((prev) => prev + 1);
+            await updateToDB(requestedBookInfo.id, "books", null, null, {
+              bookStatus: "free",
+            });
+            console.log(
+              "Updated requested book status to free",
+              requestedBookInfo.bookName
+            );
+            setStatus("unaccepted"); // Assuming setStatus updates the component state
+            setUpdateTrigger((prev) => prev + 1);
+
+            Alert.alert("Request Cancelled", "The request has been cancelled");
+          },
+        },
+      ]);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
@@ -210,79 +223,103 @@ export default function RequestCard({
   // Function to handle the complete button
   const handleComplete = async () => {
     try {
-      // if the status is accepted, update the status to one user completed
-      if (status === "accepted") {
-        const updates = {
-          status: "one user completed",
-          completedUser: auth.currentUser.uid,
-        };
-        await updateToDB(
-          requestId,
-          "users",
-          fromUserId,
-          "sentRequests",
-          updates
-        );
-        await updateToDB(
-          requestId,
-          "users",
-          toUserId,
-          "receivedRequests",
-          updates
-        );
+      Alert.alert(
+        "Confirm",
+        "Are you sure you want to complete this request?",
+        [
+          {
+            text: "Cancel",
+            style: "cancel",
+          },
+          {
+            text: "Confirm",
+            onPress: async () => {
+              // if the status is accepted, update the status to one user completed
+              if (status === "accepted") {
+                const updates = {
+                  status: "one user completed",
+                  completedUser: auth.currentUser.uid,
+                };
+                await updateToDB(
+                  requestId,
+                  "users",
+                  fromUserId,
+                  "sentRequests",
+                  updates
+                );
+                await updateToDB(
+                  requestId,
+                  "users",
+                  toUserId,
+                  "receivedRequests",
+                  updates
+                );
 
-        setUpdateTrigger((prev) => prev + 1);
-        setStatus("one user completed");
-        // if the status is one user completed, update the status to completed
-      } else if (status === "one user completed") {
-        const updates = {
-          status: "completed",
-          completedUser: "all",
-        };
-        await updateToDB(
-          requestId,
-          "users",
-          fromUserId,
-          "sentRequests",
-          updates
-        );
-        await updateToDB(
-          requestId,
-          "users",
-          toUserId,
-          "receivedRequests",
-          updates
-        );
-        await updateToDB(requestedBookInfo.id, "books", null, null, {
-          bookStatus: "completed",
-        });
-        await updateToDB(offeredBookInfo.id, "books", null, null, {
-          bookStatus: "completed",
-        });
+                setUpdateTrigger((prev) => prev + 1);
+                setStatus("one user completed");
+                // if the status is one user completed, update the status to completed
+              } else if (status === "one user completed") {
+                const updates = {
+                  status: "completed",
+                  completedUser: "all",
+                };
+                await updateToDB(
+                  requestId,
+                  "users",
+                  fromUserId,
+                  "sentRequests",
+                  updates
+                );
+                await updateToDB(
+                  requestId,
+                  "users",
+                  toUserId,
+                  "receivedRequests",
+                  updates
+                );
+                await updateToDB(requestedBookInfo.id, "books", null, null, {
+                  bookStatus: "completed",
+                });
+                await updateToDB(offeredBookInfo.id, "books", null, null, {
+                  bookStatus: "completed",
+                });
 
-        setStatus("completed");
-        setUpdateTrigger((prev) => prev + 1);
+                setStatus("completed");
+                setUpdateTrigger((prev) => prev + 1);
 
-        // Write exchange history for both users
-        const historyEntryFrom = {
-          myBook: offeredBookInfo,
-          requestedBook: requestedBookInfo,
-          fromUser: fromUserId,
-          toUser: toUserId,
-          isReviewed: false,
-          date: new Date().toISOString(),
-        };
-        const historyEntryTo = {
-          myBook: requestedBookInfo,
-          requestedBook: offeredBookInfo,
-          fromUser: toUserId,
-          toUser: fromUserId,
-          isReviewed: false,
-          date: new Date().toISOString(),
-        };
-        await writeToDB(historyEntryFrom, "users", fromUserId, "history");
-        await writeToDB(historyEntryTo, "users", toUserId, "history");
-      }
+                // Write exchange history for both users
+                const historyEntryFrom = {
+                  myBook: offeredBookInfo,
+                  requestedBook: requestedBookInfo,
+                  fromUser: fromUserId,
+                  toUser: toUserId,
+                  isReviewed: false,
+                  date: new Date().toISOString(),
+                };
+                const historyEntryTo = {
+                  myBook: requestedBookInfo,
+                  requestedBook: offeredBookInfo,
+                  fromUser: toUserId,
+                  toUser: fromUserId,
+                  isReviewed: false,
+                  date: new Date().toISOString(),
+                };
+                await writeToDB(
+                  historyEntryFrom,
+                  "users",
+                  fromUserId,
+                  "history"
+                );
+                await writeToDB(historyEntryTo, "users", toUserId, "history");
+              }
+              Alert.alert(
+                "Request Completed",
+                "The request has been completed"
+              );
+            },
+          },
+        ]
+      );
     } catch (error) {
       console.error("Failed to complete the exchange request:", error);
       // Handle the error appropriately
