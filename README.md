@@ -9,7 +9,7 @@ github accounts: sophieqin5124/qintz129
 
 github accounts: hanyi-zhou
 
-### <span style="color:red"> Important! </span>
+$${\color{red}Important!}$$
 
 Since we add index on different fields in the database, the app may not work properly if you run it on your own firebase project. Please use the firebase project we provided.  
 
