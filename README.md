@@ -1,9 +1,24 @@
 # Book Cosmos  
-**Group 8**  
-**Tianzi Qin** 
+### Group 8  
+**Tianzi Qin**      
+
 github accounts: sophieqin5124 qintz129 
-**Hanyi Zhou** 
-github accounts: hanyi-zhou
+
+**Hanyi Zhou**    
+
+github accounts: hanyi-zhou 
+
+### <font color=red>Important!</font>
+Since we add index on different fields in the database, the app may not work properly if you run it on your own firebase project. Please use the firebase project we provided.  
+
+apiKey="AIzaSyDFqxOpDNx6mkVk_kvwRt7jCxb7ABYWlwk"
+authDomain="cs5520-e585d.firebaseapp.com"
+projectId="cs5520-e585d"
+storageBucket="cs5520-e585d.appspot.com"
+messagingSenderId="215400770313"
+appId="1:215400770313:web:e81b17838b2a20c8a101d8" 
+mapsApiKey="AIzaSyA9iCzWQD8xocNjStz50whB5oE9VCbXJ-Q"
+
 ## Data Structure  
 ### Overview
 We have 2 main collections, books and users. In users, there are 3 subcollections in each user  file: receivedRquests, sentRequests, and reviews. 
@@ -71,7 +86,7 @@ A user can write a review for another user after a request is completed.
 
 #### history
 
-If both users complete an exchange, the exchange data will be stored in each user's history collections.
+If users complete or reject an exchange, the record will be stored in each user's history collections.
 
 1. fields
     - date: string
@@ -79,7 +94,8 @@ If both users complete an exchange, the exchange data will be stored in each use
     - toUser: string
     - myBook: string
     - requestedBook: string
-    - isReviewed: boolean (false by default)
+    - isReviewed: boolean (false by default) 
+    - status: string (completed, rejected)
 
 2. CRUD operations:
     - create: A history will be created when both users click complete button.
