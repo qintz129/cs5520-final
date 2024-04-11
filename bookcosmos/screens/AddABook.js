@@ -53,20 +53,6 @@ export default function AddABook({ navigation, route }) {
     getUserLocation();
   }, []);   
 
-  Geocoder.init(googleApi, {language : "en"}); 
-  
-  // Get coordinates from address
-  const findCoordinates = async (searchAddress) => {
-    try {
-      const response = await Geocoder.from(searchAddress);
-      const location = response.results[0].geometry.location;
-      return location; 
-    } catch (error) {
-      console.error('Failed to fetch coordinates:', error);
-      return null; 
-    }
-  };
-
   // Render the header based on the edit mode
   useEffect(() => {
     navigation.setOptions({
@@ -228,17 +214,34 @@ async function handleSave() {
     console.log('Fetching book details from:', url); 
     try {
       const response = await fetch(url);
-      const json = await response.json();
+      const json = await response.json(); 
       if (json.totalItems > 0 && json.items[0].volumeInfo.description) {
         // Assuming you want to open the first result
-        const description = json.items[0].volumeInfo.description;   
+        const description = json.items[0].volumeInfo.description;  
+        setDescription(description);  
       } else {
         Alert.alert( "Sorry, no books found with the given name and author.");
       }
     } catch (error) {
       console.error('Failed to fetch book details:', error);
     }  
-  }; 
+  };  
+
+  Geocoder.init(googleApi, {language : "en"}); 
+  
+  // Get coordinates from address
+  const findCoordinates = async (searchAddress) => {
+    try {
+      const response = await Geocoder.from(searchAddress);
+      const location = response.results[0].geometry.location; 
+      
+      return location; 
+    } catch (error) {
+      console.error('Failed to fetch coordinates:', error);
+      return null; 
+    }
+  };
+
 
   const getReverseGeocodingData = (lat, lng) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApi}`;
@@ -248,7 +251,8 @@ async function handleSave() {
         .then(data => {
             if (data.status === 'OK') {
                 // Get the first result
-                const firstResult = data.results[0];
+                const firstResult = data.results[0];  
+                console.log("Address converted", firstResult.formatted_address);
                 setAddress(firstResult.formatted_address);
             } else {
                 console.log('Geocoder failed due to: ' + data.status);

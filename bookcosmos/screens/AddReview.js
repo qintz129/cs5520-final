@@ -1,4 +1,4 @@
-import { View, Text, TextInput, StyleSheet, Keyboard } from "react-native";
+import { View, Text, TextInput, StyleSheet, Keyboard, Alert} from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
 import CustomButton from "../components/CustomButton";
@@ -39,7 +39,7 @@ export default function AddReview({ navigation }) {
     setRating(rate);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async () => { 
     const newReview = {
       rating: rating,
       comment: comment,
@@ -50,18 +50,29 @@ export default function AddReview({ navigation }) {
       exchangeId: exchangeId,
     };
 
-    try {
-      // Write the review to the database
-      await writeToDB(newReview, "users", reviewee, "reviews");
-      console.log("Review submitted successfully");
+    try { 
+      Alert.alert("Confirm", "Are you sure you want to submit this review?", [
+        {
+          text: "Cancel",
+          style: "cancel",
+        },
+        {
+          text: "Confirm", 
+          onPress: async () => {
+            // Write the review to the database
+            await writeToDB(newReview, "users", reviewee, "reviews");
+            console.log("Review submitted successfully");
 
-      // Update the isReviewed field to True in the history
-      await updateToDB(exchangeId, "users", auth.currentUser.uid, "history", {
-        isReviewed: true,
-      });
-
-      Keyboard.dismiss();
-      navigation.goBack();
+            // Update the isReviewed field to True in the history
+            await updateToDB(exchangeId, "users", auth.currentUser.uid, "history", {
+              isReviewed: true,
+            });
+            Keyboard.dismiss(); 
+            Alert.alert("The review has been submitted successfully!");
+            navigation.goBack(); 
+          } 
+        }] 
+      )
     } catch (error) {
       console.error("Error submitting review:", error);
     }

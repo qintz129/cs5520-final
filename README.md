@@ -1,9 +1,24 @@
 # Book Cosmos  
-**Group 8**  
-**Tianzi Qin** 
-github accounts: sophieqin5124 qintz129 
-**Hanyi Zhou** 
-github accounts: hanyi-zhou
+### Group 8  
+**Tianzi Qin**      
+
+github accounts: sophieqin5124/qintz129 
+
+**Hanyi Zhou**    
+
+github accounts: hanyi-zhou 
+
+### <font color=red>Important!</font>
+Since we add index on different fields in the database, the app may not work properly if you run it on your own firebase project. Please use the firebase project we provided.  
+
+apiKey="AIzaSyBEaicN_9yLqghPZxfbQjV6eJZq2S2Jnvc"    
+authDomain="bookcosmos-2a13a.firebaseapp.com"    
+projectId="bookcosmos-2a13a"    
+storageBucket="bookcosmos-2a13a.appspot.com"    
+messagingSenderId="1097918408997"    
+appId="1:1097918408997:web:43a3cacdd4549c648492cc"      
+googleApi="AIzaSyA9iCzWQD8xocNjStz50whB5oE9VCbXJ-Q"          
+
 ## Data Structure  
 ### Overview
 We have 2 main collections, books and users. In users, there are 3 subcollections in each user  file: receivedRquests, sentRequests, and reviews. 
@@ -14,10 +29,14 @@ We have 2 main collections, books and users. In users, there are 3 subcollection
     - uid: string
     - email: string
     - name: string   
+    - notification: boolean (false by default) 
+    - image: string (url) from firebase storage 
+    - password: string 
+    - books: array of string (bookId)
 2. CRUD operations
     - create: create a new user
     - read: get user information
-    - update: update user information 
+    - update: update user information: name, password and avatar
 
    
 #### books  
@@ -28,11 +47,14 @@ We have 2 main collections, books and users. In users, there are 3 subcollection
     - bookStatus: string (free, pending, completed)  
     - description: string 
     - id: string 
-    - owner: string 
+    - owner: string  
+    - image: string (url) from firebase storage 
+    - location: object (including latitude and longitude) 
+    - address: string
 2. CRUD operations
     - create: create a new book
     - read: get book information, in explore, book details, library, requests, and history page
-    - update: update book information 
+    - update: update book information
     - delete: delete a book  
 
 #### receivedRequests and sentRequests 
@@ -70,8 +92,7 @@ A user can write a review for another user after a request is completed.
     - read: get review information from reviews tab in profile page
 
 #### history
-
-If both users complete an exchange, the exchange data will be stored in each user's history collections.
+If users complete or reject an exchange, the record will be stored in each user's history collections.
 
 1. fields
     - date: string
@@ -79,7 +100,8 @@ If both users complete an exchange, the exchange data will be stored in each use
     - toUser: string
     - myBook: string
     - requestedBook: string
-    - isReviewed: boolean (false by default)
+    - isReviewed: boolean (false by default) 
+    - status: string (completed, rejected)
 
 2. CRUD operations:
     - create: A history will be created when both users click complete button.
@@ -124,4 +146,40 @@ Tianzi Qin:
 
 Hanyi Zhou: 
 - Implement the screens ad logics: Explore, BookDetails, Library,  AddBook,  OtherUserProfile, ChooseBook, SendRequests, History, AddReview
-- Bugs fix, polish and platform tests
+- Bugs fix, polish and platform tests  
+
+## Iteration 2 
+### Authentication 
+Most parts are implemented in the first iteration. We added a new modal to allow users to change their passwords.    
+Screenshots:           
+
+### Camera use 
+We added a new feature to allow users to take a photo or choose a photo from the gallery to set their avatar and book covers, all pictures are stored in firebase storage. 
+Then we added pictures to Explore, BookDetail, Requests, History, Library and UserInfo screens. 
+Screenshots:     
+
+### Location use 
+We added a new feature to allow users to set the location of their books, either by typing the address or by automatically getting the current location. 
+Then we added an interactive to show the number of books in a certain area. When users click on the marker, they can see the book details.
+Screenshots:       
+
+### Notification  
+We added a switch button in UserInfo screen to allow users to turn on or off the notification. 
+Then we added a new feature to allow users to receive notifications when they send a request, if the notification function is enabled, after a certain time window, they will receive the reminder to check the status of the request. For test purpose, we set the time window to 3 seconds. When users click on the notification, they will be directed to the outgoing requests screen. 
+Screenshots:    
+
+### External API 
+1. We used google books API to get descriptions when users add a book. And users could go to the google book detailed page in the book details screen when they click on the get more info button. 
+2. We uses google geocoding API to get the latitude and longitude of the address users typed in and vice versa. 
+Screenshots:     
+
+### Others 
+Optimize the UI in Explore, BookDetail, Requests, History, Library and UserInfo screens.  
+
+### Contribution 
+Tianzi Qin:   
+- Implement all camera features, including taking photos, choosing photos from the gallery, and storing photos in firebase storage. 
+- Implement the location feature in AddABook screen, including getting the current location, typing the address, and getting the latitude and longitude of the address. 
+- Implement the notification feature, including the switch button in UserInfo screen, the notification reminder.  
+- Implement the google books API and google geocoding API. 
+- Add change password feature. 
