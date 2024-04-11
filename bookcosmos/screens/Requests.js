@@ -16,7 +16,7 @@ import { fetchExtra } from "../firebase-files/firestoreHelper";
 
 // Requests component to display the incoming and outgoing requests
 export default function Requests({ navigation }) {
-  const [activeTab, setActiveTab] = useState("incoming");
+  const [activeTab, setActiveTab] = useState("outgoing");
   const [requests, setRequests] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
@@ -55,12 +55,12 @@ export default function Requests({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabs}>
+      <View style={styles.tabs}> 
+      <CustomButton onPress={() => setActiveTab("outgoing")}>
+          <Text>Outgoing</Text>
+        </CustomButton>
         <CustomButton onPress={() => setActiveTab("incoming")}>
           <Text>Incoming</Text>
-        </CustomButton>
-        <CustomButton onPress={() => setActiveTab("outgoing")}>
-          <Text>Outgoing</Text>
         </CustomButton>
       </View>
       {isLoading ? (

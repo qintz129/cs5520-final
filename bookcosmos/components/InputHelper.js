@@ -2,7 +2,8 @@ import { StyleSheet, TextInput, View, Text } from "react-native";
 import CustomButton from "./CustomButton";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons"; 
-import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { MaterialCommunityIcons } from '@expo/vector-icons'; 
+import { AntDesign } from '@expo/vector-icons';
 
 // CustomInput component to achieve the input for all screens
 export function CustomInput({
@@ -17,8 +18,8 @@ export function CustomInput({
 }) {
   return (
     <View style={styles.container}>
-      <View style={styles.fetch}>
-          <Text style={[styles.title, fetch && styles.fetchTitle]}>{title}</Text> 
+      <View style={styles.extraEdit}>
+          <Text style={[styles.title, fetch && styles.extraEditTitle]}>{title}</Text> 
           {fetch && ( 
             <CustomButton onPress={fetchFunction} disabled={!pressable} > 
               <MaterialCommunityIcons name="application-import" size={24} color="black" />
@@ -45,11 +46,21 @@ export function CustomPassWordInput({
   placeholder = "",
   editable = true,
   secureTextEntry,
-  onToggleVisibility,
+  onToggleVisibility, 
+  editButton = false, 
+  editFunction
 }) {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{title}</Text>
+      <View style={styles.extraEdit}>
+          <Text style={[styles.title, editButton && styles.extraEditTitle]}>{title}</Text> 
+          {editButton && ( 
+            <CustomButton onPress={editFunction}> 
+              <AntDesign name="edit" size={24} color="black" />
+            </CustomButton>  
+          ) 
+          } 
+      </View>
       <View style={styles.inputContainer}>
         <TextInput
           style={[styles.input, !editable && styles.nonEditable]}
@@ -69,7 +80,7 @@ export function CustomPassWordInput({
             color="grey"
           />
         </CustomButton>
-      </View>
+      </View> 
     </View>
   );
 }
@@ -80,15 +91,16 @@ export function MultilineInput({
   value,
   placeholder = "",
   editable = true, 
-  fetch = false, 
+  fetch = false,  
+  pressable = false,
   fetchFunction
 }) {
   return (
     <View style={styles.container}> 
-    <View style={styles.fetch}>
-        <Text style={[styles.title, fetch && styles.fetchTitle]}>{title}</Text> 
+    <View style={styles.extraEdit}>
+        <Text style={[styles.title, fetch && styles.extraEditTitle]}>{title}</Text> 
         {fetch && ( 
-          <CustomButton onPress={fetchFunction}> 
+          <CustomButton onPress={fetchFunction} disabled={!pressable}> 
             <MaterialCommunityIcons name="application-import" size={24} color="black" />
           </CustomButton>  
         ) 
@@ -115,7 +127,7 @@ const styles = StyleSheet.create({
   title: {
     fontWeight: "bold", 
   }, 
-  fetchTitle: {
+  extraEditTitle: {
    alignSelf: "center", 
    marginRight: 10,
   },
@@ -152,7 +164,7 @@ const styles = StyleSheet.create({
     borderWidth: 0,
     backgroundColor: "#f0f0f0",
   }, 
-  fetch: {
+  extraEdit: {
     flexDirection: "row",
   },
 });

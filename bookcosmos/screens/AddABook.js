@@ -299,7 +299,8 @@ async function handleSave() {
                   value={description}
                   placeholder="Write your book description here or import it from google books..." 
                   fetch={true} 
-                  fetchFunction={() => fetchBookDescription(bookName, author)}
+                  fetchFunction={() => fetchBookDescription(bookName, author)} 
+                  pressable={bookName && author}
                 />    
             <View style={styles.buttonContainer}>
               <CustomButton onPress={handleClear}>

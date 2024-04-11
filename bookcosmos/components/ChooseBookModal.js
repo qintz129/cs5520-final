@@ -7,7 +7,10 @@ import {
   writeToDB,
   updateToDB,
   createExchangeRequest,
-} from "../firebase-files/firestoreHelper";
+} from "../firebase-files/firestoreHelper"; 
+import * as Notifications from 'expo-notifications';  
+import {throttle} from 'lodash'; 
+import { useUser } from "../hooks/UserContext"; 
 
 // ChooseBookModal component to display a modal to choose a book for exchange
 export default function ChooseBookModal({
@@ -20,7 +23,37 @@ export default function ChooseBookModal({
   setRequestSent,
 }) {
   const [books, setBooks] = useState([]);
-  const [selectedBookId, setSelectedBookId] = useState(null);
+  const [selectedBookId, setSelectedBookId] = useState(null);  
+  const {userInfo} = useUser();
+
+  async function scheduleNotification() {  
+    try {  
+        if (!userInfo.notification) {  
+          console.log("User has disabled notifications");
+          return; 
+        }
+        const id = await Notifications.scheduleNotificationAsync({ 
+            content: { 
+                title: "Book Exchange Request",  
+                body: "Check your book exchange request status!", 
+                data: {screen: "Requests"},
+            }, 
+            // Set the notification to be sent after 3 seconds for testing purposes
+            trigger:{seconds: 3}, 
+        });
+    } catch (error) { 
+        console.log(error)
+    } 
+} 
+
+const scheduleThrottledNotification = throttle(
+    () => {
+      console.log("Scheduling notification...");
+      scheduleNotification();
+    },
+    86400000, // 24 hours  
+    { 'trailing': false }
+  );
 
   useEffect(() => {
     // Define the query to fetch books for a specific user
@@ -80,14 +113,16 @@ export default function ChooseBookModal({
           });
 
         // Update book status to indicate it is in exchange
-        await updateBookStatus(selectedBookId);
+        await updateBookStatus(selectedBookId); 
+
+        // Set the requestSent state to true
+        setRequestSent(true); 
+
+        // Schedule a notification for the user 
+        scheduleThrottledNotification();
 
         // Close the modal
         onRequestClose();
-
-        // Set the requestSent state to true
-        setRequestSent(true);
-
         // Alert the user that the request has been sent
         Alert.alert("Your request has been sent!");
       } catch (error) {

@@ -91,7 +91,6 @@ export default function Library({ navigation, userId, isMyLibrary }) {
       });
     }
   };
-  console.log("books", books);
   return (
     <View style={styles.container}>
       <FlatList
