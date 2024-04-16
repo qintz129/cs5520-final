@@ -1,10 +1,11 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import { writeToDB } from "../firebase-files/firestoreHelper";
+import BackgroundAnimation from "../components/BackgroundAnimation";
 
 // Signup component to allow users to signup
 export default function Signup({ navigation }) {
@@ -34,7 +35,7 @@ export default function Signup({ navigation }) {
         uid: userCred.user.uid,
         name: email,
         email: email,
-        password: password, 
+        password: password,
         notification: false,
       };
       writeToDB(newUser, "users");
@@ -71,6 +72,8 @@ export default function Signup({ navigation }) {
 
   return (
     <View style={styles.container}>
+      <BackgroundAnimation />
+      <Text style={{ fontFamily: "logo-font" }}>Book Cosmos</Text>
       <CustomInput
         title="Email"
         onChangeText={emailHandler}

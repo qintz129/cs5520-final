@@ -73,8 +73,7 @@ export default function History({ navigation }) {
                 reviewee={item.toUser}
                 reviewer={auth.currentUser.uid}
                 exchangeId={item.id}
-                isReviewed={item.isReviewed} 
-                status={item.status}
+                isReviewed={item.isReviewed}
               />
             ) : item.toUser === auth.currentUser.uid ? (
               <HistoryCard
@@ -85,8 +84,7 @@ export default function History({ navigation }) {
                 reviewee={auth.currentUser.uid}
                 reviewer={item.toUser}
                 exchangeId={item.id}
-                isReviewed={item.isReviewed} 
-                status={item.status}
+                isReviewed={item.isReviewed}
               />
             ) : null
           }

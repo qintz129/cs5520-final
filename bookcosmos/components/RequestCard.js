@@ -105,42 +105,11 @@ export default function RequestCard({
 
             if (action === "cancel") {
               Alert.alert(
+                "Request Cancelled",
                 "The request has been cancelled"
               );
-            } else if (action === "reject") {    
-              // Write rejected history for both users
-              const historyEntryFrom = {
-                myBook: offeredBookInfo,
-                requestedBook: requestedBookInfo,
-                fromUser: fromUserId,
-                toUser: toUserId,
-                isReviewed: false, 
-                status: "rejected",
-                date: new Date().toISOString(),
-              };
-              const historyEntryTo = {
-                myBook: requestedBookInfo,
-                requestedBook: offeredBookInfo,
-                fromUser: toUserId,
-                toUser: fromUserId, 
-                isReviewed: false, 
-                status: "rejected",
-                date: new Date().toISOString(),
-              };
-              await writeToDB(
-                historyEntryFrom,
-                "users",
-                fromUserId,
-                "history"
-              ); 
-              console.log("Wrote history entry for", fromUserId, "in fromUser");
-              await writeToDB( 
-                historyEntryTo, 
-                  "users",  
-                  toUserId,  
-                  "history"); 
-              console.log("Wrote history entry for", toUserId, "in toUser");
-              Alert.alert("The request has been rejected");
+            } else if (action === "reject") {
+              Alert.alert("Request Rejected", "The request has been rejected");
             }
           },
         },
@@ -192,7 +161,7 @@ export default function RequestCard({
             setStatus("accepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
 
-            Alert.alert("The request has been accepted");
+            Alert.alert("Request Accepted", "The request has been accepted");
           },
         },
       ]);
@@ -241,7 +210,8 @@ export default function RequestCard({
             setStatus("unaccepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
 
-            Alert.alert( "The request has been cancelled");
+            
+            Alert.alert("Request Cancelled", "The request has been cancelled");
           },
         },
       ]);
@@ -324,17 +294,15 @@ export default function RequestCard({
                   requestedBook: requestedBookInfo,
                   fromUser: fromUserId,
                   toUser: toUserId,
-                  isReviewed: false, 
-                  status: "completed",
+                  isReviewed: false,
                   date: new Date().toISOString(),
                 };
                 const historyEntryTo = {
                   myBook: requestedBookInfo,
                   requestedBook: offeredBookInfo,
                   fromUser: toUserId,
-                  toUser: fromUserId, 
-                  isReviewed: false, 
-                  status: "completed",
+                  toUser: fromUserId,
+                  isReviewed: false,
                   date: new Date().toISOString(),
                 };
                 await writeToDB(
@@ -343,13 +311,10 @@ export default function RequestCard({
                   fromUserId,
                   "history"
                 );
-                await writeToDB( 
-                  historyEntryTo, 
-                   "users",  
-                   toUserId,  
-                   "history");
+                await writeToDB(historyEntryTo, "users", toUserId, "history");
               }
               Alert.alert(
+                "Request Completed",
                 "The request has been completed"
               );
             },

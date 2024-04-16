@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
+import BackgroundAnimation from "../components/BackgroundAnimation";
 
 // Login component to allow users to login
 export default function Login({ navigation }) {
@@ -41,6 +42,7 @@ export default function Login({ navigation }) {
   };
   return (
     <View style={styles.container}>
+      <BackgroundAnimation />
       <CustomInput
         title="Email"
         onChangeText={emailHandler}
