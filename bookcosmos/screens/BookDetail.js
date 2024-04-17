@@ -248,9 +248,7 @@ export default function BookDetail({ route, navigation }) {
                       {rating > 0 && (
                         <View style={styles.userRatingContainer}>
                           <FontAwesome name="star" size={20} color="#fdcc0d" />
-                          <Text style={styles.ratingText}>
-                            Rating: {rating}
-                          </Text>
+                          <Text style={styles.ratingText}>{rating}</Text>
                         </View>
                       )}
                     </View>
@@ -335,7 +333,6 @@ const styles = StyleSheet.create({
   },
   descriptionText: {
     fontSize: 18,
-    marginBottom: 10,
     fontFamily: "Catamaran_400Regular",
     textAlign: "justify",
   },
