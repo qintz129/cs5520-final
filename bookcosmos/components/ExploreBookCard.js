@@ -23,7 +23,7 @@ export default function ExploreBookCard({ item }) {
 
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return <Text>...</Text>;
   }
 
   useEffect(() => {
