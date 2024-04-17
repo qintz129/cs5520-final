@@ -10,9 +10,11 @@ import {
 import { database } from "../firebase-files/firebaseSetup";
 import { deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
+import { calculateDistance } from "../Utils";
+import * as Location from "expo-location";
 
 // Library component to display the books in the library
-export default function Library({ navigation, userId, isMyLibrary }) {
+export default function Library({ navigation, userId, isMyLibrary, distance }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
@@ -58,6 +60,8 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     return () => unsubscribe();
   }, [userId]);
 
+  console.log("books: ", books);
+
   const handleDeleteItem = async (item) => {
     try {
       Alert.alert(
@@ -85,14 +89,20 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 
   const handlePressBook = (item) => {
     if (isMyLibrary) {
-      navigation.navigate("Add A Book", { editMode: true, bookId: item.id });
+      navigation.navigate("Add A Book", {
+        editMode: true,
+        bookId: item.id,
+      });
     } else {
+      console.log("item: ", item);
       navigation.navigate("Book Detail", {
         bookId: item.id,
         ownerId: item.owner,
+        distance: distance,
       });
     }
   };
+
   return (
     <View style={styles.container}>
       <FlatList
