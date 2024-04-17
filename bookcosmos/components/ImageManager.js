@@ -118,9 +118,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   userImage: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginTop: 10,
+    marginBottom: 20,
   },
   bookImage: {
     width: 150,
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
   editButton: {
     borderRadius: 10,
     padding: 10,
-    backgroundColor: "#55c7aa",
+    backgroundColor: "#ff9529",
   },
   editText: {
     fontFamily: "SecularOne_400Regular",
