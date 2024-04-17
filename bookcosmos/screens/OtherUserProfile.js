@@ -13,7 +13,7 @@ import { FontAwesome } from "@expo/vector-icons";
 // OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
-  const { ownerId, ownerName, rating } = route.params;
+  const { ownerId, ownerName, rating, distance } = route.params;
   const [userAvatar, setUserAvatar] = useState(null);
 
   const { fontsLoaded } = useCustomFonts();
@@ -106,7 +106,12 @@ export default function OtherUserProfile({ navigation, route }) {
         </View>
       </View>
       {activeTab === "library" ? (
-        <Library navigation={navigation} userId={ownerId} isMyLibrary={false} />
+        <Library
+          navigation={navigation}
+          userId={ownerId}
+          isMyLibrary={false}
+          distance={distance}
+        />
       ) : (
         <Reviews userId={ownerId} />
       )}

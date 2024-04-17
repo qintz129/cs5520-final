@@ -226,6 +226,7 @@ export default function BookDetail({ route, navigation }) {
                       ownerId: ownerId,
                       ownerName: ownerName,
                       rating: rating,
+                      distance: distance,
                     })
                   }
                   customStyle={{
