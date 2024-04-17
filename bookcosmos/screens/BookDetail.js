@@ -248,7 +248,9 @@ export default function BookDetail({ route, navigation }) {
                       {rating > 0 && (
                         <View style={styles.userRatingContainer}>
                           <FontAwesome name="star" size={20} color="#fdcc0d" />
-                          <Text style={styles.ratingText}>{rating}</Text>
+                          <Text style={styles.ratingText}>
+                            Rating: {rating}
+                          </Text>
                         </View>
                       )}
                     </View>
@@ -310,7 +312,16 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 30,
     marginBottom: 5,
+  bookInfoContainer: {
+    padding: 10,
+  },
+  titleText: {
+    fontSize: 30,
+    marginBottom: 5,
     fontWeight: "bold",
+    fontFamily: "SecularOne_400Regular",
+    marginTop: 10,
+    textAlign: "center",
     fontFamily: "SecularOne_400Regular",
     marginTop: 10,
     textAlign: "center",
@@ -320,6 +331,42 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 25,
     fontFamily: "Molengo_400Regular",
+    textAlign: "center",
+  },
+  descriptionText: {
+    fontSize: 18,
+    marginBottom: 10,
+    fontFamily: "Catamaran_400Regular",
+    textAlign: "justify",
+  },
+  userInfoContainer: {
+    marginTop: 20,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    borderWidth: 1,
+    borderColor: "lightgrey",
+    padding: 10,
+    borderRadius: 10,
+  },
+  userButtonContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+  },
+  userContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    columnGap: 20,
+  },
+  userTextContainer: {
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  userText: {
+    fontSize: 18,
+    fontFamily: "SecularOne_400Regular",
     textAlign: "center",
   },
   descriptionText: {
