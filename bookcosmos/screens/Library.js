@@ -21,7 +21,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     if (isMyLibrary) {
       booksQuery = query(
         collection(database, "books"),
-        where("owner", "==", userId), 
+        where("owner", "==", userId)
       );
     } else {
       // Define the query to fetch books for others' profiles
@@ -39,9 +39,11 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         const fetchedBooks = [];
         snapshot.forEach((doc) => {
           fetchedBooks.push({ id: doc.id, ...doc.data() });
-        });  
+        });
 
-        const filterBooks = fetchedBooks.filter((book) => book.bookStatus !== "completed");
+        const filterBooks = fetchedBooks.filter(
+          (book) => book.bookStatus !== "completed"
+        );
         // Sort the fetched books by book name
         filterBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
         // Update the state variable with the fetched books

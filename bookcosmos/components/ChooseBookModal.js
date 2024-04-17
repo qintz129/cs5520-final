@@ -12,6 +12,7 @@ import * as Notifications from "expo-notifications";
 import { throttle } from "lodash";
 import { useUser } from "../hooks/UserContext";
 import { useCustomFonts } from "../Fonts";
+import { ScrollView } from "react-native-gesture-handler";
 
 // ChooseBookModal component to display a modal to choose a book for exchange
 export default function ChooseBookModal({
@@ -163,20 +164,20 @@ export default function ChooseBookModal({
             )}
             keyExtractor={(item) => item.id.toString()}
           />
-          <View style={styles.buttonContainer}>
-            <CustomButton
-              onPress={onRequestClose}
-              customStyle={styles.cancelButtonStyle}
-            >
-              <Text style={styles.buttonText}>Cancel</Text>
-            </CustomButton>
-            <CustomButton
-              onPress={handleConfirm}
-              customStyle={styles.confirmButtonStyle}
-            >
-              <Text style={styles.buttonText}>Confirm</Text>
-            </CustomButton>
-          </View>
+        </View>
+        <View style={styles.buttonContainer}>
+          <CustomButton
+            onPress={onRequestClose}
+            customStyle={styles.cancelButtonStyle}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
+          </CustomButton>
+          <CustomButton
+            onPress={handleConfirm}
+            customStyle={styles.confirmButtonStyle}
+          >
+            <Text style={styles.buttonText}>Confirm</Text>
+          </CustomButton>
         </View>
       </View>
     </Modal>
@@ -186,17 +187,19 @@ export default function ChooseBookModal({
 const styles = StyleSheet.create({
   modalContainer: {
     flex: 1,
-    justifyContent: "center",
+    justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "white",
     padding: 20,
   },
   modalContent: {
+    maxHeight: "60%",
     width: "80%",
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
+    justifyContent: "center",
   },
   modalTitle: {
     fontSize: 20,
@@ -210,6 +213,7 @@ const styles = StyleSheet.create({
   },
   selectedItem: {
     backgroundColor: "#e0e0e0",
+    borderRadius: 10,
   },
   buttonContainer: {
     flexDirection: "row",
@@ -225,18 +229,18 @@ const styles = StyleSheet.create({
   cancelButtonStyle: {
     backgroundColor: "#ff5c5c",
     width: "40%",
-    height: 40,
+    height: 50,
     borderRadius: 10,
   },
   confirmButtonStyle: {
     backgroundColor: "#55c7aa",
     width: "40%",
-    height: 40,
+    height: 50,
     borderRadius: 10,
   },
   buttonText: {
     color: "#f5f5f5",
-    fontSize: 16,
+    fontSize: 18,
     fontFamily: "SecularOne_400Regular",
   },
 });
