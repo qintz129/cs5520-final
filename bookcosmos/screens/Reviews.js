@@ -8,6 +8,7 @@ import ReviewCard from "../components/ReviewCard";
 // Reviews component to display the reviews for a user
 export default function Reviews({ userId }) {
   const [reviews, setReviews] = useState([]);
+
   useEffect(() => {
     const q = query(collection(database, "users", userId, "reviews"));
     const unsubscribe = onSnapshot(
@@ -52,7 +53,7 @@ export default function Reviews({ userId }) {
   );
 }
 
-const styles = StyleSheet.create({ 
+const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 5,
