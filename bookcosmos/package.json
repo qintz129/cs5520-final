@@ -9,6 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
+    "@expo-google-fonts/catamaran": "^0.2.3",
     "@expo-google-fonts/gravitas-one": "^0.2.3",
     "@expo-google-fonts/molengo": "^0.2.3",
     "@expo-google-fonts/paytone-one": "^0.2.3",
