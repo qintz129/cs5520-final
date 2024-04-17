@@ -1,9 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
 import { Rating } from "react-native-ratings";
+import { useCustomFonts } from "../Fonts";
 
 // ReviewCard component to display a review
 export default function ReviewCard({ review }) {
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
+
   return (
     <View style={styles.card}>
       <Rating
@@ -40,17 +46,19 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    marginBottom: 5,
   },
   reviewerName: {
-    fontSize: 14,
+    fontSize: 18,
     fontWeight: "bold",
+    fontFamily: "SecularOne_400Regular",
   },
   date: {
-    fontSize: 14,
+    fontSize: 16,
     color: "#666",
+    fontFamily: "SecularOne_400Regular",
   },
   comment: {
-    fontSize: 14,
+    fontSize: 16,
+    fontFamily: "Catamaran_400Regular",
   },
 });

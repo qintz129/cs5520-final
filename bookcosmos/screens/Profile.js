@@ -1,19 +1,25 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import React, { useState, useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import CustomButton from "../components/CustomButton";
 import Library from "./Library";
 import Reviews from "./Reviews";
-import { Ionicons } from "@expo/vector-icons"; 
-import { useUser } from "../hooks/UserContext"; 
-import { ref, uploadBytes, getDownloadURL} from "firebase/storage";   
-import { auth, database, storage} from "../firebase-files/firebaseSetup";
+import { Ionicons } from "@expo/vector-icons";
+import { useUser } from "../hooks/UserContext";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { auth, database, storage } from "../firebase-files/firebaseSetup";
+import { useCustomFonts } from "../Fonts";
 
 // Profile component to display the profile of the user
-export default function Profile({ navigation }) { 
-  const {userInfo} = useUser();
-  const [activeTab, setActiveTab] = useState("library"); 
-  const [imageUri, setImageUri] = useState(null);  
-  const [downloadUri, setDownloadUri] = useState(null);  
+export default function Profile({ navigation }) {
+  const { userInfo } = useUser();
+  const [activeTab, setActiveTab] = useState("library");
+  const [imageUri, setImageUri] = useState(null);
+  const [downloadUri, setDownloadUri] = useState(null);
+
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   useEffect(() => {
     setImageUri(userInfo.imageUri);
@@ -24,7 +30,7 @@ export default function Profile({ navigation }) {
       const imageRef = ref(storage, imageUri);
 
       try {
-        const url = await getDownloadURL(imageRef); 
+        const url = await getDownloadURL(imageRef);
         setDownloadUri(url);
       } catch (error) {
         console.log(error);
@@ -34,33 +40,60 @@ export default function Profile({ navigation }) {
     if (imageUri) {
       fetchImage();
     }
-  }, [imageUri]);  
-  
-  console.log(userInfo);  
+  }, [imageUri]);
+
+  console.log(userInfo);
   return (
     <View style={styles.container}>
-      <CustomButton onPress={() => navigation.navigate("User Info")}> 
+      <CustomButton onPress={() => navigation.navigate("User Info")}>
         <View style={styles.userAvatar}>
-        {downloadUri? (  
-          <Image source={{ uri: downloadUri }} style={styles.image} />
-        ): ( 
-        <Ionicons name="person-circle" size={100} color="black" /> 
-          )} 
+          {downloadUri ? (
+            <Image source={{ uri: downloadUri }} style={styles.image} />
+          ) : (
+            <Ionicons name="person-circle" size={100} color="black" />
+          )}
         </View>
       </CustomButton>
       <View style={styles.addABook}>
         <CustomButton
+          customStyle={styles.addBookButton}
           onPress={() => navigation.navigate("Add A Book", { editMode: false })}
         >
-          <Text>Add A Book</Text>
+          <Text style={styles.addBookText}>Add A Book</Text>
         </CustomButton>
       </View>
       <View style={styles.tabs}>
-        <CustomButton onPress={() => setActiveTab("library")}>
-          <Text>My Library</Text>
+        <CustomButton
+          customStyle={[
+            styles.tab,
+            activeTab === "library" && styles.activeTab,
+          ]}
+          onPress={() => setActiveTab("library")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "library" && styles.activeTabText,
+            ]}
+          >
+            My Library
+          </Text>
         </CustomButton>
-        <CustomButton onPress={() => setActiveTab("reviews")}>
-          <Text>Reviews</Text>
+        <CustomButton
+          customStyle={[
+            styles.tab,
+            activeTab === "reviews" && styles.activeTab,
+          ]}
+          onPress={() => setActiveTab("reviews")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "reviews" && styles.activeTabText,
+            ]}
+          >
+            Reviews
+          </Text>
         </CustomButton>
       </View>
       {activeTab === "library" ? (
@@ -80,23 +113,51 @@ const styles = StyleSheet.create({
   addABook: {
     alignItems: "flex-start",
     marginVertical: 10,
-    marginLeft: 65,
+    marginLeft: 50,
+  },
+  addBookButton: {
+    backgroundColor: "#55c7aa",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  addBookText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "white",
   },
   tabs: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
-  }, 
-  image: { 
+    justifyContent: "space-evenly",
+    alignItems: "stretch",
+    marginHorizontal: 20,
+  },
+  tab: {
+    flex: 1,
+  },
+  activeTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: "#55c7aa",
+  },
+  activeTabText: {
+    color: "black",
+    marginBottom: 10,
+  },
+  image: {
     width: 100,
     height: 100,
-    borderRadius: 50, 
-  }, 
+    borderRadius: 50,
+  },
   container: {
     flex: 1,
-  }, 
+  },
   userAvatar: {
     alignItems: "center",
     marginVertical: 5,
+  },
+  tabText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "gray",
   },
 });
