@@ -4,6 +4,7 @@ import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import CustomButton from "./CustomButton";
 import { useActionSheet } from "@expo/react-native-action-sheet";
+import { useCustomFonts } from "../Fonts";
 
 export default function ImageManager({
   receiveImageUri,
@@ -14,6 +15,11 @@ export default function ImageManager({
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [imageUri, setImageUri] = useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
+
   useEffect(() => {
     setImageUri(initialImageUri);
   }, [initialImageUri]);
@@ -97,10 +103,10 @@ export default function ImageManager({
           source={{ uri: imageUri }}
         />
       ) : (
-        <MaterialIcons name="photo-camera" size={150} color="gray" />
+        <MaterialIcons name="photo-camera" size={130} color="gray" />
       )}
-      <CustomButton onPress={showActionSheet} customStyle={styles.button}>
-        <Text>Edit</Text>
+      <CustomButton onPress={showActionSheet} customStyle={styles.editButton}>
+        <Text style={styles.editText}>Edit Photo</Text>
       </CustomButton>
     </View>
   );
@@ -121,5 +127,14 @@ const styles = StyleSheet.create({
     height: 180,
     borderRadius: 10,
   },
-  button: {},
+  editButton: {
+    borderRadius: 10,
+    padding: 10,
+    backgroundColor: "#55c7aa",
+  },
+  editText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "white",
+  },
 });
