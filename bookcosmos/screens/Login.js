@@ -4,7 +4,8 @@ import { View, Text, StyleSheet, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
-import BackgroundAnimation from "../components/BackgroundAnimation";
+import AuthenticationBackground from "../components/AuthenticationBackground";
+import { useCustomFonts } from "../Fonts";
 
 // Login component to allow users to login
 export default function Login({ navigation }) {
@@ -12,6 +13,11 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
+
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   const signupHandler = () => {
     navigation.replace("Signup");
@@ -42,7 +48,12 @@ export default function Login({ navigation }) {
   };
   return (
     <View style={styles.container}>
-      <BackgroundAnimation />
+      <AuthenticationBackground />
+      <Text style={styles.logo}>Book Cosmos</Text>
+      <Text style={styles.slogan}>Start a Literary Odyssey </Text>
+      <Text style={styles.slogan}>
+        Where Every Swap is a New Universe to Explore
+      </Text>
       <CustomInput
         title="Email"
         onChangeText={emailHandler}
@@ -63,7 +74,7 @@ export default function Login({ navigation }) {
         </Text>
       </CustomButton>
       <CustomButton onPress={signupHandler}>
-        <Text>New User? Create An Account</Text>
+        <Text style={styles.signUpText}>New User? Create An Account</Text>
       </CustomButton>
     </View>
   );
@@ -77,7 +88,29 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     paddingHorizontal: 20,
   },
+  logo: {
+    fontFamily: "PaytoneOne_400Regular",
+    fontSize: 45,
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  slogan: {
+    fontFamily: "Molengo_400Regular",
+    fontSize: 16,
+    textAlign: "center",
+    marginBottom: 20,
+  },
   disabledText: {
+    fontFamily: "Molengo_400Regular",
     color: "grey",
+    fontSize: 18,
+  },
+  normalText: {
+    fontFamily: "Molengo_400Regular",
+    fontSize: 18,
+  },
+  signUpText: {
+    fontFamily: "Molengo_400Regular",
+    fontSize: 18,
   },
 });

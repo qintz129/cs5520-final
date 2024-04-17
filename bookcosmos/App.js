@@ -20,6 +20,7 @@ import { UserProvider } from "./hooks/UserContext";
 import Map from "./screens/Map";
 import * as Notifications from "expo-notifications";
 import NotificationListener from "./components/NotificationListener";
+import { useCustomFonts } from "./Fonts";
 
 Notifications.setNotificationHandler({
   handleNotification: async function (notification) {
@@ -31,6 +32,7 @@ Notifications.setNotificationHandler({
 });
 
 const Stack = createNativeStackNavigator();
+
 export default function App() {
   const [userLoggedIn, setUserLoggedIn] = useState(false);
 
@@ -50,6 +52,11 @@ export default function App() {
     });
   }, []);
 
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
+
   const AuthStack = (
     <>
       <Stack.Screen name="Signup" component={Signup} />
@@ -61,7 +68,9 @@ export default function App() {
       <Stack.Screen
         name="MainTab"
         component={MainTab}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="User Info"
@@ -97,7 +106,13 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
-      <Stack.Screen name="Map" component={Map} />
+      <Stack.Screen
+        name="Map"
+        component={Map}
+        options={{
+          headerBackTitleVisible: false,
+        }}
+      />
     </>
   );
 
@@ -111,6 +126,10 @@ export default function App() {
               initialRouteName="Signup"
               screenOptions={{
                 headerBackTitleVisible: false,
+                headerTitleStyle: {
+                  fontFamily: "SecularOne_400Regular",
+                  fontSize: 20,
+                },
               }}
             >
               {userLoggedIn ? AppStack : AuthStack}
