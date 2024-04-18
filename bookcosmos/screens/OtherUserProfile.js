@@ -7,14 +7,36 @@ import { Ionicons } from "@expo/vector-icons";
 import { onSnapshot, doc } from "firebase/firestore";
 import { database, storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
+<<<<<<< HEAD
 import { useCustomFonts } from "../Fonts";
 import { FontAwesome } from "@expo/vector-icons";
+=======
+<<<<<<< HEAD
+import { useCustomFonts } from "../Fonts";
+import { FontAwesome } from "@expo/vector-icons";
+=======
+import { Entypo } from '@expo/vector-icons';
+>>>>>>> acbf31d7952944d37065779248f15e052bbc224e
+>>>>>>> main
 
 // OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
   const { ownerId, ownerName, rating, distance } = route.params;
   const [userAvatar, setUserAvatar] = useState(null);
+=======
+  const { ownerId, ownerName, rating } = route.params;
+  const [userAvatar, setUserAvatar] = useState(null); 
+>>>>>>> acbf31d7952944d37065779248f15e052bbc224e
+
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
@@ -56,6 +78,10 @@ export default function OtherUserProfile({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+<<<<<<< HEAD
+=======
+<<<<<<< HEAD
+>>>>>>> main
       <View style={styles.topContainer}>
         <View style={styles.userAvatar}>
           {userAvatar ? (
@@ -104,6 +130,38 @@ export default function OtherUserProfile({ navigation, route }) {
             </Text>
           </CustomButton>
         </View>
+<<<<<<< HEAD
+=======
+=======
+      <View style={styles.userAvatar}>
+        {userAvatar ? (
+          <Image source={{ uri: userAvatar }} style={styles.Image} />
+        ) : (
+          <Ionicons name="person-circle" size={100} color="black" />
+        )}
+        <View style={styles.avatarBottom}>
+          {rating > 0 && <Text style={styles.rateText}>Rating: {rating}</Text>}
+          <CustomButton
+            onPress={() =>
+              navigation.navigate("Chat", {
+                otherId: ownerId,
+                otherName: ownerName,
+              })
+            }
+          >
+            <Entypo name="chat" size={24} color="black" />
+          </CustomButton>
+        </View>
+      </View>
+      <View style={styles.tabs}>
+        <CustomButton onPress={() => setActiveTab("library")}>
+          <Text>My Library</Text>
+        </CustomButton>
+        <CustomButton onPress={() => setActiveTab("reviews")}>
+          <Text>Reviews</Text>
+        </CustomButton>
+>>>>>>> acbf31d7952944d37065779248f15e052bbc224e
+>>>>>>> main
       </View>
       {activeTab === "library" ? (
         <Library
@@ -131,6 +189,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 5,
     rowGap: 15,
+  }, 
+  avatarBottom: {
+    flexDirection: "row", 
+    justifyContent: "space-evenly",
+    width: "40%",
   },
   tabs: {
     flexDirection: "row",
@@ -153,6 +216,25 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+  }, 
+  rateText: { 
+    alignSelf: "center",
+  },
+  userRatingContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    columnGap: 10,
+  },
+  ratingText: {
+    fontSize: 22,
+    fontFamily: "SecularOne_400Regular",
+    textAlign: "center",
+  },
+  tabText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "gray",
   },
   userRatingContainer: {
     flexDirection: "row",

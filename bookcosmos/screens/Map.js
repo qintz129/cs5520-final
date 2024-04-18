@@ -95,7 +95,11 @@ export default function Map() {
       location.longitude
     );
     setSelectedBooksDistance(distance);
-    setSelectedBooks(location.booksAtLocation);
+    // Sort books by book name in ascending order
+    const sortedBooks = location.booksAtLocation.sort((a, b) =>
+      a.bookName.localeCompare(b.bookName)
+    );
+    setSelectedBooks(sortedBooks);
   }
 
   // Handle press book
@@ -231,6 +235,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    height: "50%",
   },
   header: {
     fontSize: 20,
@@ -238,7 +243,11 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   bookList: {
+<<<<<<< HEAD
     maxHeight: 200,
+=======
+    maxHeight: 150,
+>>>>>>> main
   },
   closeButton: {
     fontSize: 16,
