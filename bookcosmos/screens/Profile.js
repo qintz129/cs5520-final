@@ -143,6 +143,11 @@ const styles = StyleSheet.create({
     color: "black",
     marginBottom: 10,
   },
+  tabText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "gray",
+  },
   image: {
     width: 100,
     height: 100,
@@ -154,10 +159,5 @@ const styles = StyleSheet.create({
   userAvatar: {
     alignItems: "center",
     marginVertical: 5,
-  },
-  tabText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-    color: "gray",
   },
 });

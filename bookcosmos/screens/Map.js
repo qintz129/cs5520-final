@@ -243,11 +243,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   bookList: {
-<<<<<<< HEAD
     maxHeight: 200,
-=======
-    maxHeight: 150,
->>>>>>> main
   },
   closeButton: {
     fontSize: 16,

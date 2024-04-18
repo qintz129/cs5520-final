@@ -14,7 +14,7 @@ import { calculateDistance } from "../Utils";
 import * as Location from "expo-location";
 
 // Library component to display the books in the library
-export default function Library({ navigation, userId, isMyLibrary, distance }) {
+export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
 
   useEffect(() => {
@@ -98,7 +98,6 @@ export default function Library({ navigation, userId, isMyLibrary, distance }) {
       navigation.navigate("Book Detail", {
         bookId: item.id,
         ownerId: item.owner,
-        distance: distance,
       });
     }
   };
