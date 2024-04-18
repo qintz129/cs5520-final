@@ -98,7 +98,7 @@ export default function HistoryCard({
           {myBookAvatar ? (
             <Image source={{ uri: myBookAvatar }} style={styles.image} />
           ) : (
-            <AntDesign name="picture" size={50} color="grey" />
+            <AntDesign name="picture" size={100} color="grey" />
           )}
           <Text style={styles.bookNameText}>{myBookData.bookName}</Text>
         </View>
@@ -107,7 +107,7 @@ export default function HistoryCard({
           {theirBookAvatar ? (
             <Image source={{ uri: theirBookAvatar }} style={styles.image} />
           ) : (
-            <AntDesign name="picture" size={50} color="grey" />
+            <AntDesign name="picture" size={100} color="grey" />
           )}
           <Text style={styles.bookNameText}>{theirBookData.bookName}</Text>
         </View>

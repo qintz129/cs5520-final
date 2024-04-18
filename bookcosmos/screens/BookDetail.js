@@ -20,6 +20,8 @@ import { Entypo } from "@expo/vector-icons";
 import { googleApi } from "@env";
 import { useCustomFonts } from "../Fonts";
 import { FontAwesome } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import { calculateDistance } from "../Utils";
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
@@ -33,22 +35,54 @@ export default function BookDetail({ route, navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [requestSent, setRequestSent] = useState(false);
   const [bookStatus, setBookStatus] = useState("free");
-  const { bookId, ownerId, distance } = route.params;
+  const { bookId, ownerId } = route.params;
   const [rating, setRating] = useState(0);
-  const [isLoading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [bookAvatar, setBookAvatar] = useState(null);
+  const [userLocation, setUserLocation] = useState(null);
+  const [distance, setDistance] = useState(null);
+  const [bookLocation, setBookLocation] = useState(null);
 
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
 
+  // Get user's location
+  useEffect(() => {
+    async function getUserLocation() {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== "granted") {
+        console.log("Permission to access location was denied");
+        return;
+      }
+      let location = await Location.getCurrentPositionAsync();
+      setUserLocation(location.coords);
+    }
+    getUserLocation();
+  }, []);
+
+  // Calculate the distance between the user and the book location
+  useEffect(() => {
+    if (userLocation && bookLocation) {
+      const distance = calculateDistance(
+        userLocation.latitude,
+        userLocation.longitude,
+        bookLocation.latitude,
+        bookLocation.longitude
+      );
+      setDistance(distance);
+      if (distance) {
+        setLoading(false);
+      }
+    }
+  }, [userLocation, bookLocation]);
+
   useEffect(() => {
     let bookData;
     // Fetch the book data from the database by bookId
     const fetchBookData = async () => {
       try {
-        setLoading(true);
         // Fetch the book data from the database
         const docRef = doc(database, "books", bookId);
         const docSnap = await getDoc(docRef);
@@ -59,6 +93,7 @@ export default function BookDetail({ route, navigation }) {
           setBookImageURI(bookData.image);
           setDescription(bookData.description);
           setBookStatus(bookData.bookStatus);
+          setBookLocation(bookData.location);
 
           await fetchOwnerName(bookData.owner);
         } else {
@@ -85,7 +120,6 @@ export default function BookDetail({ route, navigation }) {
         console.error("Error fetching owner name:", error);
         setOwnerName("Unknown");
       }
-      setLoading(false);
     };
     fetchBookData();
   }, [bookId]);
@@ -199,7 +233,12 @@ export default function BookDetail({ route, navigation }) {
             {bookAvatar ? (
               <Image source={{ uri: bookAvatar }} style={styles.image} />
             ) : (
-              <AntDesign name="picture" size={50} color="grey" />
+              <AntDesign
+                name="picture"
+                size={200}
+                color="grey"
+                style={{ alignSelf: "center" }}
+              />
             )}
             <View style={styles.bookInfoContainer}>
               <Text style={styles.titleText}>{bookName}</Text>
@@ -267,20 +306,22 @@ export default function BookDetail({ route, navigation }) {
               </View>
             </View>
             <View style={styles.buttonContainer}>
-              {!requestSent && bookStatus === "free" && (
-                <CustomButton
-                  onPress={handleSendRequest}
-                  customStyle={{
-                    backgroundColor: "#55c7aa",
-                    width: 200,
-                    height: 50,
-                    borderRadius: 10,
-                    alignSelf: "center",
-                  }}
-                >
-                  <Text style={styles.buttonText}>Send Request</Text>
-                </CustomButton>
-              )}
+              {!requestSent &&
+                bookStatus === "free" &&
+                auth.currentUser.uid !== ownerId && (
+                  <CustomButton
+                    onPress={handleSendRequest}
+                    customStyle={{
+                      backgroundColor: "#55c7aa",
+                      width: 200,
+                      height: 50,
+                      borderRadius: 10,
+                      alignSelf: "center",
+                    }}
+                  >
+                    <Text style={styles.buttonText}>Send Request</Text>
+                  </CustomButton>
+                )}
             </View>
             <ChooseBookModal
               visible={modalVisible}

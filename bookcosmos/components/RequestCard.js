@@ -351,7 +351,7 @@ export default function RequestCard({
           {offeredBookAvatar ? (
             <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
           ) : (
-            <AntDesign name="picture" size={50} color="grey" />
+            <AntDesign name="picture" size={100} color="grey" />
           )}
           {offeredBookInfo ? (
             <View style={styles.bookLabel}>
@@ -380,7 +380,7 @@ export default function RequestCard({
           {requestedBookAvatar ? (
             <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
           ) : (
-            <AntDesign name="picture" size={50} color="grey" />
+            <AntDesign name="picture" size={100} color="grey" />
           )}
           {requestedBookInfo ? (
             <View style={styles.bookLabel}>

@@ -20,8 +20,6 @@ import { auth } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons";
 import { calculateDistance } from "../Utils";
 import { useCustomFonts } from "../Fonts";
-import { ScrollView } from "react-native-gesture-handler";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -111,7 +109,6 @@ export default function Map() {
     navigation.navigate("Book Detail", {
       bookId: item.id,
       ownerId: item.owner,
-      distance: distance,
     });
   }
 
@@ -173,7 +170,7 @@ export default function Map() {
       )}
       {selectedBooks && (
         <View style={styles.bottomContainer}>
-          <Text style={styles.header}>Books at this location:</Text>
+          <Text style={styles.header}>Books at this location</Text>
           <View style={styles.distanceContainer}>
             <Entypo name="location-pin" size={24} color="#55c7aa" />
             <Text style={styles.distanceText}>{selectedBooksDistance} km</Text>
