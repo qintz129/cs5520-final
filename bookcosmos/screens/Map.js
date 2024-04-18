@@ -1,7 +1,12 @@
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  ActivityIndicator,
+  FlatList,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
-import { FlatList } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 import { Feather } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
@@ -14,6 +19,7 @@ import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons";
 import { calculateDistance } from "../Utils";
+import { useCustomFonts } from "../Fonts";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -23,6 +29,10 @@ export default function Map() {
   const [booksLocations, setBooksLocations] = useState([]);
   const [selectedBooks, setSelectedBooks] = useState(null);
   const [selectedBooksDistance, setSelectedBooksDistance] = useState(null);
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   // Get user's location
   useEffect(() => {
@@ -84,9 +94,11 @@ export default function Map() {
       location.latitude,
       location.longitude
     );
-    setSelectedBooksDistance(distance); 
+    setSelectedBooksDistance(distance);
     // Sort books by book name in ascending order
-    const sortedBooks = location.booksAtLocation.sort((a, b) => a.bookName.localeCompare(b.bookName));
+    const sortedBooks = location.booksAtLocation.sort((a, b) =>
+      a.bookName.localeCompare(b.bookName)
+    );
     setSelectedBooks(sortedBooks);
   }
 
@@ -101,14 +113,17 @@ export default function Map() {
     navigation.navigate("Book Detail", {
       bookId: item.id,
       ownerId: item.owner,
-      distance: distance,
     });
   }
 
   return (
     <>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         userLocation && (
           <MapView
@@ -159,24 +174,25 @@ export default function Map() {
       )}
       {selectedBooks && (
         <View style={styles.bottomContainer}>
-          <Text style={styles.header}>Books at this location:</Text>
+          <Text style={styles.header}>Books at this location</Text>
           <View style={styles.distanceContainer}>
-            <Entypo name="location-pin" size={24} color="black" />
-            <Text style={styles.distance}>{selectedBooksDistance} km</Text>
-          </View> 
+            <Entypo name="location-pin" size={24} color="#55c7aa" />
+            <Text style={styles.distanceText}>{selectedBooksDistance} km</Text>
+          </View>
           <FlatList
             data={selectedBooks}
             renderItem={({ item }) => (
               <BookCard item={item} handlePressBook={handlePressBook} />
             )}
             keyExtractor={(item) => item.id}
+            contentContainerStyle={styles.bookList}
           />
           <CustomButton
             onPress={() => setSelectedBooks(null)}
             customStyle={styles.closeButton}
           >
-            <Text>Close</Text>
-          </CustomButton> 
+            <Text style={styles.closeText}>Close</Text>
+          </CustomButton>
         </View>
       )}
     </>
@@ -195,37 +211,51 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginBottom: 10,
   },
+  distanceText: {
+    fontSize: 16,
+    fontFamily: "SecularOne_400Regular",
+    marginLeft: 5,
+  },
   markerTextContainer: {
-    backgroundColor: "lightblue",
+    backgroundColor: "#55c7aa",
     borderRadius: 8,
     padding: 5,
   },
   markerText: {
     fontWeight: "bold",
-    color: "black",
+    color: "white",
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 14,
   },
   bottomContainer: {
-    position: "absolute",
     bottom: 0,
     left: 0,
     right: 0,
     backgroundColor: "white",
     padding: 20,
     borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,   
+    borderTopRightRadius: 20,
     height: "50%",
-  }, 
+  },
   header: {
     fontSize: 20,
-    fontWeight: "bold",
+    fontFamily: "SecularOne_400Regular",
     marginBottom: 10,
   },
-  bookItem: {
-    fontSize: 16,
-    marginBottom: 5,
+  bookList: {
+    maxHeight: 200,
   },
   closeButton: {
     fontSize: 16,
     marginTop: 20,
+    backgroundColor: "#f44336",
+    borderRadius: 10,
+    marginHorizontal: 100,
+    height: 50,
+  },
+  closeText: {
+    fontFamily: "SecularOne_400Regular",
+    color: "white",
+    fontSize: 18,
   },
 });

@@ -10,30 +10,32 @@ import UserInfo from "./screens/UserInfo";
 import AddABook from "./screens/AddABook";
 import BookDetail from "./screens/BookDetail";
 import OtherUserProfile from "./screens/OtherUserProfile";
-import AddReview from "./screens/AddReview"; 
+import AddReview from "./screens/AddReview";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase-files/firebaseSetup";
 import { AntDesign } from "@expo/vector-icons";
 import CustomButton from "./components/CustomButton";
 import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { UserProvider } from "./hooks/UserContext";
-import Map from "./screens/Map"; 
-import * as Notifications from 'expo-notifications'  
-import NotificationListener from "./components/NotificationListener";   
+import Map from "./screens/Map";
+import * as Notifications from "expo-notifications";
+import NotificationListener from "./components/NotificationListener";
+import { useCustomFonts } from "./Fonts";
 import Chat from "./screens/Chat";
 
-Notifications.setNotificationHandler({ 
-  handleNotification:async function(notification){ 
-  return { 
-    shouldShowAlert:true, 
-    shouldPlaySound:true,
-  }; 
-} 
+Notifications.setNotificationHandler({
+  handleNotification: async function (notification) {
+    return {
+      shouldShowAlert: true,
+      shouldPlaySound: true,
+    };
+  },
 });
 
 const Stack = createNativeStackNavigator();
+
 export default function App() {
-  const [userLoggedIn, setUserLoggedIn] = useState(false);  
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
 
   useEffect(() => {
     onAuthStateChanged(auth, (user) => {
@@ -51,6 +53,11 @@ export default function App() {
     });
   }, []);
 
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
+
   const AuthStack = (
     <>
       <Stack.Screen name="Signup" component={Signup} />
@@ -62,7 +69,9 @@ export default function App() {
       <Stack.Screen
         name="MainTab"
         component={MainTab}
-        options={{ headerShown: false }}
+        options={{
+          headerShown: false,
+        }}
       />
       <Stack.Screen
         name="User Info"
@@ -98,7 +107,13 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
-      <Stack.Screen name="Map" component={Map} />   
+      <Stack.Screen
+        name="Map"
+        component={Map}
+        options={{
+          headerBackTitleVisible: false,
+        }}
+      />
       <Stack.Screen name="Chat" component={Chat} />
     </>
   );
@@ -107,12 +122,16 @@ export default function App() {
     <UserProvider>
       <ActionSheetProvider>
         <GestureHandlerRootView style={{ flex: 1 }}>
-          <NavigationContainer> 
+          <NavigationContainer>
             <NotificationListener />
             <Stack.Navigator
               initialRouteName="Signup"
               screenOptions={{
                 headerBackTitleVisible: false,
+                headerTitleStyle: {
+                  fontFamily: "SecularOne_400Regular",
+                  fontSize: 20,
+                },
               }}
             >
               {userLoggedIn ? AppStack : AuthStack}

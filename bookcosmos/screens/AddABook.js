@@ -17,9 +17,10 @@ import { CustomInput, MultilineInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import ImageManager from "../components/ImageManager";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import * as Location from "expo-location"; 
-import { googleApi } from "@env"; 
-import Geocoder from 'react-native-geocoding';
+import * as Location from "expo-location";
+import { googleApi } from "@env";
+import Geocoder from "react-native-geocoding";
+import { useCustomFonts } from "../Fonts";
 
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
@@ -30,10 +31,14 @@ export default function AddABook({ navigation, route }) {
   const [downloadUri, setDownloadUri] = useState(null);
   const [uploadUri, setUploadUri] = useState(null);
   const [hasNewImage, setHasNewImage] = useState(false);
-  const [userLocation, setUserLocation] = useState(null); 
-  const [address, setAddress] = useState("");  
+  const [userLocation, setUserLocation] = useState(null);
+  const [address, setAddress] = useState("");
   const [canGetAddress, setCanGetAddress] = useState(false);
   const { editMode, bookId } = route.params;
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   // Get user's location
   useEffect(() => {
@@ -43,15 +48,15 @@ export default function AddABook({ navigation, route }) {
         console.log("Permission to access location was denied");
         return;
       }
-      let location = await Location.getCurrentPositionAsync(); 
+      let location = await Location.getCurrentPositionAsync();
       if (location) {
-      setUserLocation(location.coords);  
-      // When the user's location is available, can use the address fetch button
-      setCanGetAddress(true); 
+        setUserLocation(location.coords);
+        // When the user's location is available, can use the address fetch button
+        setCanGetAddress(true);
       }
     }
     getUserLocation();
-  }, []);   
+  }, []);
 
   // Render the header based on the edit mode
   useEffect(() => {
@@ -74,7 +79,7 @@ export default function AddABook({ navigation, route }) {
             setBookName(bookData.bookName);
             setAuthor(bookData.author);
             setDescription(bookData.description);
-            setBookStatus(bookData.bookStatus); 
+            setBookStatus(bookData.bookStatus);
             setAddress(bookData.address);
             if (bookData.image) {
               setImageUri(bookData.image);
@@ -130,7 +135,7 @@ export default function AddABook({ navigation, route }) {
     } catch (err) {
       console.log(err);
     }
-  } 
+  }
 
   async function processImage(uploadUri) {
     try {
@@ -143,125 +148,128 @@ export default function AddABook({ navigation, route }) {
     }
   }
 
-async function handleSave() {
-  Alert.alert(
-    "Important",
-    "Are you sure you want to save these changes?",
-    [
-      { text: "No" },
-      {
-        text: "Yes",
-        onPress: async () => {
-          try {
-            if (!bookName || !author || !address) {
-              Alert.alert("Please fill in book name, author, and address.");
-              return;
-            }
-        
-            const location = await findCoordinates(address);
-            if (!location) {
-              Alert.alert("Failed to find location for the address provided.");
-              return;
-            } 
-            const formattedLocation = {
-              latitude: location.lat,
-              longitude: location.lng
-            };
+  async function handleSave() {
+    Alert.alert(
+      "Important",
+      "Are you sure you want to save these changes?",
+      [
+        { text: "No" },
+        {
+          text: "Yes",
+          onPress: async () => {
+            try {
+              if (!bookName || !author || !address) {
+                Alert.alert("Please fill in book name, author, and address.");
+                return;
+              }
 
-            const newBookData = {
-              bookName: bookName,
-              author: author,
-              description: description,
-              bookStatus: BookStatus,  
-              address: address,
-              location: formattedLocation,
-            };
-        
-            if (hasNewImage && uploadUri) {
-              const newImageUri = await processImage(uploadUri);
-              newBookData.image = newImageUri;
+              const location = await findCoordinates(address);
+              if (!location) {
+                Alert.alert(
+                  "Failed to find location for the address provided."
+                );
+                return;
+              }
+              const formattedLocation = {
+                latitude: location.lat,
+                longitude: location.lng,
+              };
+
+              const newBookData = {
+                bookName: bookName,
+                author: author,
+                description: description,
+                bookStatus: BookStatus,
+                address: address,
+                location: formattedLocation,
+              };
+
+              if (hasNewImage && uploadUri) {
+                const newImageUri = await processImage(uploadUri);
+                newBookData.image = newImageUri;
+              }
+              console.log("newBookData", newBookData);
+
+              if (editMode) {
+                await updateToDB(bookId, "books", null, null, newBookData);
+                navigation.goBack();
+              } else {
+                writeToDB(newBookData, "books");
+                navigation.goBack();
+              }
+            } catch (error) {
+              console.error("Error confirming save:", error);
             }
-            console.log("newBookData", newBookData);
-            
-            if (editMode) {
-              await updateToDB(bookId, "books", null, null, newBookData);
-              navigation.goBack();
-            } else {
-              writeToDB(newBookData, "books");
-              navigation.goBack();
-            }
-          } catch (error) {
-            console.error("Error confirming save:", error);
-          }
+          },
         },
-      },
-    ],
-    { cancelable: true }
-  );
-}
+      ],
+      { cancelable: true }
+    );
+  }
 
   const handleClear = () => {
     // Clear all input fields
     setBookName("");
     setAuthor("");
-    setDescription(""); 
+    setDescription("");
     setAddress("");
     Keyboard.dismiss();
-  }; 
+  };
 
   const fetchBookDescription = async (name, author) => {
-    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(name)}+inauthor:${encodeURIComponent(author)}&key=${googleApi}`;
-    console.log('Fetching book details from:', url); 
+    const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
+      name
+    )}+inauthor:${encodeURIComponent(author)}&key=${googleApi}`;
+    console.log("Fetching book details from:", url);
     try {
       const response = await fetch(url);
-      const json = await response.json(); 
+      const json = await response.json();
       if (json.totalItems > 0 && json.items[0].volumeInfo.description) {
         // Assuming you want to open the first result
-        const description = json.items[0].volumeInfo.description;  
-        setDescription(description);  
+        const description = json.items[0].volumeInfo.description;
+        setDescription(description);
       } else {
-        Alert.alert( "Sorry, no books found with the given name and author.");
+        Alert.alert("Sorry, no books found with the given name and author.");
       }
     } catch (error) {
-      console.error('Failed to fetch book details:', error);
-    }  
-  };  
+      console.error("Failed to fetch book details:", error);
+    }
+  };
 
-  Geocoder.init(googleApi, {language : "en"}); 
-  
+  Geocoder.init(googleApi, { language: "en" });
+
   // Get coordinates from address
   const findCoordinates = async (searchAddress) => {
     try {
       const response = await Geocoder.from(searchAddress);
-      const location = response.results[0].geometry.location; 
-      
-      return location; 
+      const location = response.results[0].geometry.location;
+
+      return location;
     } catch (error) {
-      console.error('Failed to fetch coordinates:', error);
-      return null; 
+      console.error("Failed to fetch coordinates:", error);
+      return null;
     }
   };
-
 
   const getReverseGeocodingData = (lat, lng) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApi}`;
     if (lat && lng) {
-    fetch(url)
-        .then(response => response.json())
-        .then(data => {
-            if (data.status === 'OK') {
-                // Get the first result
-                const firstResult = data.results[0];  
-                console.log("Address converted", firstResult.formatted_address);
-                setAddress(firstResult.formatted_address);
-            } else {
-                console.log('Geocoder failed due to: ' + data.status);
-            }
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "OK") {
+            // Get the first result
+            const firstResult = data.results[0];
+            console.log("Address converted", firstResult.formatted_address);
+            setAddress(firstResult.formatted_address);
+          } else {
+            console.log("Geocoder failed due to: " + data.status);
+          }
         })
-        .catch(error => console.error(error)); 
-        console.log(address); 
-      }
-};
+        .catch((error) => console.error(error));
+      console.log(address);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -272,48 +280,59 @@ async function handleSave() {
       >
         <ScrollView>
           <View style={styles.inputContainer}>
-              <ImageManager
-                receiveImageUri={receiveImageUri}
-                receiveNewImage={receiveNewImage}
-                initialImageUri={downloadUri}
-                mode="book"
-              />
-              <CustomInput
-                title="Book Name*"
-                value={bookName}
-                onChangeText={setBookName}
-              />
-              <CustomInput
-                title="Author*"
-                value={author}
-                onChangeText={setAuthor}
-              />  
-              <CustomInput  
-                title="Address*" 
-                value={address} 
-                onChangeText={setAddress}   
-                placeholder="Enter or auto-fill address here..."
-                fetch={true} 
-                fetchFunction={() => getReverseGeocodingData(userLocation.latitude, userLocation.longitude)}  
-                pressable={canGetAddress}
-              />
-                <MultilineInput
-                  title="Description"
-                  onChangeText={setDescription}
-                  value={description}
-                  placeholder="Write your book description here or import it from google books..." 
-                  fetch={true} 
-                  fetchFunction={() => fetchBookDescription(bookName, author)} 
-                  pressable={bookName && author}
-                />    
+            <ImageManager
+              receiveImageUri={receiveImageUri}
+              receiveNewImage={receiveNewImage}
+              initialImageUri={downloadUri}
+              mode="book"
+            />
+            <CustomInput
+              title="Book Name*"
+              value={bookName}
+              onChangeText={setBookName}
+            />
+            <CustomInput
+              title="Author*"
+              value={author}
+              onChangeText={setAuthor}
+            />
+            <CustomInput
+              title="Address*"
+              value={address}
+              onChangeText={setAddress}
+              placeholder="Enter or auto-fill address here..."
+              fetch={true}
+              fetchFunction={() =>
+                getReverseGeocodingData(
+                  userLocation.latitude,
+                  userLocation.longitude
+                )
+              }
+              pressable={canGetAddress}
+            />
+            <MultilineInput
+              title="Description"
+              onChangeText={setDescription}
+              value={description}
+              placeholder="Write your book description here or import it from google books..."
+              fetch={true}
+              fetchFunction={() => fetchBookDescription(bookName, author)}
+              pressable={bookName && author}
+            />
             <View style={styles.buttonContainer}>
-              <CustomButton onPress={handleClear}>
-                <Text>Clear</Text>
+              <CustomButton
+                customStyle={styles.clearButton}
+                onPress={handleClear}
+              >
+                <Text style={styles.clearText}>Clear</Text>
               </CustomButton>
-              <CustomButton onPress={handleSave}>
-                <Text>Save</Text>
+              <CustomButton
+                customStyle={styles.saveButton}
+                onPress={handleSave}
+              >
+                <Text style={styles.saveText}>Save</Text>
               </CustomButton>
-            </View> 
+            </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -336,12 +355,36 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
     width: "100%",
     marginTop: 20,
-  }, 
-  fetchButton: {  
-    alignItems: "flex-start", 
-    // marginLeft: 20, 
+  },
+  clearButton: {
+    width: "40%",
+    backgroundColor: "#f44336",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  clearText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "white",
+  },
+  saveButton: {
+    width: "40%",
+    backgroundColor: "#55c7aa",
+    borderRadius: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+  },
+  saveText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "white",
+  },
+  fetchButton: {
+    alignItems: "flex-start",
+    // marginLeft: 20,
     // marginVertical:0
-  }, 
+  },
   desContainer: {
     width: "100%",
   },

@@ -5,6 +5,7 @@ import CustomButton from "./CustomButton";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { database, storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
+import { useCustomFonts } from "../Fonts";
 
 export default function BookCard({
   item,
@@ -13,6 +14,10 @@ export default function BookCard({
   isMyLibrary,
 }) {
   const [bookAvatar, setBookAvatar] = useState(null);
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   useEffect(() => {
     if (item.image) {
@@ -36,8 +41,10 @@ export default function BookCard({
           <AntDesign name="picture" size={50} color="grey" />
         )}
         <View style={styles.textContent}>
-          {item.bookName && <Text style={styles.title}>{item.bookName}</Text>}
-          {item.author && <Text>{item.author}</Text>}
+          {item.bookName && (
+            <Text style={styles.titleText}>{item.bookName}</Text>
+          )}
+          {item.author && <Text style={styles.authorText}>{item.author}</Text>}
         </View>
       </View>
     );
@@ -95,9 +102,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     width: 20,
   },
-  title: {
+  titleText: {
+    fontFamily: "SecularOne_400Regular",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  authorText: {
+    fontFamily: "Molengo_400Regular",
+    fontSize: 15,
   },
   button: {
     marginVertical: 0,

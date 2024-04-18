@@ -6,14 +6,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useEffect, useState } from "react";
-import {
-  collection,
-  onSnapshot,
-  query,
-  where,
-  doc,
-  getDocs,
-} from "firebase/firestore";
+import { collection, onSnapshot, query } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { convertTimestamp } from "../Utils";
 import HistoryCard from "../components/HistoryCard";
@@ -34,7 +27,10 @@ export default function History({ navigation }) {
         const unsubscribe = onSnapshot(q, (querySnapshot) => {
           const fetchedHistories = [];
           querySnapshot.forEach((doc) => {
-            fetchedHistories.push({ ...doc.data(), id: doc.id });
+            fetchedHistories.push({
+              ...doc.data(),
+              id: doc.id,
+            });
           });
           // Sort the fetchedHistories by date
           fetchedHistories.sort((a, b) => {
@@ -58,7 +54,11 @@ export default function History({ navigation }) {
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <FlatList
           data={history}
@@ -73,19 +73,19 @@ export default function History({ navigation }) {
                 reviewee={item.toUser}
                 reviewer={auth.currentUser.uid}
                 exchangeId={item.id}
-                isReviewed={item.isReviewed} 
+                isReviewed={item.isReviewed}
                 status={item.status}
               />
             ) : item.toUser === auth.currentUser.uid ? (
               <HistoryCard
-                myBook={item.requestedBook.bookName}
-                theirBook={item.myBook.bookName}
-                date={item.date}
+                myBook={item.requestedBook}
+                theirBook={item.myBook}
+                date={convertTimestamp(item.date)}
                 navigation={navigation}
                 reviewee={auth.currentUser.uid}
                 reviewer={item.toUser}
                 exchangeId={item.id}
-                isReviewed={item.isReviewed} 
+                isReviewed={item.isReviewed}
                 status={item.status}
               />
             ) : null

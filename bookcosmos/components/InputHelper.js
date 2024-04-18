@@ -1,9 +1,11 @@
 import { StyleSheet, TextInput, View, Text } from "react-native";
 import CustomButton from "./CustomButton";
 import React from "react";
-import { Ionicons } from "@expo/vector-icons"; 
-import { MaterialCommunityIcons } from '@expo/vector-icons'; 
-import { AntDesign } from '@expo/vector-icons';
+import { Ionicons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { AntDesign } from "@expo/vector-icons";
+import { Molengo_400Regular } from "@expo-google-fonts/molengo";
+import { useFonts } from "expo-font";
 
 // CustomInput component to achieve the input for all screens
 export function CustomInput({
@@ -11,22 +13,33 @@ export function CustomInput({
   onChangeText,
   value,
   placeholder = "",
-  editable = true,  
+  editable = true,
   pressable = false,
-  fetch = false, 
-  fetchFunction
+  fetch = false,
+  fetchFunction,
 }) {
+  const [fontsLoaded] = useFonts({
+    Molengo_400Regular,
+  });
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.extraEdit}>
-          <Text style={[styles.title, fetch && styles.extraEditTitle]}>{title}</Text> 
-          {fetch && ( 
-            <CustomButton onPress={fetchFunction} disabled={!pressable} > 
-              <MaterialCommunityIcons name="application-import" size={24} color="black" />
-            </CustomButton>  
-          ) 
-          } 
-        </View>
+        <Text style={[styles.title, fetch && styles.extraEditTitle]}>
+          {title}
+        </Text>
+        {fetch && (
+          <CustomButton onPress={fetchFunction} disabled={!pressable}>
+            <MaterialCommunityIcons
+              name="application-import"
+              size={24}
+              color="black"
+            />
+          </CustomButton>
+        )}
+      </View>
       <TextInput
         style={[styles.input, !editable && styles.nonEditable]}
         onChangeText={onChangeText}
@@ -46,20 +59,21 @@ export function CustomPassWordInput({
   placeholder = "",
   editable = true,
   secureTextEntry,
-  onToggleVisibility, 
-  editButton = false, 
-  editFunction
+  onToggleVisibility,
+  editButton = false,
+  editFunction,
 }) {
   return (
     <View style={styles.container}>
       <View style={styles.extraEdit}>
-          <Text style={[styles.title, editButton && styles.extraEditTitle]}>{title}</Text> 
-          {editButton && ( 
-            <CustomButton onPress={editFunction}> 
-              <AntDesign name="edit" size={24} color="black" />
-            </CustomButton>  
-          ) 
-          } 
+        <Text style={[styles.title, editButton && styles.extraEditTitle]}>
+          {title}
+        </Text>
+        {editButton && (
+          <CustomButton onPress={editFunction}>
+            <AntDesign name="edit" size={24} color="black" />
+          </CustomButton>
+        )}
       </View>
       <View style={styles.inputContainer}>
         <TextInput
@@ -80,7 +94,7 @@ export function CustomPassWordInput({
             color="grey"
           />
         </CustomButton>
-      </View> 
+      </View>
     </View>
   );
 }
@@ -90,21 +104,26 @@ export function MultilineInput({
   onChangeText,
   value,
   placeholder = "",
-  editable = true, 
-  fetch = false,  
+  editable = true,
+  fetch = false,
   pressable = false,
-  fetchFunction
+  fetchFunction,
 }) {
   return (
-    <View style={styles.container}> 
-    <View style={styles.extraEdit}>
-        <Text style={[styles.title, fetch && styles.extraEditTitle]}>{title}</Text> 
-        {fetch && ( 
-          <CustomButton onPress={fetchFunction} disabled={!pressable}> 
-            <MaterialCommunityIcons name="application-import" size={24} color="black" />
-          </CustomButton>  
-        ) 
-        } 
+    <View style={styles.container}>
+      <View style={styles.extraEdit}>
+        <Text style={[styles.title, fetch && styles.extraEditTitle]}>
+          {title}
+        </Text>
+        {fetch && (
+          <CustomButton onPress={fetchFunction} disabled={!pressable}>
+            <MaterialCommunityIcons
+              name="application-import"
+              size={24}
+              color="black"
+            />
+          </CustomButton>
+        )}
       </View>
       <TextInput
         style={[styles.multiline, !editable && styles.nonEditable]}
@@ -125,11 +144,12 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   title: {
-    fontWeight: "bold", 
-  }, 
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 16,
+  },
   extraEditTitle: {
-   alignSelf: "center", 
-   marginRight: 10,
+    alignSelf: "center",
+    marginRight: 10,
   },
   input: {
     height: 40,
@@ -142,14 +162,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   multiline: {
-    borderWidth: 1.5, 
+    borderWidth: 1.5,
     fontSize: 16,
     borderColor: "gray",
     borderRadius: 10,
     marginBottom: 10,
     marginTop: 5,
-    minHeight: 150,  
-    paddingHorizontal: 10, 
+    minHeight: 150,
+    paddingHorizontal: 10,
     width: "100%",
   },
   inputContainer: {
@@ -163,7 +183,7 @@ const styles = StyleSheet.create({
   nonEditable: {
     borderWidth: 0,
     backgroundColor: "#f0f0f0",
-  }, 
+  },
   extraEdit: {
     flexDirection: "row",
   },

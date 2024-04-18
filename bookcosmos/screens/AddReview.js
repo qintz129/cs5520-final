@@ -1,4 +1,11 @@
-import { View, Text, TextInput, StyleSheet, Keyboard, Alert} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Keyboard,
+  Alert,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
 import CustomButton from "../components/CustomButton";
@@ -7,9 +14,14 @@ import { useRoute } from "@react-navigation/native";
 import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { getDoc, doc } from "firebase/firestore";
+import { useCustomFonts } from "../Fonts";
 
 export default function AddReview({ navigation }) {
   const [reviewer, setReviewer] = useState("");
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   useEffect(() => {
     const getUserInfo = async () => {
@@ -39,7 +51,7 @@ export default function AddReview({ navigation }) {
     setRating(rate);
   };
 
-  const handleSubmit = async () => { 
+  const handleSubmit = async () => {
     const newReview = {
       rating: rating,
       comment: comment,
@@ -50,29 +62,35 @@ export default function AddReview({ navigation }) {
       exchangeId: exchangeId,
     };
 
-    try { 
+    try {
       Alert.alert("Confirm", "Are you sure you want to submit this review?", [
         {
           text: "Cancel",
           style: "cancel",
         },
         {
-          text: "Confirm", 
+          text: "Confirm",
           onPress: async () => {
             // Write the review to the database
             await writeToDB(newReview, "users", reviewee, "reviews");
             console.log("Review submitted successfully");
 
             // Update the isReviewed field to True in the history
-            await updateToDB(exchangeId, "users", auth.currentUser.uid, "history", {
-              isReviewed: true,
-            });
-            Keyboard.dismiss(); 
+            await updateToDB(
+              exchangeId,
+              "users",
+              auth.currentUser.uid,
+              "history",
+              {
+                isReviewed: true,
+              }
+            );
+            Keyboard.dismiss();
             Alert.alert("The review has been submitted successfully!");
-            navigation.goBack(); 
-          } 
-        }] 
-      )
+            navigation.goBack();
+          },
+        },
+      ]);
     } catch (error) {
       console.error("Error submitting review:", error);
     }
@@ -97,11 +115,11 @@ export default function AddReview({ navigation }) {
         placeholder="Write your comment here..."
       />
       <View style={styles.buttonContainer}>
-        <CustomButton onPress={handleSubmit}>
-          <Text>Submit</Text>
+        <CustomButton customStyle={styles.clearButton} onPress={handleClear}>
+          <Text style={styles.buttonText}>Clear</Text>
         </CustomButton>
-        <CustomButton onPress={handleClear}>
-          <Text>Clear</Text>
+        <CustomButton customStyle={styles.submitButton} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>Submit</Text>
         </CustomButton>
       </View>
     </View>
@@ -116,13 +134,31 @@ const styles = StyleSheet.create({
     padding: 20,
   },
   header: {
-    fontSize: 18,
+    fontSize: 20,
     marginBottom: 20,
+    fontFamily: "Molengo_400Regular",
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
     marginTop: 20,
+  },
+  clearButton: {
+    width: "40%",
+    backgroundColor: "#f44336",
+    borderRadius: 10,
+    height: 50,
+  },
+  submitButton: {
+    width: "40%",
+    backgroundColor: "#55c7aa",
+    borderRadius: 10,
+    height: 50,
+  },
+  buttonText: {
+    fontSize: 18,
+    fontFamily: "SecularOne_400Regular",
+    color: "white",
   },
 });

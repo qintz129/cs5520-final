@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
-import React, { useState, useEffect, useCallback} from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   collection,
   onSnapshot,
@@ -10,6 +10,8 @@ import {
 import { database } from "../firebase-files/firebaseSetup";
 import { deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
+import { calculateDistance } from "../Utils";
+import * as Location from "expo-location";
 
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
@@ -21,7 +23,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     if (isMyLibrary) {
       booksQuery = query(
         collection(database, "books"),
-        where("owner", "==", userId), 
+        where("owner", "==", userId)
       );
     } else {
       // Define the query to fetch books for others' profiles
@@ -39,9 +41,11 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         const fetchedBooks = [];
         snapshot.forEach((doc) => {
           fetchedBooks.push({ id: doc.id, ...doc.data() });
-        });  
+        });
 
-        const filterBooks = fetchedBooks.filter((book) => book.bookStatus !== "completed");
+        const filterBooks = fetchedBooks.filter(
+          (book) => book.bookStatus !== "completed"
+        );
         // Sort the fetched books by book name
         filterBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
         // Update the state variable with the fetched books
@@ -55,6 +59,8 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     // Clean up the subscription when the component unmounts
     return () => unsubscribe();
   }, [userId]);
+
+  console.log("books: ", books);
 
   const handleDeleteItem = async (item) => {
     try {
@@ -83,14 +89,19 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 
   const handlePressBook = (item) => {
     if (isMyLibrary) {
-      navigation.navigate("Add A Book", { editMode: true, bookId: item.id });
+      navigation.navigate("Add A Book", {
+        editMode: true,
+        bookId: item.id,
+      });
     } else {
+      console.log("item: ", item);
       navigation.navigate("Book Detail", {
         bookId: item.id,
         ownerId: item.owner,
       });
     }
-  }; 
+  };
+
   return (
     <View style={styles.container}>
       <FlatList
