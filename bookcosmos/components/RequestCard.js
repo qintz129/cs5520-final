@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Alert } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useLayoutEffect} from "react";
 import CustomButton from "./CustomButton";
 import {
   deleteFromDB,
@@ -25,8 +25,8 @@ export default function RequestCard({
   initialStatus,
   initialCompletedUser,
   setUpdateTrigger,
-}) {
-  const [status, setStatus] = useState(initialStatus);
+}) { 
+  const [status, setStatus] = useState(initialStatus); 
   const [offeredBookAvatar, setOfferedBookAvatar] = useState(null);
   const [requestedBookAvatar, setRequestedBookAvatar] = useState(null);
   const { fontsLoaded } = useCustomFonts();
@@ -35,7 +35,7 @@ export default function RequestCard({
   }
 
   useEffect(() => {
-    if (offeredBookInfo.image) {
+    if (offeredBookInfo && offeredBookInfo.image) {
       const imageRef = ref(storage, offeredBookInfo.image);
       getDownloadURL(imageRef)
         .then((url) => {
@@ -58,8 +58,27 @@ export default function RequestCard({
           console.error("Failed to load image:", error);
         });
     }
-  }, [requestedBookInfo.image]);
+  }, [requestedBookInfo.image]); 
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (status === "unaccepted") {
+        if (offeredBookInfo.bookStatus === "inExchange" && requestedBookInfo.bookStatus === "inExchange") {
+          setStatus("accepted");
+        }
+      }
+  
+      if (status === "accepted") {
+        if (offeredBookInfo.bookStatus !== "inExchange" || requestedBookInfo.bookStatus !== "inExchange") {
+          setStatus("unaccepted");
+        }
+      } 
+    }, 200); 
+  
+    return () => clearTimeout(timer);
+  }, [offeredBookInfo, requestedBookInfo, status]);
+
+  console.log("status", status, "offeredBook", offeredBookInfo.bookStatus, "requestedBook", requestedBookInfo.bookStatus);
   const handlePressBook = ({ id, owner }) => {
     navigation.navigate("Book Detail", {
       bookId: id,
@@ -270,8 +289,8 @@ export default function RequestCard({
                   "receivedRequests",
                   updates
                 );
-
-                setUpdateTrigger((prev) => prev + 1);
+               
+                setUpdateTrigger((prev) => prev + 1); 
                 setStatus("one user completed");
                 // if the status is one user completed, update the status to completed
               } else if (status === "one user completed") {
@@ -347,13 +366,8 @@ export default function RequestCard({
         )}
       <View style={styles.books}>
         <View style={styles.bookItem}>
-          <Text style={styles.offeredText}>Offered</Text>
-          {offeredBookAvatar ? (
-            <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
-          ) : (
-            <AntDesign name="picture" size={100} color="grey" />
-          )}
-          {offeredBookInfo ? (
+          <Text style={styles.offeredText}>Offered</Text> 
+          {offeredBookInfo ? ( 
             <View style={styles.bookLabel}>
               <CustomButton
                 onPress={() =>
@@ -362,7 +376,12 @@ export default function RequestCard({
                     owner: offeredBookInfo.owner,
                   })
                 }
-              >
+              >  
+              {offeredBookAvatar ? (
+                <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
+              ) : (
+                <AntDesign name="picture" size={100} color="grey"/>
+              )}
                 <Text style={styles.requestCardText}>
                   {offeredBookInfo.bookName}
                 </Text>
@@ -377,11 +396,6 @@ export default function RequestCard({
         </View>
         <View style={styles.bookItem}>
           <Text style={styles.requestedText}>Requested</Text>
-          {requestedBookAvatar ? (
-            <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
-          ) : (
-            <AntDesign name="picture" size={100} color="grey" />
-          )}
           {requestedBookInfo ? (
             <View style={styles.bookLabel}>
               <CustomButton
@@ -391,7 +405,12 @@ export default function RequestCard({
                     owner: requestedBookInfo.owner,
                   })
                 }
-              >
+              > 
+               {requestedBookAvatar ? (
+                  <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
+                ) : (
+                  <AntDesign name="picture" size={100} color="grey" />
+                )}
                 <Text style={styles.requestCardText}>
                   {requestedBookInfo.bookName}
                 </Text>
@@ -432,7 +451,17 @@ export default function RequestCard({
               </CustomButton>
             )}
         </View>
-      ) : status === "accepted" ? (
+      ) : status === "accepted" ? ( 
+        <>
+        {offeredBookInfo.owner !== auth.currentUser.uid ? (
+          <Text style={styles.addressText}>  
+           Shipping Address: {'\n'}
+          {offeredBookInfo.address} </Text> 
+        ) : (
+          <Text style={styles.addressText}>  
+           Shipping Address: {'\n'}
+          {requestedBookInfo.address} </Text>
+        )}
         <View style={styles.buttonView}>
           <CustomButton
             customStyle={styles.cancelButton}
@@ -447,6 +476,7 @@ export default function RequestCard({
             <Text style={styles.buttonText}>Complete</Text>
           </CustomButton>
         </View>
+      </>
       ) : status === "one user completed" &&
         initialCompletedUser === auth.currentUser.uid ? (
         <Text style={styles.waitingText}>
@@ -491,6 +521,14 @@ const styles = StyleSheet.create({
     color: "black",
     fontSize: 16,
     fontFamily: "SecularOne_400Regular",
+  }, 
+  addressText: {
+    color: "black",
+    fontSize: 14,
+    fontFamily: "SecularOne_400Regular",
+    marginVertical: 10, 
+    alignSelf: "center", 
+    width: "80%",
   },
   books: {
     flexDirection: "row",
@@ -541,7 +579,7 @@ const styles = StyleSheet.create({
     color: "white",
     alignSelf: "center",
     fontFamily: "SecularOne_400Regular",
-    fontSize: 16,
+    fontSize: 15, 
   },
   rejectButton: {
     backgroundColor: "#f44336",
@@ -582,8 +620,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#55c7aa",
     borderRadius: 10,
     padding: 10,
-    height: 40,
+    height: 50,
     alignSelf: "center",
-    width: "70%",
+    width: "80%",
   },
 });

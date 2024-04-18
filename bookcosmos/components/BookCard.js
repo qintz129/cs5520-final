@@ -7,7 +7,8 @@ import { database, storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { useCustomFonts } from "../Fonts";
 
-const ExploreBookCard = memo(({ item, isMyLibrary, handlePressBook, handleDeleteItem}) => { 
+const ExploreBookCard = memo(({ item, isMyLibrary, handlePressBook, handleDeleteItem}) => {   
+  console.log(item.bookName, item.bookStatus, isMyLibrary);
   const [bookAvatar, setBookAvatar] = useState(null);
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
@@ -82,7 +83,12 @@ const ExploreBookCard = memo(({ item, isMyLibrary, handlePressBook, handleDelete
   );
 } ,  
 (prevProps, nextProps) => {
-  return prevProps.item.id === nextProps.item.id && prevProps.item.image === nextProps.item.image;
+  return prevProps.item.id === nextProps.item.id &&
+         prevProps.item.image === nextProps.item.image && 
+         prevProps.item.bookStatus === nextProps.item.bookStatus && 
+         prevProps.item.bookName === nextProps.item.bookName &&  
+         prevProps.item.author === nextProps.item.author &&
+         prevProps.isMyLibrary === nextProps.isMyLibrary
 }
 ); 
 
