@@ -292,22 +292,14 @@ export default function RequestCard({
                 setStatus("completed");
                 setUpdateTrigger((prev) => prev + 1);
 
-                // Write exchange history for both users
                 const historyEntryFrom = {
-                  myBook: offeredBookInfo,
-                  requestedBook: requestedBookInfo,
-                  fromUser: fromUserId,
-                  toUser: toUserId,
-                  isReviewed: false,
-                  date: new Date().toISOString(),
-                };
-                const historyEntryTo = {
-                  myBook: requestedBookInfo,
-                  requestedBook: offeredBookInfo,
+                  myBook: requestedBookInfo.id,
+                  requestedBook: offeredBookInfo.id,
                   fromUser: toUserId,
                   toUser: fromUserId,
                   isReviewed: false,
                   date: new Date().toISOString(),
+                  status: "completed",
                 };
                 await writeToDB(
                   historyEntryFrom,
@@ -315,7 +307,7 @@ export default function RequestCard({
                   fromUserId,
                   "history"
                 );
-                await writeToDB(historyEntryTo, "users", toUserId, "history");
+                await writeToDB(historyEntryFrom, "users", toUserId, "history");
               }
               Alert.alert(
                 "Request Completed",
