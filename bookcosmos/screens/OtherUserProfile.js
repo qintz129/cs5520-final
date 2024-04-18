@@ -56,7 +56,17 @@ export default function OtherUserProfile({ navigation, route }) {
           <Ionicons name="person-circle" size={100} color="black" />
         )}
         {rating > 0 && <Text>Rating: {rating}</Text>}
-      </View>
+      </View> 
+        <CustomButton
+              onPress={() =>
+                navigation.navigate("Chat", {
+                  otherId: ownerId,
+                  otherName: ownerName,
+                })
+              }
+            > 
+        <Text>Chat</Text>
+        </CustomButton>
       <View style={styles.tabs}>
         <CustomButton onPress={() => setActiveTab("library")}>
           <Text>My Library</Text>

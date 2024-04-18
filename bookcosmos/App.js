@@ -19,7 +19,8 @@ import { ActionSheetProvider } from "@expo/react-native-action-sheet";
 import { UserProvider } from "./hooks/UserContext";
 import Map from "./screens/Map"; 
 import * as Notifications from 'expo-notifications'  
-import NotificationListener from "./components/NotificationListener";
+import NotificationListener from "./components/NotificationListener";   
+import Chat from "./screens/Chat";
 
 Notifications.setNotificationHandler({ 
   handleNotification:async function(notification){ 
@@ -97,7 +98,8 @@ export default function App() {
         options={{ headerBackTitleVisible: false }}
       />
       <Stack.Screen name="Add A Review" component={AddReview} />
-      <Stack.Screen name="Map" component={Map} />  
+      <Stack.Screen name="Map" component={Map} />   
+      <Stack.Screen name="Chat" component={Chat} />
     </>
   );
 
