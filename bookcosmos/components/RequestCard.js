@@ -114,6 +114,17 @@ export default function RequestCard({
                 "The request has been cancelled"
               );
             } else if (action === "reject") {
+              const historyEntryForm = {
+                myBook: offeredBookInfo.id,
+                requestedBook: requestedBookInfo.id,
+                fromUser: fromUserId,
+                toUser: toUserId,
+                isReviewed: false,
+                date: new Date().toISOString(),
+                status: "rejected",
+              };
+              await writeToDB(historyEntryForm, "users", fromUserId, "history");
+              await writeToDB(historyEntryForm, "users", toUserId, "history");
               Alert.alert("Request Rejected", "The request has been rejected");
             }
           },
@@ -292,7 +303,7 @@ export default function RequestCard({
                 setStatus("completed");
                 setUpdateTrigger((prev) => prev + 1);
 
-                const historyEntryFrom = {
+                const historyEntryForm = {
                   myBook: requestedBookInfo.id,
                   requestedBook: offeredBookInfo.id,
                   fromUser: toUserId,
@@ -302,12 +313,12 @@ export default function RequestCard({
                   status: "completed",
                 };
                 await writeToDB(
-                  historyEntryFrom,
+                  historyEntryForm,
                   "users",
                   fromUserId,
                   "history"
                 );
-                await writeToDB(historyEntryFrom, "users", toUserId, "history");
+                await writeToDB(historyEntryForm, "users", toUserId, "history");
               }
               Alert.alert(
                 "Request Completed",
