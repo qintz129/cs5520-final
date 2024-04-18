@@ -19,11 +19,11 @@ import { calculateDistance } from "../Utils";
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [isLoading, setLoading] = useState(true);
+  const [allBooksLoaded, setAllBooksLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
 
   // Get the user's location
-  useEffect(() => {
+  useEffect(() => {  
     async function getUserLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -32,12 +32,12 @@ export default function Explore({ navigation }) {
       }
       let location = await Location.getCurrentPositionAsync();
       setUserLocation(location.coords);
-      setLoading(false);
     }
     getUserLocation();
   }, []);
 
-  useEffect(() => {
+  useEffect(() => {  
+    if (!userLocation) return; // Only proceed if userLocation is available
     const fetchBooks = () => {
       try {
         const booksCollection = collection(database, "books");
@@ -64,29 +64,29 @@ export default function Explore({ navigation }) {
             );
 
           const promises = fetchedBooks.map(async (book) => {
-            const ownerName = await getOwnerName(book.owner);
-            if (!userLocation)
-              return { ...book, ownerName, distance: "loading..." };
+            const ownerName = await getOwnerName(book.owner); 
             const distance = calculateDistance(
               userLocation.latitude,
               userLocation.longitude,
               book.location.latitude,
               book.location.longitude
             );
-
             return { ...book, ownerName, distance };
           });
 
           const booksWithOwnerName = await Promise.all(promises);
           const sortedBooks = booksWithOwnerName.sort(
             (a, b) => a.distance - b.distance
+          ); 
+          const sortedBookswithName = sortedBooks.sort((a, b) => 
+            a.bookName.localeCompare(b.bookName) 
           );
-          setBooks(sortedBooks);
-          setLoading(false);
+          setBooks(sortedBookswithName);
+          setAllBooksLoaded(true);
         });
         return unsubscribe;
       } catch (error) {
-        console.error("Error fetching books:", error);
+        console.error("Error fetching books:", error); 
       }
     };
 
@@ -120,7 +120,7 @@ export default function Explore({ navigation }) {
           onChangeText={(text) => setSearchKeyword(text)}
         />
       </View>
-      {isLoading ? (
+      { !allBooksLoaded? (
         <ActivityIndicator
           size="large"
           color="#55c7aa"

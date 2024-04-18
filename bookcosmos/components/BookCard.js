@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo} from "react";
 import { View, Text, StyleSheet, Image } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "./CustomButton";
@@ -7,12 +7,7 @@ import { database, storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { useCustomFonts } from "../Fonts";
 
-export default function BookCard({
-  item,
-  handlePressBook,
-  handleDeleteItem,
-  isMyLibrary,
-}) {
+const ExploreBookCard = memo(({ item, isMyLibrary, handlePressBook, handleDeleteItem}) => { 
   const [bookAvatar, setBookAvatar] = useState(null);
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
@@ -30,7 +25,8 @@ export default function BookCard({
           console.error("Failed to load image:", error);
         });
     }
-  }, [item.image]);
+  }, [item.image]); 
+
 
   function BookCardContent() {
     return (
@@ -84,7 +80,13 @@ export default function BookCard({
   ) : (
     content
   );
+} ,  
+(prevProps, nextProps) => {
+  return prevProps.item.id === nextProps.item.id && prevProps.item.image === nextProps.item.image;
 }
+); 
+
+export default ExploreBookCard;
 
 const styles = StyleSheet.create({
   item: {

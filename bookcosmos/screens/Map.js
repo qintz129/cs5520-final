@@ -185,7 +185,6 @@ export default function Map() {
               <BookCard item={item} handlePressBook={handlePressBook} />
             )}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.bookList}
           />
           <CustomButton
             onPress={() => setSelectedBooks(null)}
@@ -235,15 +234,13 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: "50%",
+    height: "50%", 
+    flex: 1,
   },
   header: {
     fontSize: 20,
     fontFamily: "SecularOne_400Regular",
     marginBottom: 10,
-  },
-  bookList: {
-    maxHeight: 200,
   },
   closeButton: {
     fontSize: 16,

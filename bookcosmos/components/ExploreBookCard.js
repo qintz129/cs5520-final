@@ -4,9 +4,8 @@ import {
   View,
   Image,
   Dimensions,
-  ActivityIndicator,
 } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, memo} from "react";
 import CustomButton from "./CustomButton";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
@@ -15,12 +14,11 @@ import { ref, getDownloadURL } from "firebase/storage";
 import { Entypo } from "@expo/vector-icons";
 import { useCustomFonts } from "../Fonts";
 
-export default function ExploreBookCard({ item }) {
+const ExploreBookCard = memo(({ item }) => {
   const navigation = useNavigation();
-  const [bookAvatar, setBookAvatar] = useState(null);
+  const [bookAvatar, setBookAvatar] = useState(null); 
   const screenWidth = Dimensions.get("window").width;
-  const bookCardWidth = (screenWidth - 15 * 3) / 2;
-
+  const bookCardWidth = (screenWidth - 15 * 3) / 2; 
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
     return <Text>...</Text>;
@@ -85,7 +83,11 @@ export default function ExploreBookCard({ item }) {
       </View>
     </CustomButton>
   );
-}
+}, (prevProps, nextProps) => {
+  return prevProps.item.id === nextProps.item.id && prevProps.item.image === nextProps.item.image;
+}); 
+
+export default ExploreBookCard;
 
 const styles = StyleSheet.create({
   item: {
