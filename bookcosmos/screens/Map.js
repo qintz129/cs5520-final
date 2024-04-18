@@ -95,7 +95,11 @@ export default function Map() {
       location.longitude
     );
     setSelectedBooksDistance(distance);
-    setSelectedBooks(location.booksAtLocation);
+    // Sort books by book name in ascending order
+    const sortedBooks = location.booksAtLocation.sort((a, b) =>
+      a.bookName.localeCompare(b.bookName)
+    );
+    setSelectedBooks(sortedBooks);
   }
 
   // Handle press book
@@ -169,8 +173,8 @@ export default function Map() {
         <View style={styles.bottomContainer}>
           <Text style={styles.header}>Books at this location:</Text>
           <View style={styles.distanceContainer}>
-            <Entypo name="location-pin" size={24} color="#55c7aa" />
-            <Text style={styles.distanceText}>{selectedBooksDistance} km</Text>
+            <Entypo name="location-pin" size={24} color="black" />
+            <Text style={styles.distance}>{selectedBooksDistance} km</Text>
           </View>
           <FlatList
             data={selectedBooks}
@@ -184,7 +188,7 @@ export default function Map() {
             onPress={() => setSelectedBooks(null)}
             customStyle={styles.closeButton}
           >
-            <Text style={styles.closeText}>Close</Text>
+            <Text>Close</Text>
           </CustomButton>
         </View>
       )}
@@ -228,6 +232,7 @@ const styles = StyleSheet.create({
     padding: 20,
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
+    height: "50%",
   },
   header: {
     fontSize: 20,

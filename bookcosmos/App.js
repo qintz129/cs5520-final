@@ -21,6 +21,7 @@ import Map from "./screens/Map";
 import * as Notifications from "expo-notifications";
 import NotificationListener from "./components/NotificationListener";
 import { useCustomFonts } from "./Fonts";
+import Chat from "./screens/Chat";
 
 Notifications.setNotificationHandler({
   handleNotification: async function (notification) {
@@ -113,6 +114,7 @@ export default function App() {
           headerBackTitleVisible: false,
         }}
       />
+      <Stack.Screen name="Chat" component={Chat} />
     </>
   );
 

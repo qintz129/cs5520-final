@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   collection,
   onSnapshot,
@@ -10,8 +10,6 @@ import {
 import { database } from "../firebase-files/firebaseSetup";
 import { deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
-import { calculateDistance } from "../Utils";
-import * as Location from "expo-location";
 
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary, distance }) {
@@ -102,7 +100,6 @@ export default function Library({ navigation, userId, isMyLibrary, distance }) {
       });
     }
   };
-
   return (
     <View style={styles.container}>
       <FlatList
