@@ -253,11 +253,14 @@ export default function BookDetail({ route, navigation }) {
               <Text style={styles.authorText}>{author}</Text>  
               <View style={styles.descriptionContainer}>
               <Text style={styles.descriptionText}> 
-              {isExpanded ? description : `${description.substring(0, 200)}...`} 
-              </Text> 
+              {description.length > 200 && !isExpanded ? `${description.substring(0, 200)}...` : description} 
+              </Text>  
+              {description && (
               <CustomButton onPress={toggleDescription}> 
               <Text style={styles.expandButtonText}>{isExpanded ? 'Hide' : 'Read more'}</Text> 
-              </CustomButton> 
+              </CustomButton>   
+                )
+              }   
               </View>
             </View>
             <View style={styles.googleBooks}>

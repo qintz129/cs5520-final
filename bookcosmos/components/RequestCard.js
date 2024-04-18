@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, Image, Alert } from "react-native";
-import React, { useEffect, useState, useLayoutEffect} from "react";
+import React, { useEffect, useState} from "react";
 import CustomButton from "./CustomButton";
 import {
   deleteFromDB,
@@ -7,10 +7,11 @@ import {
   writeToDB,
 } from "../firebase-files/firestoreHelper";
 import { AntDesign } from "@expo/vector-icons";
-import { auth } from "../firebase-files/firebaseSetup";
+import { auth, database} from "../firebase-files/firebaseSetup";
 import { storage } from "../firebase-files/firebaseSetup";
-import { ref, getDownloadURL } from "firebase/storage";
-import { useCustomFonts } from "../Fonts";
+import { ref, getDownloadURL} from "firebase/storage";
+import { useCustomFonts } from "../Fonts"; 
+import { onSnapshot, doc} from "firebase/firestore";
 
 // RequestCard component to display the exchange requests
 export default function RequestCard({
@@ -45,10 +46,10 @@ export default function RequestCard({
           console.error("Failed to load image:", error);
         });
     }
-  }, [offeredBookInfo.image]);
+  }, [offeredBookInfo]);
 
   useEffect(() => {
-    if (requestedBookInfo.image) {
+    if (requestedBookInfo && requestedBookInfo.image) {
       const imageRef = ref(storage, requestedBookInfo.image);
       getDownloadURL(imageRef)
         .then((url) => {
@@ -58,27 +59,29 @@ export default function RequestCard({
           console.error("Failed to load image:", error);
         });
     }
-  }, [requestedBookInfo.image]); 
+  }, [requestedBookInfo]); 
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      if (status === "unaccepted") {
-        if (offeredBookInfo.bookStatus === "inExchange" && requestedBookInfo.bookStatus === "inExchange") {
-          setStatus("accepted");
-        }
+  useEffect(() => {  
+    let subcollectionName = tab === "incoming" ? "receivedRequests" : "sentRequests";
+    const docRef = doc(database, "users", auth.currentUser.uid, subcollectionName, requestId);
+  
+    const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
+      if (docSnapshot.exists()) {
+        const requestData = docSnapshot.data();  
+        setStatus(requestData.status);
+      } else {
+        console.log("No such document!");
       }
+    }, (error) => {
+      console.error("Failed to fetch data: ", error);
+    });
   
-      if (status === "accepted") {
-        if (offeredBookInfo.bookStatus !== "inExchange" || requestedBookInfo.bookStatus !== "inExchange") {
-          setStatus("unaccepted");
-        }
-      } 
-    }, 200); 
+    return () => {
+      unsubscribe();
+    };
+  }, [tab, requestId, offeredBookInfo, requestedBookInfo]);
   
-    return () => clearTimeout(timer);
-  }, [offeredBookInfo, requestedBookInfo, status]);
 
-  console.log("status", status, "offeredBook", offeredBookInfo.bookStatus, "requestedBook", requestedBookInfo.bookStatus);
   const handlePressBook = ({ id, owner }) => {
     navigation.navigate("Book Detail", {
       bookId: id,
@@ -126,13 +129,7 @@ export default function RequestCard({
               });
               console.log("Updated offered book status to free");
             }
-
-            if (action === "cancel") {
-              Alert.alert(
-                "Request Cancelled",
-                "The request has been cancelled"
-              );
-            } else if (action === "reject") {
+          if (action === "reject") {
               const historyEntryForm = {
                 myBook: offeredBookInfo.id,
                 requestedBook: requestedBookInfo.id,
@@ -144,7 +141,6 @@ export default function RequestCard({
               };
               await writeToDB(historyEntryForm, "users", fromUserId, "history");
               await writeToDB(historyEntryForm, "users", toUserId, "history");
-              Alert.alert("Request Rejected", "The request has been rejected");
             }
           },
         },
@@ -195,8 +191,6 @@ export default function RequestCard({
 
             setStatus("accepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
-
-            Alert.alert("Request Accepted", "The request has been accepted");
           },
         },
       ]);
@@ -244,8 +238,6 @@ export default function RequestCard({
             );
             setStatus("unaccepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
-
-            Alert.alert("Request Cancelled", "The request has been cancelled");
           },
         },
       ]);
@@ -339,10 +331,6 @@ export default function RequestCard({
                 );
                 await writeToDB(historyEntryForm, "users", toUserId, "history");
               }
-              Alert.alert(
-                "Request Completed",
-                "The request has been completed"
-              );
             },
           },
         ]
