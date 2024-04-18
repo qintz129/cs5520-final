@@ -1,5 +1,5 @@
 import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback} from "react";
 import {
   collection,
   onSnapshot,
@@ -90,7 +90,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         ownerId: item.owner,
       });
     }
-  };
+  }; 
   return (
     <View style={styles.container}>
       <FlatList

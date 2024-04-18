@@ -7,12 +7,13 @@ import { Ionicons } from "@expo/vector-icons";
 import { onSnapshot, doc } from "firebase/firestore";
 import { database, storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
+import { Entypo } from '@expo/vector-icons';
 
 // OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
   const { ownerId, ownerName, rating } = route.params;
-  const [userAvatar, setUserAvatar] = useState(null);
+  const [userAvatar, setUserAvatar] = useState(null); 
 
   useEffect(() => {
     navigation.setOptions({
@@ -55,18 +56,20 @@ export default function OtherUserProfile({ navigation, route }) {
         ) : (
           <Ionicons name="person-circle" size={100} color="black" />
         )}
-        {rating > 0 && <Text>Rating: {rating}</Text>}
-      </View> 
-        <CustomButton
-              onPress={() =>
-                navigation.navigate("Chat", {
-                  otherId: ownerId,
-                  otherName: ownerName,
-                })
-              }
-            > 
-        <Text>Chat</Text>
-        </CustomButton>
+        <View style={styles.avatarBottom}>
+          {rating > 0 && <Text style={styles.rateText}>Rating: {rating}</Text>}
+          <CustomButton
+            onPress={() =>
+              navigation.navigate("Chat", {
+                otherId: ownerId,
+                otherName: ownerName,
+              })
+            }
+          >
+            <Entypo name="chat" size={24} color="black" />
+          </CustomButton>
+        </View>
+      </View>
       <View style={styles.tabs}>
         <CustomButton onPress={() => setActiveTab("library")}>
           <Text>My Library</Text>
@@ -92,6 +95,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     marginVertical: 5,
     rowGap: 15,
+  }, 
+  avatarBottom: {
+    flexDirection: "row", 
+    justifyContent: "space-evenly",
+    width: "40%",
   },
   tabs: {
     flexDirection: "row",
@@ -102,5 +110,8 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 50,
+  }, 
+  rateText: { 
+    alignSelf: "center",
   },
 });
