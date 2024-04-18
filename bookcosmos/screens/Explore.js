@@ -78,10 +78,7 @@ export default function Explore({ navigation }) {
           const sortedBooks = booksWithOwnerName.sort(
             (a, b) => a.distance - b.distance
           ); 
-          const sortedBookswithName = sortedBooks.sort((a, b) => 
-            a.bookName.localeCompare(b.bookName) 
-          );
-          setBooks(sortedBookswithName);
+          setBooks(sortedBooks);
           setAllBooksLoaded(true);
         });
         return unsubscribe;

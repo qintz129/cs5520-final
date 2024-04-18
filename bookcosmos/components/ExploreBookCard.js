@@ -5,7 +5,7 @@ import {
   Image,
   Dimensions,
 } from "react-native";
-import React, { useState, useEffect, memo} from "react";
+import React, { useState, useEffect} from "react";
 import CustomButton from "./CustomButton";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
@@ -14,7 +14,7 @@ import { ref, getDownloadURL } from "firebase/storage";
 import { Entypo } from "@expo/vector-icons";
 import { useCustomFonts } from "../Fonts";
 
-const ExploreBookCard = memo(({ item }) => {
+const ExploreBookCard = ({ item }) => {
   const navigation = useNavigation();
   const [bookAvatar, setBookAvatar] = useState(null); 
   const screenWidth = Dimensions.get("window").width;
@@ -83,9 +83,7 @@ const ExploreBookCard = memo(({ item }) => {
       </View>
     </CustomButton>
   );
-}, (prevProps, nextProps) => {
-  return prevProps.item.id === nextProps.item.id && prevProps.item.image === nextProps.item.image;
-}); 
+}; 
 
 export default ExploreBookCard;
 

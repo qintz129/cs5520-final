@@ -113,7 +113,7 @@ export default function Requests({ navigation }) {
               requestId={item.id}
               tab={activeTab}
               fromUserId={item.fromUser}
-              toUserId={item.toUser}
+              toUserId={item.toUser} 
               initialStatus={item.status}
               initialCompletedUser={
                 item.completedUser ? item.completedUser : null
