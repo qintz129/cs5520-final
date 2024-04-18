@@ -121,7 +121,7 @@ export default function Explore({ navigation }) {
         />
       </View>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator size="large" color="#55c7aa" />
       ) : (
         <>
           {books.length > 0 && (

@@ -189,7 +189,11 @@ export default function BookDetail({ route, navigation }) {
     <View>
       <ScrollView>
         {isLoading ? (
-          <ActivityIndicator size="large" color="#0000ff" />
+          <ActivityIndicator
+            size="large"
+            color="#55c7aa"
+            style={{ marginTop: 20 }}
+          />
         ) : (
           <View style={styles.container}>
             {bookAvatar ? (
@@ -311,16 +315,7 @@ const styles = StyleSheet.create({
   titleText: {
     fontSize: 30,
     marginBottom: 5,
-  bookInfoContainer: {
-    padding: 10,
-  },
-  titleText: {
-    fontSize: 30,
-    marginBottom: 5,
     fontWeight: "bold",
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-    textAlign: "center",
     fontFamily: "SecularOne_400Regular",
     marginTop: 10,
     textAlign: "center",
@@ -330,41 +325,6 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     fontSize: 25,
     fontFamily: "Molengo_400Regular",
-    textAlign: "center",
-  },
-  descriptionText: {
-    fontSize: 18,
-    fontFamily: "Catamaran_400Regular",
-    textAlign: "justify",
-  },
-  userInfoContainer: {
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    borderWidth: 1,
-    borderColor: "lightgrey",
-    padding: 10,
-    borderRadius: 10,
-  },
-  userButtonContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  userContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 20,
-  },
-  userTextContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  userText: {
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
     textAlign: "center",
   },
   descriptionText: {

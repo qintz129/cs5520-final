@@ -10,6 +10,7 @@ import { AntDesign } from "@expo/vector-icons";
 import { auth } from "../firebase-files/firebaseSetup";
 import { storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
+import { useCustomFonts } from "../Fonts";
 
 // RequestCard component to display the exchange requests
 export default function RequestCard({
@@ -28,6 +29,10 @@ export default function RequestCard({
   const [status, setStatus] = useState(initialStatus);
   const [offeredBookAvatar, setOfferedBookAvatar] = useState(null);
   const [requestedBookAvatar, setRequestedBookAvatar] = useState(null);
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   useEffect(() => {
     if (offeredBookInfo.image) {
@@ -210,7 +215,6 @@ export default function RequestCard({
             setStatus("unaccepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
 
-            
             Alert.alert("Request Cancelled", "The request has been cancelled");
           },
         },
@@ -328,7 +332,9 @@ export default function RequestCard({
   };
   return status === "completed" ? null : (
     <View style={styles.container}>
-      <Text>{date}</Text>
+      <View style={styles.dateContainer}>
+        <Text style={styles.dateText}>{date}</Text>
+      </View>
       {status === "unaccepted" &&
         (!offeredBookInfo ||
           !requestedBookInfo ||
@@ -338,7 +344,7 @@ export default function RequestCard({
         )}
       <View style={styles.books}>
         <View style={styles.bookItem}>
-          <Text>Offered:</Text>
+          <Text style={styles.offeredText}>Offered</Text>
           {offeredBookAvatar ? (
             <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
           ) : (
@@ -354,18 +360,20 @@ export default function RequestCard({
                   })
                 }
               >
-                <Text style={styles.text}>{offeredBookInfo.bookName}</Text>
+                <Text style={styles.requestCardText}>
+                  {offeredBookInfo.bookName}
+                </Text>
               </CustomButton>
               {offeredBookInfo.bookStatus === "inExchange" && (
                 <AntDesign name="swap" size={24} color="red" />
               )}
             </View>
           ) : (
-            <Text style={styles.text}>Unavailable</Text>
+            <Text style={styles.requestCardText}>Unavailable</Text>
           )}
         </View>
         <View style={styles.bookItem}>
-          <Text>Requested:</Text>
+          <Text style={styles.requestedText}>Requested</Text>
           {requestedBookAvatar ? (
             <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
           ) : (
@@ -381,53 +389,73 @@ export default function RequestCard({
                   })
                 }
               >
-                <Text>{requestedBookInfo.bookName}</Text>
+                <Text style={styles.requestCardText}>
+                  {requestedBookInfo.bookName}
+                </Text>
               </CustomButton>
               {requestedBookInfo.bookStatus === "inExchange" && (
                 <AntDesign name="swap" size={24} color="red" />
               )}
             </View>
           ) : (
-            <Text>Unavailable</Text>
+            <Text style={styles.requestCardText}>Unavailable</Text>
           )}
         </View>
       </View>
       {tab === "outgoing" && status === "unaccepted" ? (
-        <CustomButton onPress={() => handleCancelAndReject("cancel")}>
-          <Text style={styles.text}>Cancel</Text>
+        <CustomButton
+          customStyle={styles.outgoingCancelButton}
+          onPress={() => handleCancelAndReject("cancel")}
+        >
+          <Text style={styles.buttonText}>Cancel</Text>
         </CustomButton>
       ) : tab === "incoming" && status === "unaccepted" ? (
         <View style={styles.buttonView}>
+          <CustomButton
+            customStyle={styles.rejectButton}
+            onPress={() => handleCancelAndReject("reject")}
+          >
+            <Text style={styles.buttonText}>Reject</Text>
+          </CustomButton>
           {offeredBookInfo &&
             requestedBookInfo &&
             offeredBookInfo.bookStatus !== "inExchange" &&
             requestedBookInfo.bookStatus !== "inExchange" && (
-              <CustomButton onPress={() => handleAccept()}>
-                <Text>Accept</Text>
+              <CustomButton
+                customStyle={styles.acceptButton}
+                onPress={() => handleAccept()}
+              >
+                <Text style={styles.buttonText}>Accept</Text>
               </CustomButton>
             )}
-          <CustomButton onPress={() => handleCancelAndReject("reject")}>
-            <Text>Reject</Text>
-          </CustomButton>
         </View>
       ) : status === "accepted" ? (
         <View style={styles.buttonView}>
-          <CustomButton onPress={() => handleComplete()}>
-            <Text style={styles.text}>Complete</Text>
+          <CustomButton
+            customStyle={styles.cancelButton}
+            onPress={() => handleAcceptAfterCancel()}
+          >
+            <Text style={styles.buttonText}>Cancel</Text>
           </CustomButton>
-          <CustomButton onPress={() => handleAcceptAfterCancel()}>
-            <Text style={styles.text}>Cancel</Text>
+          <CustomButton
+            customStyle={styles.completeButton}
+            onPress={() => handleComplete()}
+          >
+            <Text style={styles.buttonText}>Complete</Text>
           </CustomButton>
         </View>
       ) : status === "one user completed" &&
         initialCompletedUser === auth.currentUser.uid ? (
-        <Text style={styles.waiting}>
+        <Text style={styles.waitingText}>
           Waiting for the other user to complete
         </Text>
       ) : status === "one user completed" &&
         initialCompletedUser !== auth.currentUser.uid ? (
-        <CustomButton onPress={() => handleComplete()}>
-          <Text style={styles.text}>Waiting for you to complete</Text>
+        <CustomButton
+          customStyle={styles.waitingButton}
+          onPress={() => handleComplete()}
+        >
+          <Text style={styles.buttonText}>Waiting for you to complete</Text>
         </CustomButton>
       ) : null}
     </View>
@@ -435,6 +463,32 @@ export default function RequestCard({
 }
 
 const styles = StyleSheet.create({
+  dateContainer: {
+    borderBottomColor: "#ccc",
+    borderBottomWidth: 1,
+  },
+  dateText: {
+    color: "black",
+    fontSize: 16,
+    fontFamily: "SecularOne_400Regular",
+  },
+  offeredText: {
+    color: "#ff9529",
+    fontSize: 18,
+    fontFamily: "SecularOne_400Regular",
+    marginTop: 10,
+  },
+  requestedText: {
+    color: "#55aacc",
+    fontSize: 18,
+    fontFamily: "SecularOne_400Regular",
+    marginTop: 10,
+  },
+  requestCardText: {
+    color: "black",
+    fontSize: 16,
+    fontFamily: "SecularOne_400Regular",
+  },
   books: {
     flexDirection: "row",
     justifyContent: "space-around",
@@ -463,19 +517,70 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   image: {
-    width: 70,
-    height: 70,
+    width: 90,
+    height: 90,
     borderRadius: 10,
+    marginVertical: 5,
   },
   buttonView: {
     flexDirection: "row",
-    justifyContent: "space-evenly",
+    justifyContent: "space-around",
   },
-  waiting: {
-    color: "red",
+  outgoingCancelButton: {
+    backgroundColor: "#f44336",
+    borderRadius: 10,
+    padding: 10,
     alignSelf: "center",
+    width: "40%",
+    height: 40,
   },
-  text: {
+  buttonText: {
+    color: "white",
     alignSelf: "center",
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 16,
+  },
+  rejectButton: {
+    backgroundColor: "#f44336",
+    borderRadius: 10,
+    padding: 10,
+    height: 40,
+    width: "30%",
+  },
+  acceptButton: {
+    borderRadius: 10,
+    backgroundColor: "#55c7aa",
+    padding: 10,
+    height: 40,
+    width: "30%",
+  },
+  cancelButton: {
+    backgroundColor: "#f44336",
+    borderRadius: 10,
+    padding: 10,
+    height: 40,
+    width: "30%",
+  },
+  completeButton: {
+    borderRadius: 10,
+    backgroundColor: "#55c7aa",
+    padding: 10,
+    height: 40,
+    width: "30%",
+  },
+  waitingText: {
+    marginVertical: 10,
+    color: "#f44336",
+    alignSelf: "center",
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 16,
+  },
+  waitingButton: {
+    backgroundColor: "#55c7aa",
+    borderRadius: 10,
+    padding: 10,
+    height: 40,
+    alignSelf: "center",
+    width: "70%",
   },
 });

@@ -58,7 +58,11 @@ export default function History({ navigation }) {
   return (
     <View style={styles.container}>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <FlatList
           data={history}

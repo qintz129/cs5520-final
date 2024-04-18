@@ -20,6 +20,8 @@ import { auth } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons";
 import { calculateDistance } from "../Utils";
 import { useCustomFonts } from "../Fonts";
+import { ScrollView } from "react-native-gesture-handler";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -116,7 +118,11 @@ export default function Map() {
   return (
     <>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         userLocation && (
           <MapView
@@ -235,7 +241,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   bookList: {
-    maxHeight: 150,
+    maxHeight: 200,
   },
   closeButton: {
     fontSize: 16,

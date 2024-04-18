@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
   },
   reviewerName: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     fontFamily: "SecularOne_400Regular",
   },
@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     fontFamily: "SecularOne_400Regular",
   },
   comment: {
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "Catamaran_400Regular",
   },
 });

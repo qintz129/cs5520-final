@@ -13,6 +13,7 @@ import RequestCard from "../components/RequestCard";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import { fetchExtra } from "../firebase-files/firestoreHelper";
+import { useCustomFonts } from "../Fonts";
 
 // Requests component to display the incoming and outgoing requests
 export default function Requests({ navigation }) {
@@ -20,6 +21,10 @@ export default function Requests({ navigation }) {
   const [requests, setRequests] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return <Text>Loading...</Text>;
+  }
 
   // useFocusEffect hook to fetch the incoming and outgoing requests.
   // Similar to useEffect, but it specifically runs when the screen comes into focus or goes out of focus.
@@ -55,16 +60,46 @@ export default function Requests({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.tabs}> 
-      <CustomButton onPress={() => setActiveTab("outgoing")}>
-          <Text>Outgoing</Text>
+      <View style={styles.tabs}>
+        <CustomButton
+          customStyle={[
+            styles.tab,
+            activeTab === "outgoing" && styles.activeTab,
+          ]}
+          onPress={() => setActiveTab("outgoing")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "outgoing" && styles.activeTabText,
+            ]}
+          >
+            Outgoing
+          </Text>
         </CustomButton>
-        <CustomButton onPress={() => setActiveTab("incoming")}>
-          <Text>Incoming</Text>
+        <CustomButton
+          customStyle={[
+            styles.tab,
+            activeTab === "incoming" && styles.activeTab,
+          ]}
+          onPress={() => setActiveTab("incoming")}
+        >
+          <Text
+            style={[
+              styles.tabText,
+              activeTab === "incoming" && styles.activeTabText,
+            ]}
+          >
+            Incoming
+          </Text>
         </CustomButton>
       </View>
       {isLoading ? (
-        <ActivityIndicator size="large" color="#0000ff" />
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
       ) : (
         <FlatList
           data={requests}
@@ -94,8 +129,25 @@ export default function Requests({ navigation }) {
 const styles = StyleSheet.create({
   tabs: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginVertical: 10,
+    justifyContent: "space-evenly",
+    alignItems: "stretch",
+    marginHorizontal: 20,
+  },
+  tab: {
+    flex: 1,
+  },
+  activeTab: {
+    borderBottomWidth: 3,
+    borderBottomColor: "#55c7aa",
+  },
+  activeTabText: {
+    color: "black",
+    marginBottom: 10,
+  },
+  tabText: {
+    fontFamily: "SecularOne_400Regular",
+    fontSize: 18,
+    color: "gray",
   },
   container: {
     flex: 1,
