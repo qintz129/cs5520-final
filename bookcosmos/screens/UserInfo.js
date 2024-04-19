@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert, ActivityIndicator } from "react-native";
+import { Text, View, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { auth, storage } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
@@ -15,7 +15,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useUser } from "../hooks/UserContext";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import NotificationManager from "../components/NotificationManager";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { COLORS } from "../styles/Colors";
+import { userInfoStyles } from "../styles/ScreenStyles";
 
 // UserInfo component to display the user information
 export default function UserInfo({ navigation }) {
@@ -32,10 +34,10 @@ export default function UserInfo({ navigation }) {
   const [hasNewImage, setHasNewImage] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSaveLoading, setIsSaveLoading] = useState(false);
+  const styles = userInfoStyles;
   const { fontsLoaded } = useCustomFonts();
-
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -235,7 +237,7 @@ export default function UserInfo({ navigation }) {
         </CustomButton>
         <CustomButton customStyle={styles.saveButton} onPress={handleSave}>
           {isSaveLoading ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={COLORS.white} />
           ) : (
             <Text style={styles.saveText}>Save</Text>
           )}
@@ -244,39 +246,3 @@ export default function UserInfo({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 10,
-    marginRight: 10,
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 100,
-  },
-  saveButton: {
-    backgroundColor: "#55c7aa",
-    height: 50,
-    borderRadius: 10,
-    width: "40%",
-  },
-  saveText: {
-    color: "white",
-    fontSize: 20,
-    fontFamily: "SecularOne_400Regular",
-  },
-  logOutButton: {
-    backgroundColor: "#f44336",
-    height: 50,
-    borderRadius: 10,
-    width: "40%",
-  },
-  logOutText: {
-    color: "white",
-    fontSize: 20,
-    fontFamily: "SecularOne_400Regular",
-  },
-});

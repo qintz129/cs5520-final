@@ -1,10 +1,12 @@
-import { View, StyleSheet, Text, Alert, Image } from "react-native";
+import { View, Text, Alert, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
 import CustomButton from "./CustomButton";
 import { useActionSheet } from "@expo/react-native-action-sheet";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { COLORS } from "../styles/Colors";
+import { imageManagerStyles } from "../styles/ComponentStyles";
 
 export default function ImageManager({
   receiveImageUri,
@@ -15,9 +17,10 @@ export default function ImageManager({
   const [status, requestPermission] = ImagePicker.useCameraPermissions();
   const [imageUri, setImageUri] = useState(null);
   const { showActionSheetWithOptions } = useActionSheet();
+  const styles = imageManagerStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -103,43 +106,20 @@ export default function ImageManager({
           source={{ uri: imageUri }}
         />
       ) : (
-        <MaterialIcons name="photo-camera" size={130} color="gray" />
+        <MaterialIcons
+          name="photo-camera"
+          size={styles.photoIconSize}
+          color={COLORS.grey}
+        />
       )}
       <CustomButton onPress={showActionSheet} customStyle={styles.editButton}>
-        <MaterialIcons name="add-a-photo" size={24} color="white" />
+        <MaterialIcons
+          name="add-a-photo"
+          size={styles.addPhotoIconSize}
+          color={COLORS.white}
+        />
         <Text style={styles.editText}>Edit Photo</Text>
       </CustomButton>
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  userImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  bookImage: {
-    width: 150,
-    height: 180,
-    borderRadius: 10,
-  },
-  editButton: {
-    borderRadius: 10,
-    padding: 8,
-    backgroundColor: "#ff9529",
-    flexDirection: "row",
-    columnGap: 10,
-  },
-  editText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-    color: "white",
-  },
-});

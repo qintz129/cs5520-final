@@ -1,5 +1,4 @@
 import {
-  StyleSheet,
   Text,
   View,
   Image,
@@ -18,10 +17,13 @@ import { ref, getDownloadURL } from "firebase/storage";
 import { storage } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons";
 import { googleApi } from "@env";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
 import { FontAwesome } from "@expo/vector-icons";
 import * as Location from "expo-location";
-import { calculateDistance } from "../Utils";
+import { calculateDistance } from "../utils/Utils";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { COLORS } from "../styles/Colors";
+import { bookDetailStyles } from "../styles/ScreenStyles";
 
 // BookDetail component to display the details of a book
 export default function BookDetail({ route, navigation }) {
@@ -41,10 +43,10 @@ export default function BookDetail({ route, navigation }) {
   const [userLocation, setUserLocation] = useState(null);
   const [distance, setDistance] = useState(null);
   const [bookLocation, setBookLocation] = useState(null);
-
+  const styles = bookDetailStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   // Get user's location
@@ -167,7 +169,7 @@ export default function BookDetail({ route, navigation }) {
 
   // Function to handle the book selection, after the user selects a book, the modal will be closed
   const handleSelectBook = (selectedBookId) => {
-    console.log("Selected book ID:", selectedBookId);
+    //console.log("Selected book ID:", selectedBookId);
     setModalVisible(false);
   };
 
@@ -201,7 +203,7 @@ export default function BookDetail({ route, navigation }) {
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
       name
     )}+inauthor:${encodeURIComponent(author)}&key=${googleApi}`;
-    console.log("Fetching book details from:", url);
+    //console.log("Fetching book details from:", url);
     try {
       const response = await fetch(url);
       const json = await response.json();
@@ -231,9 +233,9 @@ export default function BookDetail({ route, navigation }) {
       <ScrollView>
         {isLoading ? (
           <ActivityIndicator
-            size="large"
-            color="#55c7aa"
-            style={{ marginTop: 20 }}
+            size={activityIndicatorStyles.size}
+            color={activityIndicatorStyles.color}
+            style={activityIndicatorStyles.style}
           />
         ) : (
           <View style={styles.container}>
@@ -242,9 +244,9 @@ export default function BookDetail({ route, navigation }) {
             ) : (
               <AntDesign
                 name="picture"
-                size={200}
-                color="grey"
-                style={{ alignSelf: "center" }}
+                size={styles.pictureIconSize}
+                color={COLORS.grey}
+                style={styles.pictureIconStyle}
               />
             )}
             <View style={styles.bookInfoContainer}>
@@ -268,14 +270,13 @@ export default function BookDetail({ route, navigation }) {
             <View style={styles.googleBooks}>
               <CustomButton
                 onPress={() => fetchBookDetails(bookName, author)}
-                customStyle={{
-                  flexDirection: "row",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  columnGap: 10,
-                }}
+                customStyle={styles.googleButton}
               >
-                <AntDesign name="google" size={24} color="black" />
+                <AntDesign
+                  name="google"
+                  size={styles.googleIconSize}
+                  color={COLORS.black}
+                />
                 <Text style={styles.googleButtonText}>
                   More information from Google Books
                 </Text>
@@ -292,26 +293,30 @@ export default function BookDetail({ route, navigation }) {
                       distance: distance,
                     })
                   }
-                  customStyle={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    columnGap: 10,
-                  }}
+                  customStyle={styles.ownerButton}
                 >
                   <View style={styles.userContainer}>
                     {ownerAvatar ? (
                       <Image
                         source={{ uri: ownerAvatar }}
-                        style={{ width: 50, height: 50, borderRadius: 50 }}
+                        style={styles.ownerAvatar}
                       />
                     ) : (
-                      <AntDesign name="user" size={50} color="grey" />
+                      <AntDesign
+                        name="user"
+                        size={styles.userIconSize}
+                        color={COLORS.grey}
+                      />
                     )}
                     <View style={styles.userTextContainer}>
                       <Text style={styles.userText}>{ownerName}</Text>
                       {rating > 0 && (
                         <View style={styles.userRatingContainer}>
-                          <FontAwesome name="star" size={20} color="#fdcc0d" />
+                          <FontAwesome
+                            name="star"
+                            size={styles.starIconSize}
+                            color={COLORS.reviewStar}
+                          />
                           <Text style={styles.ratingText}>{rating}</Text>
                         </View>
                       )}
@@ -321,7 +326,11 @@ export default function BookDetail({ route, navigation }) {
               </View>
               <View style={styles.divider}></View>
               <View style={styles.locationContainer}>
-                <Entypo name="location-pin" size={24} color="#55c7aa" />
+                <Entypo
+                  name="location-pin"
+                  size={styles.pinIconSize}
+                  color={COLORS.mainTheme}
+                />
                 <Text style={styles.distanceText}>{distance} km</Text>
               </View>
             </View>
@@ -329,13 +338,7 @@ export default function BookDetail({ route, navigation }) {
               {bookStatus === "free" && auth.currentUser.uid !== ownerId && (
                 <CustomButton
                   onPress={handleSendRequest}
-                  customStyle={{
-                    backgroundColor: "#55c7aa",
-                    width: 200,
-                    height: 50,
-                    borderRadius: 10,
-                    alignSelf: "center",
-                  }}
+                  customStyle={styles.sendRequestButton}
                 >
                   <Text style={styles.buttonText}>Send Request</Text>
                 </CustomButton>
@@ -355,127 +358,3 @@ export default function BookDetail({ route, navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-  },
-  image: {
-    width: "100%",
-    height: 370,
-    borderRadius: 10,
-  },
-  bookInfoContainer: {
-    padding: 10,
-  },
-  titleText: {
-    fontSize: 30,
-    marginBottom: 5,
-    fontWeight: "bold",
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  authorText: {
-    marginTop: 5,
-    marginBottom: 15,
-    fontSize: 25,
-    fontFamily: "Molengo_400Regular",
-    textAlign: "center",
-  },
-  descriptionContainer: {
-    flex: 1,
-    flexDirection: "row",
-    flexWrap: "wrap",
-    alignItems: "center",
-  },
-  descriptionText: {
-    fontSize: 18,
-    fontFamily: "Catamaran_400Regular",
-    textAlign: "justify",
-  },
-  userInfoContainer: {
-    marginTop: 20,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-evenly",
-    borderWidth: 1,
-    borderColor: "lightgrey",
-    padding: 10,
-    borderRadius: 10,
-  },
-  userButtonContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-  },
-  userContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 20,
-  },
-  userTextContainer: {
-    flexDirection: "column",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  userText: {
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    textAlign: "center",
-  },
-  userRatingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 10,
-  },
-  ratingText: {
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    textAlign: "center",
-  },
-  divider: {
-    height: 50,
-    width: 1,
-    backgroundColor: "lightgrey",
-    marginLeft: 10,
-    marginRight: 10,
-  },
-  locationContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  distanceText: {
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    textAlign: "center",
-  },
-  buttonText: {
-    color: "#f5f5f5",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-  },
-  expandButtonText: {
-    fontSize: 15,
-    fontWeight: "bold",
-    fontFamily: "SecularOne_400Regular",
-  },
-  googleBooks: {
-    borderWidth: 1,
-    borderColor: "lightgrey",
-    padding: 10,
-    borderRadius: 10,
-  },
-  googleButtonText: {
-    fontSize: 15,
-    fontFamily: "SecularOne_400Regular",
-    color: "black",
-    padding: 5,
-  },
-  buttonContainer: {
-    marginTop: 10,
-  },
-});

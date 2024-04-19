@@ -1,14 +1,13 @@
 import React from "react";
 import { ImageBackground } from "react-native";
-
 import backgroundImage from "../assets/background.jpg";
-import styles from "../Styles";
+import { authenticationBackgroundStyles } from "../styles/ComponentStyles";
 
 export default function AuthenticationBackground() {
   return (
     <ImageBackground
       resizeMode="cover"
-      style={styles.background}
+      style={authenticationBackgroundStyles.background}
       source={backgroundImage}
     />
   );

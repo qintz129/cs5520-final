@@ -1,11 +1,12 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import AuthenticationBackground from "../components/AuthenticationBackground";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { authenticationStyles } from "../styles/ScreenStyles";
 
 // Login component to allow users to login
 export default function Login({ navigation }) {
@@ -13,10 +14,10 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
-
+  const styles = authenticationStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   const signupHandler = () => {
@@ -26,7 +27,7 @@ export default function Login({ navigation }) {
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      console.log(err.code);
+      //console.log(err.code);
       if (err.code === "auth/invalid-credential") {
         Alert.alert("Wrong email or password, please try again");
       } else if (err.code === "auth/user-not-found") {
@@ -83,48 +84,8 @@ export default function Login({ navigation }) {
         </Text>
       </CustomButton>
       <CustomButton onPress={signupHandler}>
-        <Text style={styles.signUpText}>New User? Create An Account</Text>
+        <Text style={styles.normalText}>New User? Create An Account</Text>
       </CustomButton>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "stretch",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  logo: {
-    fontFamily: "PaytoneOne_400Regular",
-    fontSize: 45,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  coloredLetter: { color: "#55c7aa" },
-  slogan: {
-    fontFamily: "Molengo_400Regular",
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  coloredWord: {
-    color: "black",
-    fontFamily: "PaytoneOne_400Regular",
-  },
-  disabledText: {
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-    fontSize: 18,
-  },
-  normalText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-  },
-  signUpText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-  },
-});

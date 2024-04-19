@@ -18,7 +18,7 @@ import {
 import * as Notifications from "expo-notifications";
 import { throttle } from "lodash";
 import { useUser } from "../hooks/UserContext";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
 
 // ChooseBookModal component to display a modal to choose a book for exchange
 export default function ChooseBookModal({

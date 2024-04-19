@@ -1,18 +1,19 @@
-import { StyleSheet, Text, View, Modal, Alert } from "react-native";
+import { Text, View, Modal, Alert } from "react-native";
 import { useState } from "react";
 import { CustomPassWordInput } from "./InputHelper";
 import CustomButton from "./CustomButton";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { changePasswordModalStyles } from "../styles/ComponentStyles";
 
 export default function ChangePassword({ isVisible, onClose, onSave }) {
   const [newPassword, setNewPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
-
+  const styles = changePasswordModalStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   const handleConfirm = () => {
@@ -106,56 +107,3 @@ export default function ChangePassword({ isVisible, onClose, onSave }) {
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 10,
-  },
-  modalView: {
-    margin: 15,
-    backgroundColor: "white",
-    borderRadius: 20,
-    padding: 30,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 1,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    width: "95%",
-  },
-  reminder: {
-    marginLeft: 10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-  },
-  cancelButton: {
-    backgroundColor: "#f44336",
-    height: 40,
-    borderRadius: 10,
-    width: "40%",
-  },
-  cancelText: {
-    color: "white",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-  },
-  confirmButton: {
-    backgroundColor: "#55c7aa",
-    height: 40,
-    borderRadius: 10,
-    width: "40%",
-  },
-  confirmText: {
-    color: "white",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-  },
-});

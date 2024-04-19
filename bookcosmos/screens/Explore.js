@@ -1,10 +1,4 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, FlatList, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
@@ -12,8 +6,10 @@ import { doc, getDoc } from "firebase/firestore";
 import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
 import * as Location from "expo-location";
-import { calculateDistance } from "../Utils";
-import { useCustomFonts } from "../Fonts";
+import { calculateDistance } from "../utils/Utils";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { exploreStyles } from "../styles/ScreenStyles";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
@@ -21,7 +17,11 @@ export default function Explore({ navigation }) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
+  const styles = exploreStyles;
   const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return null;
+  }
 
   // Get the user's location
   useEffect(() => {
@@ -86,7 +86,6 @@ export default function Explore({ navigation }) {
         return unsubscribe;
       } catch (error) {
         console.error("Error fetching books:", error);
-        setLoading(false);
       }
     };
 
@@ -97,6 +96,7 @@ export default function Explore({ navigation }) {
 
   // Function to get the owner name from the database by ownerId
   const getOwnerName = async (ownerId) => {
+    setLoading(true);
     try {
       const userDoc = doc(database, "users", ownerId);
       const userSnap = await getDoc(userDoc);
@@ -109,9 +109,11 @@ export default function Explore({ navigation }) {
     } catch (error) {
       console.error("Error fetching owner name:", error);
       return "Unknown";
+    } finally {
+      setLoading(false);
     }
   };
-  console.log(books);
+  //console.log(books);
 
   return (
     <View style={styles.container}>
@@ -123,9 +125,9 @@ export default function Explore({ navigation }) {
       </View>
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
         />
       ) : books.length > 0 ? (
         <FlatList
@@ -140,21 +142,3 @@ export default function Explore({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  search: {
-    padding: 10,
-    width: "100%",
-    alignItems: "center",
-  },
-  noResultsText: {
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: 20,
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-  },
-});

@@ -1,22 +1,22 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, FlatList, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { database } from "../firebase-files/firebaseSetup";
 import { collection, onSnapshot, query } from "firebase/firestore";
-import { convertTimestamp } from "../Utils";
+import { convertTimestamp } from "../utils/Utils";
 import ReviewCard from "../components/ReviewCard";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { reviewsStyles } from "../styles/ScreenStyles";
 
 // Reviews component to display the reviews for a user
 export default function Reviews({ userId }) {
   const [reviews, setReviews] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const styles = reviewsStyles;
   const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return null;
+  }
 
   useEffect(() => {
     const q = query(collection(database, "users", userId, "reviews"));
@@ -51,14 +51,14 @@ export default function Reviews({ userId }) {
     };
   }, []);
 
-  console.log(reviews);
+  //console.log(reviews);
   return (
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
         />
       ) : reviews.length === 0 ? (
         <Text style={styles.noReviewsText}>No reviews</Text>
@@ -72,17 +72,3 @@ export default function Reviews({ userId }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 5,
-  },
-  noReviewsText: {
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: 20,
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-  },
-});

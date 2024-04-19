@@ -1,23 +1,22 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  Alert,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, FlatList, Alert, ActivityIndicator } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import { deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { libraryStyles } from "../styles/ScreenStyles";
 
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
-  const { fontsLoaded } = useCustomFonts();
   const [isLoading, setIsLoading] = useState(true);
+  const styles = libraryStyles;
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return null;
+  }
 
   useEffect(() => {
     let booksQuery;
@@ -107,9 +106,9 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
         />
       ) : books.length === 0 ? (
         <View>
@@ -132,16 +131,3 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  emptyLibraryText: {
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: 20,
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-  },
-});

@@ -1,12 +1,14 @@
-import { StyleSheet, Text, View, Alert, Switch } from "react-native";
+import { Text, View, Alert, Switch } from "react-native";
 import { useState, useEffect } from "react";
 import * as Notifications from "expo-notifications";
+import { notificationManagerStyles } from "../styles/ComponentStyles";
 
 export default function NotificationManager({
   initialNotification,
   notificationHandler,
 }) {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
+  const styles = notificationManagerStyles;
 
   useEffect(() => {
     setIsNotificationsEnabled(initialNotification);
@@ -54,17 +56,3 @@ export default function NotificationManager({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  switchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginVertical: 10,
-    width: "100%",
-  },
-  text: {
-    fontWeight: "bold",
-    marginLeft: 10,
-  },
-});

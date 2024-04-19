@@ -17,8 +17,10 @@ import { AntDesign } from "@expo/vector-icons";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
 import { onSnapshot, doc } from "firebase/firestore";
+import { COLORS } from "../styles/Colors";
+import { requestCardStyles } from "../styles/ComponentStyles";
 
 // RequestCard component to display the exchange requests
 export default function RequestCard({
@@ -43,9 +45,10 @@ export default function RequestCard({
   const [isCancelAfterAcceptLoading, setIsCancelAfterAcceptLoading] =
     useState(false);
   const [isCompleteLoading, setIsCompleteLoading] = useState(false);
+  const styles = requestCardStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -419,14 +422,22 @@ export default function RequestCard({
                     style={styles.image}
                   />
                 ) : (
-                  <AntDesign name="picture" size={100} color="grey" />
+                  <AntDesign
+                    name="picture"
+                    size={styles.pictureIconSize}
+                    color={COLORS.grey}
+                  />
                 )}
                 <Text style={styles.requestCardText}>
                   {offeredBookInfo.bookName}
                 </Text>
               </CustomButton>
               {offeredBookInfo.bookStatus === "inExchange" && (
-                <AntDesign name="swap" size={24} color="red" />
+                <AntDesign
+                  name="swap"
+                  size={styles.swapIconSize}
+                  color={COLORS.red}
+                />
               )}
             </View>
           ) : (
@@ -451,14 +462,22 @@ export default function RequestCard({
                     style={styles.image}
                   />
                 ) : (
-                  <AntDesign name="picture" size={100} color="grey" />
+                  <AntDesign
+                    name="picture"
+                    size={styles.pictureIconSize}
+                    color={COLORS.grey}
+                  />
                 )}
                 <Text style={styles.requestCardText}>
                   {requestedBookInfo.bookName}
                 </Text>
               </CustomButton>
               {requestedBookInfo.bookStatus === "inExchange" && (
-                <AntDesign name="swap" size={24} color="red" />
+                <AntDesign
+                  name="swap"
+                  size={styles.swapIconSize}
+                  color={COLORS.red}
+                />
               )}
             </View>
           ) : (
@@ -472,7 +491,7 @@ export default function RequestCard({
           onPress={() => handleCancelAndReject("cancel")}
         >
           {isCancelAndRejectLoading ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={COLORS.white} />
           ) : (
             <Text style={styles.buttonText}>Cancel</Text>
           )}
@@ -484,7 +503,7 @@ export default function RequestCard({
             onPress={() => handleCancelAndReject("reject")}
           >
             {isCancelAndRejectLoading ? (
-              <ActivityIndicator color="white" />
+              <ActivityIndicator color={COLORS.white} />
             ) : (
               <Text style={styles.buttonText}>Reject</Text>
             )}
@@ -498,7 +517,7 @@ export default function RequestCard({
                 onPress={() => handleAccept()}
               >
                 {isAcceptLoading ? (
-                  <ActivityIndicator color="white" />
+                  <ActivityIndicator color={COLORS.white} />
                 ) : (
                   <Text style={styles.buttonText}>Accept</Text>
                 )}
@@ -524,7 +543,7 @@ export default function RequestCard({
               onPress={() => handleCancelAfterAccept()}
             >
               {isCancelAfterAcceptLoading ? (
-                <ActivityIndicator color="white" />
+                <ActivityIndicator color={COLORS.white} />
               ) : (
                 <Text style={styles.buttonText}>Cancel</Text>
               )}
@@ -534,7 +553,7 @@ export default function RequestCard({
               onPress={() => handleComplete()}
             >
               {isCompleteLoading ? (
-                <ActivityIndicator color="white" />
+                <ActivityIndicator color={COLORS.white} />
               ) : (
                 <Text style={styles.buttonText}>Complete</Text>
               )}
@@ -553,7 +572,7 @@ export default function RequestCard({
           onPress={() => handleComplete()}
         >
           {isCompleteLoading ? (
-            <ActivityIndicator color="white" />
+            <ActivityIndicator color={COLORS.white} />
           ) : (
             <Text style={styles.buttonText}>Waiting for you to complete</Text>
           )}
@@ -562,144 +581,3 @@ export default function RequestCard({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  dateContainer: {
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-  },
-  dateText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "SecularOne_400Regular",
-  },
-  offeredText: {
-    color: "#ff9529",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  requestedText: {
-    color: "#55aacc",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  requestCardText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "SecularOne_400Regular",
-    textAlign: "center",
-  },
-  noLongerAvailableText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "Molengo_400Regular",
-    textAlign: "center",
-    marginVertical: 10,
-  },
-  addressText: {
-    color: "black",
-    fontSize: 14,
-    fontFamily: "SecularOne_400Regular",
-    marginVertical: 10,
-    alignSelf: "center",
-    width: "80%",
-  },
-  books: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  container: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    margin: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1.41,
-    elevation: 2,
-  },
-  bookLabel: {
-    alignItems: "center",
-  },
-  bookItem: {
-    width: "45%",
-    alignItems: "center",
-  },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
-    marginVertical: 5,
-  },
-  buttonView: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  outgoingCancelButton: {
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    padding: 10,
-    alignSelf: "center",
-    width: "40%",
-    height: 40,
-  },
-  buttonText: {
-    color: "white",
-    alignSelf: "center",
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 15,
-  },
-  rejectButton: {
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  acceptButton: {
-    borderRadius: 10,
-    backgroundColor: "#55c7aa",
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  cancelButton: {
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  completeButton: {
-    borderRadius: 10,
-    backgroundColor: "#55c7aa",
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  waitingText: {
-    marginVertical: 10,
-    color: "#f44336",
-    alignSelf: "center",
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 16,
-  },
-  waitingButton: {
-    backgroundColor: "#55c7aa",
-    borderRadius: 10,
-    padding: 10,
-    height: 50,
-    alignSelf: "center",
-    width: "80%",
-  },
-});

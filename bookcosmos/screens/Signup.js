@@ -1,12 +1,13 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import { writeToDB } from "../firebase-files/firestoreHelper";
 import AuthenticationBackground from "../components/AuthenticationBackground";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { authenticationStyles } from "../styles/ScreenStyles";
 
 // Signup component to allow users to signup
 export default function Signup({ navigation }) {
@@ -16,10 +17,10 @@ export default function Signup({ navigation }) {
   const [isEmpty, setIsEmpty] = useState(true);
   const [passwordError, setPasswordError] = useState(false);
   const [passwordVisible, setPasswordVisible] = useState(false);
-
+  const styles = authenticationStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   const loginHandler = () => {
@@ -46,7 +47,7 @@ export default function Signup({ navigation }) {
       };
       writeToDB(newUser, "users");
     } catch (err) {
-      console.log(err.code);
+      //console.log(err.code);
       if (err.code === "auth/email-already-in-use") {
         Alert.alert("This email is already signed up");
       } else if (err.code === "auth/weak-password") {
@@ -119,47 +120,8 @@ export default function Signup({ navigation }) {
         </Text>
       </CustomButton>
       <CustomButton onPress={loginHandler}>
-        <Text style={styles.loginText}>Already Registered? Login</Text>
+        <Text style={styles.normalText}>Already Registered? Login</Text>
       </CustomButton>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    paddingHorizontal: 20,
-    justifyContent: "center",
-  },
-  logo: {
-    fontFamily: "PaytoneOne_400Regular",
-    fontSize: 45,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  coloredLetter: { color: "#55c7aa" },
-  slogan: {
-    fontFamily: "Molengo_400Regular",
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  coloredWord: {
-    color: "black",
-    fontFamily: "PaytoneOne_400Regular",
-  },
-  disabledText: {
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-    fontSize: 18,
-  },
-  normalText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-  },
-  loginText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-  },
-});

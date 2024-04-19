@@ -1,11 +1,13 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { Text, View, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import CustomButton from "./CustomButton";
 import { storage, database } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { AntDesign } from "@expo/vector-icons";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
 import { doc, getDoc } from "firebase/firestore";
+import { COLORS } from "../styles/Colors";
+import { historyCardStyles } from "../styles/ComponentStyles";
 
 // HistoryCard component to display the history of exchanges
 export default function HistoryCard({
@@ -23,10 +25,10 @@ export default function HistoryCard({
   const [theirBookData, setTheirBookData] = useState([]);
   const [myBookAvatar, setMyBookAvatar] = useState(null);
   const [theirBookAvatar, setTheirBookAvatar] = useState(null);
+  const styles = historyCardStyles;
   const { fontsLoaded } = useCustomFonts();
-
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   // Fetch books data from the database
@@ -98,7 +100,11 @@ export default function HistoryCard({
           {myBookAvatar ? (
             <Image source={{ uri: myBookAvatar }} style={styles.image} />
           ) : (
-            <AntDesign name="picture" size={100} color="grey" />
+            <AntDesign
+              name="picture"
+              size={styles.pictureIconSize}
+              color={COLORS.grey}
+            />
           )}
           <Text style={styles.bookNameText}>{myBookData.bookName}</Text>
         </View>
@@ -107,7 +113,11 @@ export default function HistoryCard({
           {theirBookAvatar ? (
             <Image source={{ uri: theirBookAvatar }} style={styles.image} />
           ) : (
-            <AntDesign name="picture" size={100} color="grey" />
+            <AntDesign
+              name="picture"
+              size={styles.pictureIconSize}
+              color={COLORS.grey}
+            />
           )}
           <Text style={styles.bookNameText}>{theirBookData.bookName}</Text>
         </View>
@@ -130,93 +140,3 @@ export default function HistoryCard({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  dateContainer: {
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-  },
-  dateText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "SecularOne_400Regular",
-  },
-  myBookText: {
-    color: "#ff9529",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  theirBookText: {
-    color: "#55aacc",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-    textAlign: "center",
-  },
-  bookNameText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 16,
-    textAlign: "center",
-    marginTop: 10,
-  },
-  books: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  bookItem: {
-    width: "45%",
-    alignItems: "center",
-  },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
-    marginVertical: 5,
-  },
-  container: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    margin: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1.41,
-    elevation: 2,
-  },
-  bottomView: {
-    marginTop: 10,
-  },
-  rejectedText: {
-    color: "grey",
-    alignSelf: "center",
-    fontFamily: "Molengo_400Regular",
-    fontSize: 18,
-    marginBottom: 10,
-  },
-  reviewedText: {
-    alignSelf: "center",
-    fontFamily: "Molengo_400Regular",
-    fontSize: 18,
-  },
-  reviewButton: {
-    backgroundColor: "#55c7aa",
-    borderRadius: 10,
-    height: 40,
-    width: "30%",
-    alignSelf: "center",
-  },
-  reviewText: {
-    color: "white",
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-    textAlign: "center",
-  },
-});

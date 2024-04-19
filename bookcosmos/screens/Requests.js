@@ -8,12 +8,14 @@ import {
 import React, { useState } from "react";
 import { collection, query, onSnapshot } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
-import { convertTimestamp } from "../Utils";
+import { convertTimestamp } from "../utils/Utils";
 import RequestCard from "../components/RequestCard";
 import { useFocusEffect } from "@react-navigation/native";
 import CustomButton from "../components/CustomButton";
 import { fetchExtra } from "../firebase-files/firestoreHelper";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { requestsStyles } from "../styles/ScreenStyles";
 
 // Requests component to display the incoming and outgoing requests
 export default function Requests({ navigation }) {
@@ -21,9 +23,10 @@ export default function Requests({ navigation }) {
   const [requests, setRequests] = useState([]);
   const [isLoading, setLoading] = useState(false);
   const [updateTrigger, setUpdateTrigger] = useState(0);
+  const styles = requestsStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useFocusEffect(
@@ -101,9 +104,9 @@ export default function Requests({ navigation }) {
       </View>
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
         />
       ) : completedRequests.length === requests.length ? (
         <Text style={styles.noRequestsText}>No requests</Text>
@@ -132,38 +135,3 @@ export default function Requests({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  tabs: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "stretch",
-    marginHorizontal: 20,
-  },
-  tab: {
-    flex: 1,
-  },
-  activeTab: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#55c7aa",
-  },
-  activeTabText: {
-    color: "black",
-    marginBottom: 10,
-  },
-  tabText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-    color: "gray",
-  },
-  container: {
-    flex: 1,
-  },
-  noRequestsText: {
-    fontSize: 20,
-    textAlign: "center",
-    marginTop: 20,
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-  },
-});

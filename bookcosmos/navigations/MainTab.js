@@ -9,7 +9,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
 import { Platform, StyleSheet, Text } from "react-native";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
 
 const Tab = createBottomTabNavigator();
 

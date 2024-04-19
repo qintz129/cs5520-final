@@ -1,5 +1,6 @@
 import React from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable } from "react-native";
+import { customButtonStyles } from "../styles/ComponentStyles";
 
 // CustomButton component using Pressable to achieve the button for all screens
 export default function CustomButton({
@@ -8,6 +9,7 @@ export default function CustomButton({
   customStyle = {},
   children,
 }) {
+  const styles = customButtonStyles;
   return (
     <Pressable
       onPress={onPress}
@@ -24,17 +26,3 @@ export default function CustomButton({
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  button: {
-    alignItems: "center",
-    justifyContent: "center",
-    marginVertical: 10,
-  },
-  pressed: {
-    opacity: 0.5,
-  },
-  disabled: {
-    opacity: 0.5,
-  },
-});

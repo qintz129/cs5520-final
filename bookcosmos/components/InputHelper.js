@@ -1,11 +1,12 @@
-import { StyleSheet, TextInput, View, Text } from "react-native";
+import { TextInput, View, Text } from "react-native";
 import CustomButton from "./CustomButton";
 import React from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { AntDesign } from "@expo/vector-icons";
-import { Molengo_400Regular } from "@expo-google-fonts/molengo";
-import { useFonts } from "expo-font";
+import { COLORS } from "../styles/Colors";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { inputHelperStyles } from "../styles/ComponentStyles";
 
 // CustomInput component to achieve the input for all screens
 export function CustomInput({
@@ -18,11 +19,10 @@ export function CustomInput({
   fetch = false,
   fetchFunction,
 }) {
-  const [fontsLoaded] = useFonts({
-    Molengo_400Regular,
-  });
+  const { fontsLoaded } = useCustomFonts();
+  const styles = inputHelperStyles;
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
   return (
     <View style={styles.container}>
@@ -34,8 +34,8 @@ export function CustomInput({
           <CustomButton onPress={fetchFunction} disabled={!pressable}>
             <MaterialCommunityIcons
               name="application-import"
-              size={24}
-              color="black"
+              size={styles.iconSize}
+              color={COLORS.black}
             />
           </CustomButton>
         )}
@@ -63,6 +63,11 @@ export function CustomPassWordInput({
   editButton = false,
   editFunction,
 }) {
+  const { fontsLoaded } = useCustomFonts();
+  const styles = inputHelperStyles;
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.extraEdit}>
@@ -71,7 +76,11 @@ export function CustomPassWordInput({
         </Text>
         {editButton && (
           <CustomButton onPress={editFunction}>
-            <AntDesign name="edit" size={24} color="black" />
+            <AntDesign
+              name="edit"
+              size={styles.iconSize}
+              color={COLORS.black}
+            />
           </CustomButton>
         )}
       </View>
@@ -90,8 +99,8 @@ export function CustomPassWordInput({
         >
           <Ionicons
             name={secureTextEntry ? "eye-off" : "eye"}
-            size={24}
-            color="grey"
+            size={styles.iconSize}
+            color={COLORS.grey}
           />
         </CustomButton>
       </View>
@@ -109,6 +118,11 @@ export function MultilineInput({
   pressable = false,
   fetchFunction,
 }) {
+  const { fontsLoaded } = useCustomFonts();
+  const styles = inputHelperStyles;
+  if (!fontsLoaded) {
+    return null;
+  }
   return (
     <View style={styles.container}>
       <View style={styles.extraEdit}>
@@ -119,8 +133,8 @@ export function MultilineInput({
           <CustomButton onPress={fetchFunction} disabled={!pressable}>
             <MaterialCommunityIcons
               name="application-import"
-              size={24}
-              color="black"
+              size={styles.iconSize}
+              color={COLORS.black}
             />
           </CustomButton>
         )}
@@ -136,55 +150,3 @@ export function MultilineInput({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: "100%",
-    marginHorizontal: 10,
-    marginTop: 10,
-  },
-  title: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 16,
-  },
-  extraEditTitle: {
-    alignSelf: "center",
-    marginRight: 10,
-  },
-  input: {
-    height: 40,
-    fontSize: 16,
-    borderWidth: 1.5,
-    marginTop: 5,
-    borderRadius: 10,
-    paddingHorizontal: 10,
-    borderColor: "gray",
-    width: "100%",
-  },
-  multiline: {
-    borderWidth: 1.5,
-    fontSize: 16,
-    borderColor: "gray",
-    borderRadius: 10,
-    marginBottom: 10,
-    marginTop: 5,
-    minHeight: 150,
-    paddingHorizontal: 10,
-    width: "100%",
-  },
-  inputContainer: {
-    flexDirection: "row",
-    position: "relative",
-  },
-  viewButton: {
-    position: "absolute",
-    right: 10,
-  },
-  nonEditable: {
-    borderWidth: 0,
-    backgroundColor: "#f0f0f0",
-  },
-  extraEdit: {
-    flexDirection: "row",
-  },
-});
