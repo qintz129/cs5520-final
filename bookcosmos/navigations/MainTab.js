@@ -70,7 +70,7 @@ export default function MainTab({ navigation }) {
             fontSize: 12,
             fontFamily: "SecularOne_400Regular",
           },
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <Foundation name="book-bookmark" size={24} color={color} />
           ),
         }}
@@ -93,7 +93,7 @@ export default function MainTab({ navigation }) {
             fontSize: 12,
             fontFamily: "SecularOne_400Regular",
           },
-          tabBarIcon: ({ color, size }) => (
+          tabBarIcon: ({ color }) => (
             <FontAwesome name="history" size={24} color={color} />
           ),
         }}

@@ -9,7 +9,6 @@ import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
-import CustomButton from "../components/CustomButton";
 import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
 import * as Location from "expo-location";

@@ -1,11 +1,4 @@
-import {
-  View,
-  StyleSheet,
-  Text,
-  Alert,
-  Image,
-  ActivityIndicator,
-} from "react-native";
+import { View, StyleSheet, Text, Alert, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";

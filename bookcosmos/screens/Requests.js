@@ -5,8 +5,8 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import React, { useState, useEffect } from "react";
-import { collection, query, onSnapshot, doc } from "firebase/firestore";
+import React, { useState } from "react";
+import { collection, query, onSnapshot } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { convertTimestamp } from "../Utils";
 import RequestCard from "../components/RequestCard";

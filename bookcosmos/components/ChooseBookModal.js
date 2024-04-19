@@ -12,7 +12,6 @@ import CustomButton from "./CustomButton";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {
-  writeToDB,
   updateToDB,
   createExchangeRequest,
 } from "../firebase-files/firestoreHelper";

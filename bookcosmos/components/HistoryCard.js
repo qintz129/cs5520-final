@@ -1,7 +1,7 @@
 import { StyleSheet, Text, View, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import CustomButton from "./CustomButton";
-import { storage, database, auth } from "../firebase-files/firebaseSetup";
+import { storage, database } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { AntDesign } from "@expo/vector-icons";
 import { useCustomFonts } from "../Fonts";

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
-import { auth, database, storage } from "../firebase-files/firebaseSetup";
+import { auth, database } from "../firebase-files/firebaseSetup";
 import { onSnapshot, doc } from "firebase/firestore";
 
 const UserContext = createContext();
@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
     name: "",
     email: "",
     imageUri: null,
-    password: "", 
+    password: "",
     notification: false,
   });
   useEffect(() => {
@@ -25,8 +25,10 @@ export const UserProvider = ({ children }) => {
               name: userData.name,
               email: userData.email,
               password: userData.password,
-              imageUri: userData.image ? userData.image : null, 
-              notification: userData.notification ? userData.notification : false,
+              imageUri: userData.image ? userData.image : null,
+              notification: userData.notification
+                ? userData.notification
+                : false,
             });
           } else {
             console.log("No such document!");
@@ -43,7 +45,7 @@ export const UserProvider = ({ children }) => {
         name: "",
         email: "",
         imageUri: null,
-        password: "", 
+        password: "",
         notification: false,
       });
     }

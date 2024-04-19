@@ -5,8 +5,8 @@ import Library from "./Library";
 import Reviews from "./Reviews";
 import { Ionicons } from "@expo/vector-icons";
 import { useUser } from "../hooks/UserContext";
-import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { auth, database, storage } from "../firebase-files/firebaseSetup";
+import { ref, getDownloadURL } from "firebase/storage";
+import { auth, storage } from "../firebase-files/firebaseSetup";
 import { useCustomFonts } from "../Fonts";
 import { Feather } from "@expo/vector-icons";
 

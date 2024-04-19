@@ -216,15 +216,15 @@ export default function BookDetail({ route, navigation }) {
     } catch (error) {
       console.error("Failed to fetch book details:", error);
     }
-  }; 
+  };
 
-    // State to keep track of whether the description is expanded or not
-    const [isExpanded, setIsExpanded] = useState(false);
+  // State to keep track of whether the description is expanded or not
+  const [isExpanded, setIsExpanded] = useState(false);
 
-    // Function to toggle the description
-    const toggleDescription = () => {
-      setIsExpanded(!isExpanded);
-    };
+  // Function to toggle the description
+  const toggleDescription = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   return (
     <View>
@@ -249,17 +249,20 @@ export default function BookDetail({ route, navigation }) {
             )}
             <View style={styles.bookInfoContainer}>
               <Text style={styles.titleText}>{bookName}</Text>
-              <Text style={styles.authorText}>{author}</Text>  
+              <Text style={styles.authorText}>{author}</Text>
               <View style={styles.descriptionContainer}>
-              <Text style={styles.descriptionText}> 
-              {description.length > 200 && !isExpanded ? `${description.substring(0, 200)}...` : description} 
-              </Text>  
-              {description && (
-              <CustomButton onPress={toggleDescription}> 
-              <Text style={styles.expandButtonText}>{isExpanded ? 'Hide' : 'Read more'}</Text> 
-              </CustomButton>   
-                )
-              }   
+                <Text style={styles.descriptionText}>
+                  {description.length > 200 && !isExpanded
+                    ? `${description.substring(0, 200)}...`
+                    : description}
+                </Text>
+                {description && (
+                  <CustomButton onPress={toggleDescription}>
+                    <Text style={styles.expandButtonText}>
+                      {isExpanded ? "Hide" : "Read more"}
+                    </Text>
+                  </CustomButton>
+                )}
               </View>
             </View>
             <View style={styles.googleBooks}>
@@ -380,12 +383,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: "Molengo_400Regular",
     textAlign: "center",
-  }, 
-  descriptionContainer: { 
+  },
+  descriptionContainer: {
     flex: 1,
-    flexDirection: 'row',  
-    flexWrap: 'wrap', 
-    alignItems: 'center', 
+    flexDirection: "row",
+    flexWrap: "wrap",
+    alignItems: "center",
   },
   descriptionText: {
     fontSize: 18,
@@ -454,8 +457,8 @@ const styles = StyleSheet.create({
     color: "#f5f5f5",
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
-  }, 
-  expandButtonText: {  
+  },
+  expandButtonText: {
     fontSize: 15,
     fontWeight: "bold",
     fontFamily: "SecularOne_400Regular",
@@ -469,7 +472,7 @@ const styles = StyleSheet.create({
   googleButtonText: {
     fontSize: 15,
     fontFamily: "SecularOne_400Regular",
-    color: "black",  
+    color: "black",
     padding: 5,
   },
   buttonContainer: {

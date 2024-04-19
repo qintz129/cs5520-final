@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import { auth, database, storage } from "../firebase-files/firebaseSetup";
+import { auth, storage } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import {
