@@ -5,8 +5,8 @@ import {
   FlatList,
   ActivityIndicator,
 } from "react-native";
-import React, { useState } from "react";
-import { collection, query, onSnapshot } from "firebase/firestore";
+import React, { useState, useEffect } from "react";
+import { collection, query, onSnapshot, doc } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { convertTimestamp } from "../Utils";
 import RequestCard from "../components/RequestCard";
@@ -26,9 +26,6 @@ export default function Requests({ navigation }) {
     return <Text>Loading...</Text>;
   }
 
-  // useFocusEffect hook to fetch the incoming and outgoing requests.
-  // Similar to useEffect, but it specifically runs when the screen comes into focus or goes out of focus.
-  // It is useful when you delete a book and come back to the screen, the book should not be there anymore.
   useFocusEffect(
     // Fetch the incoming and outgoing requests
     React.useCallback(() => {
@@ -41,7 +38,10 @@ export default function Requests({ navigation }) {
       const unsubscribe = onSnapshot(
         q,
         async (querySnapshot) => {
-          const promises = querySnapshot.docs.map((doc) => fetchExtra(doc));
+          const filteredDocs = querySnapshot.docs.filter((doc) => {
+            return doc.data() && doc.data().status !== "completed";
+          });
+          const promises = filteredDocs.map((doc) => fetchExtra(doc));
           const newArray = await Promise.all(promises);
           const updatedArray = newArray.map((item) => ({
             ...item,

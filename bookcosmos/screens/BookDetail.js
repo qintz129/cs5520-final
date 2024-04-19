@@ -216,7 +216,15 @@ export default function BookDetail({ route, navigation }) {
     } catch (error) {
       console.error("Failed to fetch book details:", error);
     }
-  };
+  }; 
+
+    // State to keep track of whether the description is expanded or not
+    const [isExpanded, setIsExpanded] = useState(false);
+
+    // Function to toggle the description
+    const toggleDescription = () => {
+      setIsExpanded(!isExpanded);
+    };
 
   return (
     <View>
@@ -241,8 +249,18 @@ export default function BookDetail({ route, navigation }) {
             )}
             <View style={styles.bookInfoContainer}>
               <Text style={styles.titleText}>{bookName}</Text>
-              <Text style={styles.authorText}>{author}</Text>
-              <Text style={styles.descriptionText}>{description}</Text>
+              <Text style={styles.authorText}>{author}</Text>  
+              <View style={styles.descriptionContainer}>
+              <Text style={styles.descriptionText}> 
+              {description.length > 200 && !isExpanded ? `${description.substring(0, 200)}...` : description} 
+              </Text>  
+              {description && (
+              <CustomButton onPress={toggleDescription}> 
+              <Text style={styles.expandButtonText}>{isExpanded ? 'Hide' : 'Read more'}</Text> 
+              </CustomButton>   
+                )
+              }   
+              </View>
             </View>
             <View style={styles.googleBooks}>
               <CustomButton
@@ -256,7 +274,7 @@ export default function BookDetail({ route, navigation }) {
               >
                 <AntDesign name="google" size={24} color="black" />
                 <Text style={styles.googleButtonText}>
-                  See more information from Google Books
+                  More information from Google Books
                 </Text>
               </CustomButton>
             </View>
@@ -362,6 +380,12 @@ const styles = StyleSheet.create({
     fontSize: 25,
     fontFamily: "Molengo_400Regular",
     textAlign: "center",
+  }, 
+  descriptionContainer: { 
+    flex: 1,
+    flexDirection: 'row',  
+    flexWrap: 'wrap', 
+    alignItems: 'center', 
   },
   descriptionText: {
     fontSize: 18,
@@ -430,6 +454,11 @@ const styles = StyleSheet.create({
     color: "#f5f5f5",
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
+  }, 
+  expandButtonText: {  
+    fontSize: 15,
+    fontWeight: "bold",
+    fontFamily: "SecularOne_400Regular",
   },
   googleBooks: {
     borderWidth: 1,
@@ -438,9 +467,10 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   googleButtonText: {
-    fontSize: 16,
+    fontSize: 15,
     fontFamily: "SecularOne_400Regular",
-    color: "black",
+    color: "black",  
+    padding: 5,
   },
   buttonContainer: {
     marginTop: 10,

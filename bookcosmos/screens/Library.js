@@ -69,9 +69,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     return () => unsubscribe();
   }, [userId]);
 
-  console.log("books: ", books);
-
-  const handleDeleteItem = async (item) => {
+  const handleDeleteItem = useCallback(async (item) => {
     try {
       Alert.alert(
         "Delete Book",
@@ -94,9 +92,9 @@ export default function Library({ navigation, userId, isMyLibrary }) {
     } catch (error) {
       console.error("Error deleting book:", error);
     }
-  };
+  }, []);
 
-  const handlePressBook = (item) => {
+  const handlePressBook = useCallback((item) => {
     if (isMyLibrary) {
       navigation.navigate("Add A Book", {
         editMode: true,
@@ -109,7 +107,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         ownerId: item.owner,
       });
     }
-  };
+  }, []);
 
   return (
     <View style={styles.container}>

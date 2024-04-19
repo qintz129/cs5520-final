@@ -20,7 +20,7 @@ import { useCustomFonts } from "../Fonts";
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [isLoading, setLoading] = useState(true);
+  const [allBooksLoaded, setAllBooksLoaded] = useState(false);
   const [userLocation, setUserLocation] = useState(null);
   const { fontsLoaded } = useCustomFonts();
 
@@ -34,12 +34,12 @@ export default function Explore({ navigation }) {
       }
       let location = await Location.getCurrentPositionAsync();
       setUserLocation(location.coords);
-      setLoading(false);
     }
     getUserLocation();
   }, []);
 
   useEffect(() => {
+    if (!userLocation) return; // Only proceed if userLocation is available
     const fetchBooks = () => {
       setLoading(true);
       try {
@@ -68,15 +68,12 @@ export default function Explore({ navigation }) {
 
           const promises = fetchedBooks.map(async (book) => {
             const ownerName = await getOwnerName(book.owner);
-            if (!userLocation)
-              return { ...book, ownerName, distance: "loading..." };
             const distance = calculateDistance(
               userLocation.latitude,
               userLocation.longitude,
               book.location.latitude,
               book.location.longitude
             );
-
             return { ...book, ownerName, distance };
           });
 
@@ -85,7 +82,7 @@ export default function Explore({ navigation }) {
             (a, b) => a.distance - b.distance
           );
           setBooks(sortedBooks);
-          setLoading(false);
+          setAllBooksLoaded(true);
         });
         return unsubscribe;
       } catch (error) {
@@ -125,7 +122,7 @@ export default function Explore({ navigation }) {
           onChangeText={(text) => setSearchKeyword(text)}
         />
       </View>
-      {isLoading ? (
+      {!allBooksLoaded ? (
         <ActivityIndicator
           size="large"
           color="#55c7aa"
