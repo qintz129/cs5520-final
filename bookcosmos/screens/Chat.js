@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView } from "react-native";
+import { SafeAreaView } from "react-native";
 import React, {
   useState,
   useLayoutEffect,
@@ -14,10 +14,12 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
+import { chatStyles } from "../styles/ScreenStyles";
 
 export default function Chat({ route, navigation }) {
   const { otherId, otherName } = route.params;
   const [messages, setMessages] = useState([]);
+  const styles = chatStyles;
 
   useEffect(() => {
     navigation.setOptions({
@@ -78,13 +80,8 @@ export default function Chat({ route, navigation }) {
         showUserAvatar={false}
         onSend={(messages) => onSend(messages)}
         renderAvatar={null}
-        messagesContainerStyle={{
-          backgroundColor: "#fff",
-        }}
-        textInputStyle={{
-          backgroundColor: "#fff",
-          borderRadius: 20,
-        }}
+        messagesContainerStyle={styles.messagesContainerStyle}
+        textInputStyle={styles.textInputStyle}
         user={{
           _id: auth.currentUser.uid,
         }}
@@ -92,10 +89,3 @@ export default function Chat({ route, navigation }) {
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-  },
-});

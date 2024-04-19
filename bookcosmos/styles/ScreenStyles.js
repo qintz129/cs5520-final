@@ -514,3 +514,18 @@ export const userInfoStyles = StyleSheet.create({
     fontFamily: "SecularOne_400Regular",
   },
 });
+
+// Styles for Chat screen
+export const chatStyles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: COLORS.white,
+  },
+  messagesContainerStyle: {
+    backgroundColor: COLORS.white,
+  },
+  textInputStyle: {
+    backgroundColor: COLORS.white,
+    borderRadius: 20,
+  },
+});
