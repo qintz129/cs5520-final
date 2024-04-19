@@ -33,7 +33,6 @@ export default function BookDetail({ route, navigation }) {
   const [ownerAvatar, setOwnerAvatar] = useState(null);
   const [ownerName, setOwnerName] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [requestSent, setRequestSent] = useState(false);
   const [bookStatus, setBookStatus] = useState("free");
   const { bookId, ownerId } = route.params;
   const [rating, setRating] = useState(0);
@@ -306,22 +305,20 @@ export default function BookDetail({ route, navigation }) {
               </View>
             </View>
             <View style={styles.buttonContainer}>
-              {!requestSent &&
-                bookStatus === "free" &&
-                auth.currentUser.uid !== ownerId && (
-                  <CustomButton
-                    onPress={handleSendRequest}
-                    customStyle={{
-                      backgroundColor: "#55c7aa",
-                      width: 200,
-                      height: 50,
-                      borderRadius: 10,
-                      alignSelf: "center",
-                    }}
-                  >
-                    <Text style={styles.buttonText}>Send Request</Text>
-                  </CustomButton>
-                )}
+              {bookStatus === "free" && auth.currentUser.uid !== ownerId && (
+                <CustomButton
+                  onPress={handleSendRequest}
+                  customStyle={{
+                    backgroundColor: "#55c7aa",
+                    width: 200,
+                    height: 50,
+                    borderRadius: 10,
+                    alignSelf: "center",
+                  }}
+                >
+                  <Text style={styles.buttonText}>Send Request</Text>
+                </CustomButton>
+              )}
             </View>
             <ChooseBookModal
               visible={modalVisible}
@@ -330,8 +327,6 @@ export default function BookDetail({ route, navigation }) {
               fromUserId={auth.currentUser.uid}
               requestedBookId={bookId}
               toUserId={ownerId}
-              requestSent={requestSent}
-              setRequestSent={setRequestSent}
             />
           </View>
         )}

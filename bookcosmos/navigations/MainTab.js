@@ -30,7 +30,7 @@ export default function MainTab({ navigation }) {
         name="Explore"
         component={Explore}
         options={{
-          headerStyle: { height: 100 },
+          headerStyle: { height: 110 },
           headerTitleStyle: {
             fontSize: 20,
             fontFamily: "SecularOne_400Regular",

@@ -10,11 +10,14 @@ import { collection, onSnapshot, query } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { convertTimestamp } from "../Utils";
 import HistoryCard from "../components/HistoryCard";
+import { useCustomFonts } from "../Fonts";
 
 // History component to display the history of exchanges
 export default function History({ navigation }) {
   const [history, setHistory] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const { fontsLoaded } = useCustomFonts();
+
   // useEffect to fetch the history of exchanges
   useEffect(() => {
     const fetchHistory = () => {
@@ -59,6 +62,8 @@ export default function History({ navigation }) {
           color="#55c7aa"
           style={{ marginTop: 20 }}
         />
+      ) : history.length === 0 ? (
+        <Text style={styles.noHistoryText}>No exchange history</Text>
       ) : (
         <FlatList
           data={history}
@@ -99,5 +104,12 @@ export default function History({ navigation }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  noHistoryText: {
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: "Molengo_400Regular",
+    color: "grey",
   },
 });

@@ -1,13 +1,22 @@
-import { StyleSheet, Text, View, FlatList } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import { database } from "../firebase-files/firebaseSetup";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { convertTimestamp } from "../Utils";
 import ReviewCard from "../components/ReviewCard";
+import { useCustomFonts } from "../Fonts";
 
 // Reviews component to display the reviews for a user
 export default function Reviews({ userId }) {
   const [reviews, setReviews] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const { fontsLoaded } = useCustomFonts();
 
   useEffect(() => {
     const q = query(collection(database, "users", userId, "reviews"));
@@ -31,6 +40,7 @@ export default function Reviews({ userId }) {
         }));
 
         setReviews(updatedArray);
+        setIsLoading(false);
       },
       (error) => {
         console.log(error.message);
@@ -44,11 +54,21 @@ export default function Reviews({ userId }) {
   console.log(reviews);
   return (
     <View style={styles.container}>
-      <FlatList
-        data={reviews}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <ReviewCard review={item} />}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
+      ) : reviews.length === 0 ? (
+        <Text style={styles.noReviewsText}>No reviews</Text>
+      ) : (
+        <FlatList
+          data={reviews}
+          keyExtractor={(item) => item.id}
+          renderItem={({ item }) => <ReviewCard review={item} />}
+        />
+      )}
     </View>
   );
 }
@@ -57,5 +77,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 5,
+  },
+  noReviewsText: {
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: "Molengo_400Regular",
+    color: "grey",
   },
 });

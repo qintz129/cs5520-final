@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  FlatList,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import {
   collection,
@@ -10,12 +17,13 @@ import {
 import { database } from "../firebase-files/firebaseSetup";
 import { deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
-import { calculateDistance } from "../Utils";
-import * as Location from "expo-location";
+import { useCustomFonts } from "../Fonts";
 
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
+  const { fontsLoaded } = useCustomFonts();
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     let booksQuery;
@@ -50,6 +58,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         filterBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
         // Update the state variable with the fetched books
         setBooks(filterBooks);
+        setIsLoading(false);
       },
       (error) => {
         console.error("Error fetching books:", error);
@@ -104,18 +113,30 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={books}
-        renderItem={({ item }) => (
-          <BookCard
-            item={item}
-            isMyLibrary={isMyLibrary}
-            handleDeleteItem={handleDeleteItem}
-            handlePressBook={handlePressBook}
-          />
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size="large"
+          color="#55c7aa"
+          style={{ marginTop: 20 }}
+        />
+      ) : books.length === 0 ? (
+        <View>
+          <Text style={styles.emptyLibraryText}>Library is empty</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={books}
+          renderItem={({ item }) => (
+            <BookCard
+              item={item}
+              isMyLibrary={isMyLibrary}
+              handleDeleteItem={handleDeleteItem}
+              handlePressBook={handlePressBook}
+            />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
     </View>
   );
 }
@@ -123,5 +144,12 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  emptyLibraryText: {
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: "Molengo_400Regular",
+    color: "grey",
   },
 });

@@ -58,6 +58,11 @@ export default function Requests({ navigation }) {
     }, [activeTab, updateTrigger]) // updateTrigger is triggered when any info in the request is updated
   );
 
+  // Filter completed requests
+  const completedRequests = requests.filter(
+    (request) => request.status === "completed"
+  );
+
   return (
     <View style={styles.container}>
       <View style={styles.tabs}>
@@ -100,6 +105,8 @@ export default function Requests({ navigation }) {
           color="#55c7aa"
           style={{ marginTop: 20 }}
         />
+      ) : completedRequests.length === requests.length ? (
+        <Text style={styles.noRequestsText}>No requests</Text>
       ) : (
         <FlatList
           data={requests}
@@ -151,5 +158,12 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
+  },
+  noRequestsText: {
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: "Molengo_400Regular",
+    color: "grey",
   },
 });

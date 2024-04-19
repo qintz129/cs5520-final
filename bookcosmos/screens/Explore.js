@@ -14,6 +14,7 @@ import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
 import * as Location from "expo-location";
 import { calculateDistance } from "../Utils";
+import { useCustomFonts } from "../Fonts";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
@@ -21,6 +22,7 @@ export default function Explore({ navigation }) {
   const [searchKeyword, setSearchKeyword] = useState("");
   const [isLoading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
+  const { fontsLoaded } = useCustomFonts();
 
   // Get the user's location
   useEffect(() => {
@@ -39,6 +41,7 @@ export default function Explore({ navigation }) {
 
   useEffect(() => {
     const fetchBooks = () => {
+      setLoading(true);
       try {
         const booksCollection = collection(database, "books");
         let booksQuery = booksCollection;
@@ -87,6 +90,7 @@ export default function Explore({ navigation }) {
         return unsubscribe;
       } catch (error) {
         console.error("Error fetching books:", error);
+        setLoading(false);
       }
     };
 
@@ -111,6 +115,7 @@ export default function Explore({ navigation }) {
       return "Unknown";
     }
   };
+  console.log(books);
 
   return (
     <View style={styles.container}>
@@ -126,17 +131,15 @@ export default function Explore({ navigation }) {
           color="#55c7aa"
           style={{ marginTop: 20 }}
         />
+      ) : books.length > 0 ? (
+        <FlatList
+          data={books}
+          renderItem={({ item }) => <ExploreBookCard item={item} />}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
+        />
       ) : (
-        <>
-          {books.length > 0 && (
-            <FlatList
-              data={books}
-              renderItem={({ item }) => <ExploreBookCard item={item} />}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-            />
-          )}
-        </>
+        <Text style={styles.noResultsText}>No books available</Text>
       )}
     </View>
   );
@@ -150,5 +153,12 @@ const styles = StyleSheet.create({
     padding: 10,
     width: "100%",
     alignItems: "center",
+  },
+  noResultsText: {
+    fontSize: 20,
+    textAlign: "center",
+    marginTop: 20,
+    fontFamily: "Molengo_400Regular",
+    color: "grey",
   },
 });

@@ -8,6 +8,7 @@ import { useUser } from "../hooks/UserContext";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { auth, database, storage } from "../firebase-files/firebaseSetup";
 import { useCustomFonts } from "../Fonts";
+import { Feather } from "@expo/vector-icons";
 
 // Profile component to display the profile of the user
 export default function Profile({ navigation }) {
@@ -59,6 +60,7 @@ export default function Profile({ navigation }) {
           customStyle={styles.addBookButton}
           onPress={() => navigation.navigate("Add A Book", { editMode: false })}
         >
+          <Feather name="book" size={24} color="white" />
           <Text style={styles.addBookText}>Add A Book</Text>
         </CustomButton>
       </View>
@@ -113,13 +115,15 @@ const styles = StyleSheet.create({
   addABook: {
     alignItems: "flex-start",
     marginVertical: 10,
-    marginLeft: 50,
+    marginLeft: 30,
   },
   addBookButton: {
     backgroundColor: "#55c7aa",
     borderRadius: 10,
-    paddingVertical: 10,
+    paddingVertical: 8,
     paddingHorizontal: 20,
+    flexDirection: "row",
+    columnGap: 10,
   },
   addBookText: {
     fontFamily: "SecularOne_400Regular",

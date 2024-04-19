@@ -1,7 +1,7 @@
 import {
   View,
   Text,
-  TextInput,
+  ActivityIndicator,
   StyleSheet,
   Keyboard,
   Alert,
@@ -19,6 +19,7 @@ import { useCustomFonts } from "../Fonts";
 export default function AddReview({ navigation }) {
   const [reviewer, setReviewer] = useState("");
   const { fontsLoaded } = useCustomFonts();
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
   }
@@ -71,6 +72,7 @@ export default function AddReview({ navigation }) {
         {
           text: "Confirm",
           onPress: async () => {
+            setIsSubmitLoading(true);
             // Write the review to the database
             await writeToDB(newReview, "users", reviewee, "reviews");
             console.log("Review submitted successfully");
@@ -93,6 +95,8 @@ export default function AddReview({ navigation }) {
       ]);
     } catch (error) {
       console.error("Error submitting review:", error);
+    } finally {
+      setIsSubmitLoading(false);
     }
   };
 
@@ -119,7 +123,11 @@ export default function AddReview({ navigation }) {
           <Text style={styles.buttonText}>Clear</Text>
         </CustomButton>
         <CustomButton customStyle={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Submit</Text>
+          {isSubmitLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.buttonText}>Submit</Text>
+          )}
         </CustomButton>
       </View>
     </View>

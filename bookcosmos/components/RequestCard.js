@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, Image, Alert } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import React, { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import {
@@ -29,6 +36,12 @@ export default function RequestCard({
   const [status, setStatus] = useState(initialStatus);
   const [offeredBookAvatar, setOfferedBookAvatar] = useState(null);
   const [requestedBookAvatar, setRequestedBookAvatar] = useState(null);
+  const [isCancelAndRejectLoading, setIsCancelAndRejectLoading] =
+    useState(false);
+  const [isAcceptLoading, setIsAcceptLoading] = useState(false);
+  const [isCancelAfterAcceptLoading, setIsCancelAfterAcceptLoading] =
+    useState(false);
+  const [isCompleteLoading, setIsCompleteLoading] = useState(false);
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
@@ -85,6 +98,7 @@ export default function RequestCard({
         {
           text: "Confirm",
           onPress: async () => {
+            setIsCancelAndRejectLoading(true);
             // Wait for each delete operation to complete
             await deleteFromDB(requestId, "users", fromUserId, "sentRequests");
             console.log("Deleted from sentRequests");
@@ -114,6 +128,7 @@ export default function RequestCard({
                 "The request has been cancelled"
               );
             } else if (action === "reject") {
+              setIsCancelAndRejectLoading(false);
               const historyEntryForm = {
                 myBook: offeredBookInfo.id,
                 requestedBook: requestedBookInfo.id,
@@ -133,6 +148,8 @@ export default function RequestCard({
     } catch (err) {
       console.error("Failed to cancel the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
+    } finally {
+      setIsCancelAndRejectLoading(false);
     }
   };
 
@@ -147,6 +164,7 @@ export default function RequestCard({
         {
           text: "Confirm",
           onPress: async () => {
+            setIsAcceptLoading(true);
             // Wait for each update operation to complete
             await updateToDB(requestId, "users", toUserId, "receivedRequests", {
               status: "accepted",
@@ -184,10 +202,12 @@ export default function RequestCard({
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
+    } finally {
+      setIsAcceptLoading(false);
     }
   };
 
-  const handleAcceptAfterCancel = async () => {
+  const handleCancelAfterAccept = async () => {
     try {
       Alert.alert("Confirm", "Are you sure you want to cancel this request?", [
         {
@@ -197,6 +217,7 @@ export default function RequestCard({
         {
           text: "Confirm",
           onPress: async () => {
+            setIsCancelAfterAcceptLoading(true);
             // Wait for each update operation to complete
             await updateToDB(requestId, "users", toUserId, "receivedRequests", {
               status: "unaccepted",
@@ -233,6 +254,8 @@ export default function RequestCard({
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
+    } finally {
+      setIsCancelAfterAcceptLoading(false);
     }
   };
 
@@ -250,6 +273,7 @@ export default function RequestCard({
           {
             text: "Confirm",
             onPress: async () => {
+              setIsCompleteLoading(true);
               // if the status is accepted, update the status to one user completed
               if (status === "accepted") {
                 const updates = {
@@ -331,6 +355,8 @@ export default function RequestCard({
     } catch (error) {
       console.error("Failed to complete the exchange request:", error);
       // Handle the error appropriately
+    } finally {
+      setIsCompleteLoading(false);
     }
   };
   return status === "completed" ? null : (
@@ -410,7 +436,11 @@ export default function RequestCard({
           customStyle={styles.outgoingCancelButton}
           onPress={() => handleCancelAndReject("cancel")}
         >
-          <Text style={styles.buttonText}>Cancel</Text>
+          {isCancelAndRejectLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.buttonText}>Cancel</Text>
+          )}
         </CustomButton>
       ) : tab === "incoming" && status === "unaccepted" ? (
         <View style={styles.buttonView}>
@@ -418,7 +448,11 @@ export default function RequestCard({
             customStyle={styles.rejectButton}
             onPress={() => handleCancelAndReject("reject")}
           >
-            <Text style={styles.buttonText}>Reject</Text>
+            {isCancelAndRejectLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Reject</Text>
+            )}
           </CustomButton>
           {offeredBookInfo &&
             requestedBookInfo &&
@@ -428,7 +462,11 @@ export default function RequestCard({
                 customStyle={styles.acceptButton}
                 onPress={() => handleAccept()}
               >
-                <Text style={styles.buttonText}>Accept</Text>
+                {isAcceptLoading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text style={styles.buttonText}>Accept</Text>
+                )}
               </CustomButton>
             )}
         </View>
@@ -436,15 +474,23 @@ export default function RequestCard({
         <View style={styles.buttonView}>
           <CustomButton
             customStyle={styles.cancelButton}
-            onPress={() => handleAcceptAfterCancel()}
+            onPress={() => handleCancelAfterAccept()}
           >
-            <Text style={styles.buttonText}>Cancel</Text>
+            {isCancelAfterAcceptLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Cancel</Text>
+            )}
           </CustomButton>
           <CustomButton
             customStyle={styles.completeButton}
             onPress={() => handleComplete()}
           >
-            <Text style={styles.buttonText}>Complete</Text>
+            {isCompleteLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Complete</Text>
+            )}
           </CustomButton>
         </View>
       ) : status === "one user completed" &&
@@ -458,7 +504,11 @@ export default function RequestCard({
           customStyle={styles.waitingButton}
           onPress={() => handleComplete()}
         >
-          <Text style={styles.buttonText}>Waiting for you to complete</Text>
+          {isCompleteLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.buttonText}>Waiting for you to complete</Text>
+          )}
         </CustomButton>
       ) : null}
     </View>
@@ -480,17 +530,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
     marginTop: 10,
+    textAlign: "center",
   },
   requestedText: {
     color: "#55aacc",
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
     marginTop: 10,
+    textAlign: "center",
   },
   requestCardText: {
     color: "black",
     fontSize: 16,
     fontFamily: "SecularOne_400Regular",
+    textAlign: "center",
   },
   books: {
     flexDirection: "row",

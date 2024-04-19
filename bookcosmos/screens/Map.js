@@ -8,7 +8,7 @@ import {
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
 import {
   fetchBooksAtLocation,
@@ -151,13 +151,13 @@ export default function Map() {
                     }}
                     onPress={() => handleMarkerPress(location)}
                   >
-                    <Feather
-                      name="book-open"
+                    <Ionicons
+                      name="library-outline"
                       size={27}
                       color="black"
                       style={styles.bookIcon}
                     />
-                    {zoomLevel < 0.5 && (
+                    {zoomLevel < 0.2 && (
                       <View style={styles.markerTextContainer}>
                         <Text style={styles.markerText}>
                           {location.booksCount === 1
@@ -185,7 +185,6 @@ export default function Map() {
               <BookCard item={item} handlePressBook={handlePressBook} />
             )}
             keyExtractor={(item) => item.id}
-            contentContainerStyle={styles.bookList}
           />
           <CustomButton
             onPress={() => setSelectedBooks(null)}
@@ -242,16 +241,13 @@ const styles = StyleSheet.create({
     fontFamily: "SecularOne_400Regular",
     marginBottom: 10,
   },
-  bookList: {
-    maxHeight: 200,
-  },
   closeButton: {
     fontSize: 16,
     marginTop: 20,
     backgroundColor: "#f44336",
     borderRadius: 10,
     marginHorizontal: 100,
-    height: 50,
+    height: 40,
   },
   closeText: {
     fontFamily: "SecularOne_400Regular",

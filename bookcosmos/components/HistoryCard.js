@@ -146,17 +146,20 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
     marginTop: 10,
+    textAlign: "center",
   },
   theirBookText: {
     color: "#55aacc",
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
     marginTop: 10,
+    textAlign: "center",
   },
   bookNameText: {
     fontFamily: "SecularOne_400Regular",
     fontSize: 16,
     textAlign: "center",
+    marginTop: 10,
   },
   books: {
     flexDirection: "row",

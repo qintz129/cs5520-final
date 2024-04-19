@@ -9,6 +9,7 @@ export default function ChangePassword({ isVisible, onClose, onSave }) {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [confirmPassword, setConfirmPassword] = useState("");
   const [passwordError, setPasswordError] = useState(false);
+
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
@@ -28,6 +29,7 @@ export default function ChangePassword({ isVisible, onClose, onSave }) {
       return;
     }
     onSave(newPassword);
+    Alert.alert("Password changed successfully");
     setNewPassword("");
     setConfirmPassword("");
     onClose();
@@ -136,7 +138,7 @@ const styles = StyleSheet.create({
   },
   cancelButton: {
     backgroundColor: "#f44336",
-    height: 50,
+    height: 40,
     borderRadius: 10,
     width: "40%",
   },
@@ -147,7 +149,7 @@ const styles = StyleSheet.create({
   },
   confirmButton: {
     backgroundColor: "#55c7aa",
-    height: 50,
+    height: 40,
     borderRadius: 10,
     width: "40%",
   },

@@ -9,6 +9,7 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 import { database, storage } from "../firebase-files/firebaseSetup";
@@ -35,6 +36,8 @@ export default function AddABook({ navigation, route }) {
   const [address, setAddress] = useState("");
   const [canGetAddress, setCanGetAddress] = useState(false);
   const { editMode, bookId } = route.params;
+  const [isSaveLoading, setIsSaveLoading] = useState(false);
+
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
     return <Text>Loading...</Text>;
@@ -157,6 +160,7 @@ export default function AddABook({ navigation, route }) {
         {
           text: "Yes",
           onPress: async () => {
+            setIsSaveLoading(true);
             try {
               if (!bookName || !author || !address) {
                 Alert.alert("Please fill in book name, author, and address.");
@@ -197,8 +201,11 @@ export default function AddABook({ navigation, route }) {
                 writeToDB(newBookData, "books");
                 navigation.goBack();
               }
+              Alert.alert("Book saved successfully!");
             } catch (error) {
               console.error("Error confirming save:", error);
+            } finally {
+              setIsSaveLoading(false);
             }
           },
         },
@@ -330,7 +337,11 @@ export default function AddABook({ navigation, route }) {
                 customStyle={styles.saveButton}
                 onPress={handleSave}
               >
-                <Text style={styles.saveText}>Save</Text>
+                {isSaveLoading ? (
+                  <ActivityIndicator color="white" />
+                ) : (
+                  <Text style={styles.saveText}>Save</Text>
+                )}
               </CustomButton>
             </View>
           </View>
@@ -382,8 +393,6 @@ const styles = StyleSheet.create({
   },
   fetchButton: {
     alignItems: "flex-start",
-    // marginLeft: 20,
-    // marginVertical:0
   },
   desContainer: {
     width: "100%",

@@ -1,4 +1,11 @@
-import { View, StyleSheet, Text, Alert, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  Alert,
+  Image,
+  ActivityIndicator,
+} from "react-native";
 import React, { useState, useEffect } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { MaterialIcons } from "@expo/vector-icons";
@@ -106,6 +113,7 @@ export default function ImageManager({
         <MaterialIcons name="photo-camera" size={130} color="gray" />
       )}
       <CustomButton onPress={showActionSheet} customStyle={styles.editButton}>
+        <MaterialIcons name="add-a-photo" size={24} color="white" />
         <Text style={styles.editText}>Edit Photo</Text>
       </CustomButton>
     </View>
@@ -131,8 +139,10 @@ const styles = StyleSheet.create({
   },
   editButton: {
     borderRadius: 10,
-    padding: 10,
+    padding: 8,
     backgroundColor: "#ff9529",
+    flexDirection: "row",
+    columnGap: 10,
   },
   editText: {
     fontFamily: "SecularOne_400Regular",

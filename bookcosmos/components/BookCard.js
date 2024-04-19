@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, Image } from "react-native";
 import Swipeable from "react-native-gesture-handler/Swipeable";
 import CustomButton from "./CustomButton";
 import AntDesign from "react-native-vector-icons/AntDesign";
-import { database, storage } from "../firebase-files/firebaseSetup";
+import { storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { useCustomFonts } from "../Fonts";
 
@@ -75,7 +75,7 @@ export default function BookCard({
           onPress={() => handleDeleteItem(item)}
           customStyle={styles.deleteButton}
         >
-          <AntDesign name="delete" size={24} color="black" />
+          <AntDesign name="delete" size={24} color="#f44336" />
         </CustomButton>
       )}
     >

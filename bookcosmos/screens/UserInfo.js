@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { StyleSheet, Text, View, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { auth, database, storage } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
@@ -31,6 +31,7 @@ export default function UserInfo({ navigation }) {
   const [uploadUri, setUploadUri] = useState(null);
   const [hasNewImage, setHasNewImage] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSaveLoading, setIsSaveLoading] = useState(false);
   const { fontsLoaded } = useCustomFonts();
 
   if (!fontsLoaded) {
@@ -74,8 +75,9 @@ export default function UserInfo({ navigation }) {
         { text: "No", style: "cancel" },
         {
           text: "Yes",
-          onPress: () => {
-            (async () => {
+          onPress: async () => {
+            setIsSaveLoading(true);
+            try {
               if (password.length < 6) {
                 Alert.alert("Password should be at least 6 characters");
                 return;
@@ -149,8 +151,12 @@ export default function UserInfo({ navigation }) {
                 }
               }
               setInitialPassword(password);
-              navigation.goBack();
-            })();
+              Alert.alert("Changes saved successfully");
+            } catch (error) {
+              console.error("Error saving changes:", error);
+            } finally {
+              setIsSaveLoading(false);
+            }
           },
         },
       ],
@@ -228,7 +234,11 @@ export default function UserInfo({ navigation }) {
           <Text style={styles.logOutText}>Log out</Text>
         </CustomButton>
         <CustomButton customStyle={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveText}>Save</Text>
+          {isSaveLoading ? (
+            <ActivityIndicator color="white" />
+          ) : (
+            <Text style={styles.saveText}>Save</Text>
+          )}
         </CustomButton>
       </View>
     </View>
