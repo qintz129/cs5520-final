@@ -55,6 +55,7 @@ export default function Profile({ navigation }) {
           )}
         </View>
       </CustomButton>
+      <Text style={styles.userNameText}>{userInfo.name}</Text>
       <View style={styles.addABook}>
         <CustomButton
           customStyle={styles.addBookButton}
@@ -163,5 +164,10 @@ const styles = StyleSheet.create({
   userAvatar: {
     alignItems: "center",
     marginVertical: 5,
+  },
+  userNameText: {
+    fontSize: 22,
+    fontFamily: "SecularOne_400Regular",
+    textAlign: "center",
   },
 });

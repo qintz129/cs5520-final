@@ -76,7 +76,15 @@ export default function App() {
       <Stack.Screen
         name="User Info"
         component={UserInfo}
-        options={{ headerBackTitleVisible: false }}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: "black",
+            fontSize: 20,
+            fontFamily: "SecularOne_400Regular",
+          },
+          headerTintColor: "#55c7aa",
+        }}
       />
       <Stack.Screen
         name="Add A Book"
@@ -84,7 +92,7 @@ export default function App() {
         options={({ navigation }) => ({
           headerLeft: () => (
             <CustomButton onPress={() => navigation.goBack()}>
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign name="close" size={24} color="#f44336" />
             </CustomButton>
           ),
           gestureDirection: "vertical",
@@ -99,22 +107,68 @@ export default function App() {
       <Stack.Screen
         name="Book Detail"
         component={BookDetail}
-        options={{ headerBackTitleVisible: false }}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: "black",
+            fontSize: 20,
+            fontFamily: "SecularOne_400Regular",
+          },
+          headerTintColor: "#55c7aa",
+        }}
       />
       <Stack.Screen
         name="Other User Profile"
         component={OtherUserProfile}
-        options={{ headerBackTitleVisible: false }}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: "black",
+            fontSize: 20,
+            fontFamily: "SecularOne_400Regular",
+          },
+          headerTintColor: "#55c7aa",
+        }}
       />
-      <Stack.Screen name="Add A Review" component={AddReview} />
+      <Stack.Screen
+        name="Add A Review"
+        component={AddReview}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: "black",
+            fontSize: 20,
+            fontFamily: "SecularOne_400Regular",
+          },
+          headerTintColor: "#55c7aa",
+        }}
+      />
       <Stack.Screen
         name="Map"
         component={Map}
         options={{
           headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: "black",
+            fontSize: 20,
+            fontFamily: "SecularOne_400Regular",
+          },
+          headerTintColor: "#55c7aa",
         }}
       />
-      <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen
+        name="Chat"
+        component={Chat}
+        options={{
+          headerBackTitleVisible: false,
+          headerTitleStyle: {
+            color: "black",
+            fontSize: 20,
+            fontFamily: "SecularOne_400Regular",
+          },
+          headerTintColor: "#55c7aa",
+        }}
+      />
     </>
   );
 

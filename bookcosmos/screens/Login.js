@@ -29,6 +29,12 @@ export default function Login({ navigation }) {
       console.log(err.code);
       if (err.code === "auth/invalid-credential") {
         Alert.alert("Wrong email or password, please try again");
+      } else if (err.code === "auth/user-not-found") {
+        Alert.alert("User not found, please try again");
+      } else if (err.code === "auth/wrong-password") {
+        Alert.alert("Wrong password, please try again");
+      } else if (err.code == "auth/invalid-email") {
+        Alert.alert("Invalid email, please try again");
       }
     }
   };
@@ -49,10 +55,13 @@ export default function Login({ navigation }) {
   return (
     <View style={styles.container}>
       <AuthenticationBackground />
-      <Text style={styles.logo}>Book Cosmos</Text>
+      <Text style={styles.logo}>
+        Book <Text style={styles.coloredLetter}>C</Text>osmos
+      </Text>
       <Text style={styles.slogan}>Start a Literary Odyssey </Text>
       <Text style={styles.slogan}>
-        Where Every Swap is a New Universe to Explore
+        Where Every <Text style={styles.coloredWord}>Swap</Text> is a New
+        Universe to Explore
       </Text>
       <CustomInput
         title="Email"
@@ -68,7 +77,7 @@ export default function Login({ navigation }) {
         secureTextEntry={!passwordVisible}
         onToggleVisibility={toggleVisibility}
       />
-      <CustomButton onPress={loginHandler}>
+      <CustomButton onPress={loginHandler} disabled={isEmpty}>
         <Text style={isEmpty ? styles.disabledText : styles.normalText}>
           Login
         </Text>
@@ -94,11 +103,16 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
+  coloredLetter: { color: "#55c7aa" },
   slogan: {
     fontFamily: "Molengo_400Regular",
     fontSize: 16,
     textAlign: "center",
     marginBottom: 20,
+  },
+  coloredWord: {
+    color: "black",
+    fontFamily: "PaytoneOne_400Regular",
   },
   disabledText: {
     fontFamily: "Molengo_400Regular",
@@ -106,11 +120,11 @@ const styles = StyleSheet.create({
     fontSize: 18,
   },
   normalText: {
-    fontFamily: "Molengo_400Regular",
+    fontFamily: "SecularOne_400Regular",
     fontSize: 18,
   },
   signUpText: {
-    fontFamily: "Molengo_400Regular",
+    fontFamily: "SecularOne_400Regular",
     fontSize: 18,
   },
 });

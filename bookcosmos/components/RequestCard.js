@@ -160,7 +160,6 @@ export default function RequestCard({
                 "The request has been cancelled"
               );
             } else if (action === "reject") {
-              setIsCancelAndRejectLoading(false);
               const historyEntryForm = {
                 myBook: offeredBookInfo.id,
                 requestedBook: requestedBookInfo.id,
@@ -172,6 +171,7 @@ export default function RequestCard({
               };
               await writeToDB(historyEntryForm, "users", fromUserId, "history");
               await writeToDB(historyEntryForm, "users", toUserId, "history");
+              Alert.alert("The request has been rejected");
             }
           },
         },
@@ -225,6 +225,7 @@ export default function RequestCard({
 
             setStatus("accepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
+            Alert.alert("The request has been accepted");
           },
         },
       ]);
@@ -275,6 +276,7 @@ export default function RequestCard({
             );
             setStatus("unaccepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
+            Alert.alert("The request has been cancelled");
           },
         },
       ]);
@@ -324,6 +326,7 @@ export default function RequestCard({
 
                 setUpdateTrigger((prev) => prev + 1);
                 setStatus("one user completed");
+                Alert.alert("The exchange has been completed");
                 // if the status is one user completed, update the status to completed
               } else if (status === "one user completed") {
                 const updates = {
@@ -370,6 +373,7 @@ export default function RequestCard({
                   "history"
                 );
                 await writeToDB(historyEntryForm, "users", toUserId, "history");
+                Alert.alert("The exchange has been completed");
               }
             },
           },
@@ -392,7 +396,9 @@ export default function RequestCard({
           !requestedBookInfo ||
           offeredBookInfo.bookStatus === "inExchange" ||
           requestedBookInfo.bookStatus === "inExchange") && (
-          <Text>One or both books are no longer available</Text>
+          <Text style={styles.noLongerAvailableText}>
+            One or both books are no longer available
+          </Text>
         )}
       <View style={styles.books}>
         <View style={styles.bookItem}>
@@ -586,6 +592,13 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: "SecularOne_400Regular",
     textAlign: "center",
+  },
+  noLongerAvailableText: {
+    color: "black",
+    fontSize: 16,
+    fontFamily: "Molengo_400Regular",
+    textAlign: "center",
+    marginVertical: 10,
   },
   addressText: {
     color: "black",

@@ -8,7 +8,7 @@ import { Foundation } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
-import { StyleSheet, Text } from "react-native";
+import { Platform, StyleSheet, Text } from "react-native";
 import { useCustomFonts } from "../Fonts";
 
 const Tab = createBottomTabNavigator();
@@ -30,7 +30,9 @@ export default function MainTab({ navigation }) {
         name="Explore"
         component={Explore}
         options={{
-          headerStyle: { height: 110 },
+          headerStyle: {
+            height: Platform.OS === "ios" ? 110 : 80,
+          },
           headerTitleStyle: {
             fontSize: 20,
             fontFamily: "SecularOne_400Regular",
@@ -57,7 +59,9 @@ export default function MainTab({ navigation }) {
         name="Requests"
         component={Requests}
         options={{
-          headerStyle: { height: 100 },
+          headerStyle: {
+            height: Platform.OS === "ios" ? 110 : 80,
+          },
           headerTitleStyle: {
             fontSize: 20,
             fontFamily: "SecularOne_400Regular",
@@ -75,7 +79,9 @@ export default function MainTab({ navigation }) {
         name="History"
         component={History}
         options={{
-          headerStyle: { height: 100 },
+          headerStyle: {
+            height: Platform.OS === "ios" ? 110 : 80,
+          },
           tabBarLabelStyle: {
             fontSize: 12,
           },
@@ -96,7 +102,9 @@ export default function MainTab({ navigation }) {
         name="Profile"
         component={Profile}
         options={{
-          headerStyle: { height: 100 },
+          headerStyle: {
+            height: Platform.OS === "ios" ? 110 : 80,
+          },
           headerTitleStyle: {
             fontSize: 20,
             fontFamily: "SecularOne_400Regular",

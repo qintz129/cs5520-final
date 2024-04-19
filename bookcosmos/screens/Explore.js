@@ -20,7 +20,7 @@ import { useCustomFonts } from "../Fonts";
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [allBooksLoaded, setAllBooksLoaded] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
   const { fontsLoaded } = useCustomFonts();
 
@@ -82,7 +82,7 @@ export default function Explore({ navigation }) {
             (a, b) => a.distance - b.distance
           );
           setBooks(sortedBooks);
-          setAllBooksLoaded(true);
+          setLoading(false);
         });
         return unsubscribe;
       } catch (error) {
@@ -122,7 +122,7 @@ export default function Explore({ navigation }) {
           onChangeText={(text) => setSearchKeyword(text)}
         />
       </View>
-      {!allBooksLoaded ? (
+      {isLoading ? (
         <ActivityIndicator
           size="large"
           color="#55c7aa"
