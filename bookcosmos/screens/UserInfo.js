@@ -1,6 +1,6 @@
-import { StyleSheet, Text, View, Alert } from "react-native";
+import { Text, View, Alert, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
-import { auth, database, storage } from "../firebase-files/firebaseSetup";
+import { auth, storage } from "../firebase-files/firebaseSetup";
 import CustomButton from "../components/CustomButton";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import {
@@ -15,7 +15,9 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { useUser } from "../hooks/UserContext";
 import ChangePasswordModal from "../components/ChangePasswordModal";
 import NotificationManager from "../components/NotificationManager";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { COLORS } from "../styles/Colors";
+import { userInfoStyles } from "../styles/ScreenStyles";
 
 // UserInfo component to display the user information
 export default function UserInfo({ navigation }) {
@@ -31,10 +33,11 @@ export default function UserInfo({ navigation }) {
   const [uploadUri, setUploadUri] = useState(null);
   const [hasNewImage, setHasNewImage] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isSaveLoading, setIsSaveLoading] = useState(false);
+  const styles = userInfoStyles;
   const { fontsLoaded } = useCustomFonts();
-
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -74,8 +77,9 @@ export default function UserInfo({ navigation }) {
         { text: "No", style: "cancel" },
         {
           text: "Yes",
-          onPress: () => {
-            (async () => {
+          onPress: async () => {
+            setIsSaveLoading(true);
+            try {
               if (password.length < 6) {
                 Alert.alert("Password should be at least 6 characters");
                 return;
@@ -149,8 +153,12 @@ export default function UserInfo({ navigation }) {
                 }
               }
               setInitialPassword(password);
-              navigation.goBack();
-            })();
+              Alert.alert("Changes saved successfully");
+            } catch (error) {
+              console.error("Error saving changes:", error);
+            } finally {
+              setIsSaveLoading(false);
+            }
           },
         },
       ],
@@ -228,45 +236,13 @@ export default function UserInfo({ navigation }) {
           <Text style={styles.logOutText}>Log out</Text>
         </CustomButton>
         <CustomButton customStyle={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveText}>Save</Text>
+          {isSaveLoading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.saveText}>Save</Text>
+          )}
         </CustomButton>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 10,
-    marginRight: 10,
-  },
-  buttonContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 100,
-  },
-  saveButton: {
-    backgroundColor: "#55c7aa",
-    height: 50,
-    borderRadius: 10,
-    width: "40%",
-  },
-  saveText: {
-    color: "white",
-    fontSize: 20,
-    fontFamily: "SecularOne_400Regular",
-  },
-  logOutButton: {
-    backgroundColor: "#f44336",
-    height: 50,
-    borderRadius: 10,
-    width: "40%",
-  },
-  logOutText: {
-    color: "white",
-    fontSize: 20,
-    fontFamily: "SecularOne_400Regular",
-  },
-});

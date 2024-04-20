@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Image } from "react-native";
+import { Text, View, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import CustomButton from "../components/CustomButton";
 import Library from "./Library";
@@ -8,18 +8,20 @@ import { onSnapshot, doc } from "firebase/firestore";
 import { database, storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { Entypo } from "@expo/vector-icons";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
 import { FontAwesome } from "@expo/vector-icons";
+import { COLORS } from "../styles/Colors";
+import { otherUserProfileStyles } from "../styles/ScreenStyles";
 
 // OtherUserProfile component to display the profile of other users
 export default function OtherUserProfile({ navigation, route }) {
   const [activeTab, setActiveTab] = useState("library");
   const { ownerId, ownerName, rating } = route.params;
   const [userAvatar, setUserAvatar] = useState(null);
-
+  const styles = otherUserProfileStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -61,12 +63,20 @@ export default function OtherUserProfile({ navigation, route }) {
         {userAvatar ? (
           <Image source={{ uri: userAvatar }} style={styles.Image} />
         ) : (
-          <Ionicons name="person-circle" size={100} color="black" />
+          <Ionicons
+            name="person-circle"
+            size={styles.personIconSize}
+            color={COLORS.black}
+          />
         )}
         <View style={styles.avatarBottom}>
           {rating > 0 && (
             <View style={styles.userRatingContainer}>
-              <FontAwesome name="star" size={24} color="#fdcc0d" />
+              <FontAwesome
+                name="star"
+                size={styles.starIconSize}
+                color={COLORS.reviewStar}
+              />
               <Text style={styles.ratingText}>{rating}</Text>
             </View>
           )}
@@ -78,7 +88,11 @@ export default function OtherUserProfile({ navigation, route }) {
               })
             }
           >
-            <Entypo name="chat" size={24} color="black" />
+            <Entypo
+              name="chat"
+              size={styles.chatIconSize}
+              color={COLORS.black}
+            />
           </CustomButton>
         </View>
       </View>
@@ -124,80 +138,3 @@ export default function OtherUserProfile({ navigation, route }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  topContainer: {
-    backgroundColor: "white",
-  },
-  userAvatar: {
-    marginTop: 20,
-    alignItems: "center",
-    marginVertical: 5,
-    rowGap: 15,
-  },
-  avatarBottom: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    width: "40%",
-  },
-  tabs: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    alignItems: "stretch",
-    marginHorizontal: 20,
-  },
-  tab: {
-    flex: 1,
-  },
-  activeTab: {
-    borderBottomWidth: 3,
-    borderBottomColor: "#55c7aa",
-  },
-  activeTabText: {
-    color: "black",
-    marginBottom: 10,
-  },
-  Image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  userRatingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 10,
-  },
-  ratingText: {
-    fontSize: 22,
-    fontFamily: "SecularOne_400Regular",
-    textAlign: "center",
-  },
-  tabText: {
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 18,
-    color: "gray",
-  },
-  Image: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
-  rateText: {
-    alignSelf: "center",
-  },
-  userRatingContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    columnGap: 10,
-  },
-  ratingText: {
-    fontSize: 22,
-    fontFamily: "SecularOne_400Regular",
-    textAlign: "center",
-  },
-});

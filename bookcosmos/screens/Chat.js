@@ -1,102 +1,91 @@
-import { StyleSheet, Text, View, SafeAreaView } from 'react-native';
+import { SafeAreaView } from "react-native";
 import React, {
-    useState,
-    useLayoutEffect,
-    useCallback, 
-    useEffect
-  } from 'react';
-import { GiftedChat } from 'react-native-gifted-chat'; 
+  useState,
+  useLayoutEffect,
+  useCallback,
+  useEffect,
+} from "react";
+import { GiftedChat } from "react-native-gifted-chat";
 import {
-    collection,
-    addDoc, 
-    orderBy,
-    query,
-    onSnapshot, 
-  } from 'firebase/firestore';
-import {auth, database} from "../firebase-files/firebaseSetup";
+  collection,
+  addDoc,
+  orderBy,
+  query,
+  onSnapshot,
+} from "firebase/firestore";
+import { auth, database } from "../firebase-files/firebaseSetup";
+import { chatStyles } from "../styles/ScreenStyles";
 
-export default function Chat({ route, navigation}) { 
-    const { otherId, otherName} = route.params;
-    const [messages, setMessages] = useState([]);  
-    
-    useEffect(() => {
-        navigation.setOptions({
-          title: otherName,
-        });
-      }, [otherName]);
+export default function Chat({ route, navigation }) {
+  const { otherId, otherName } = route.params;
+  const [messages, setMessages] = useState([]);
+  const styles = chatStyles;
 
-    function generateChatRoomId(userId1, userId2) {
-        const ids = [userId1, userId2].sort();
-        return `chat_${ids[0]}_${ids[1]}`;
-      }
-      
-    const chatRoomId = generateChatRoomId(auth.currentUser.uid, otherId); 
-    console.log(chatRoomId);
+  useEffect(() => {
+    navigation.setOptions({
+      title: otherName,
+    });
+  }, [otherName]);
 
-    useLayoutEffect(() => {
-        const messagesRef = collection(database, 'chats', chatRoomId, 'messages');
-        const q = query(messagesRef, orderBy('createdAt', 'desc'));
-    
-        const unsubscribe = onSnapshot(q, querySnapshot => {
-            if (querySnapshot.empty) {
-                console.log('The chat room is empty.');
-            } else {
-                setMessages(
-                    querySnapshot.docs.map(doc => ({
-                        _id: doc.id,
-                        createdAt: doc.data().createdAt.toDate(),
-                        text: doc.data().text,
-                        user: doc.data().user
-                    }))
-                );
-            }
-        });
-    
-        return () => unsubscribe();
-    }, [chatRoomId]);
+  function generateChatRoomId(userId1, userId2) {
+    const ids = [userId1, userId2].sort();
+    return `chat_${ids[0]}_${ids[1]}`;
+  }
 
-      const onSend = useCallback((messages = []) => {
-        setMessages(previousMessages =>
-          GiftedChat.append(previousMessages, messages),
+  const chatRoomId = generateChatRoomId(auth.currentUser.uid, otherId);
+  console.log(chatRoomId);
+
+  useLayoutEffect(() => {
+    const messagesRef = collection(database, "chats", chatRoomId, "messages");
+    const q = query(messagesRef, orderBy("createdAt", "desc"));
+
+    const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      if (querySnapshot.empty) {
+        console.log("The chat room is empty.");
+      } else {
+        setMessages(
+          querySnapshot.docs.map((doc) => ({
+            _id: doc.id,
+            createdAt: doc.data().createdAt.toDate(),
+            text: doc.data().text,
+            user: doc.data().user,
+          }))
         );
-        const { _id, createdAt, text, user } = messages[0];
-    
-        addDoc(collection(database, 'chats', chatRoomId, 'messages'), {
-          _id,
-          createdAt,
-          text,
-          user,
-          to: otherId 
-        });
-    }, []);
+      }
+    });
 
-      return ( 
-        <SafeAreaView style={styles.container}>
-        <GiftedChat
-          messages={messages}
-          showAvatarForEveryMessage={false}
-          showUserAvatar={false}
-          onSend={messages => onSend(messages)}  
-          renderAvatar={null}
+    return () => unsubscribe();
+  }, [chatRoomId]);
 
-          messagesContainerStyle={{
-            backgroundColor: '#fff'
-          }}
-          textInputStyle={{
-            backgroundColor: '#fff',
-            borderRadius: 20,
-          }}
-          user={{
-            _id: auth.currentUser.uid,
-          }}
-        /> 
-        </SafeAreaView>
-      );
+  const onSend = useCallback((messages = []) => {
+    setMessages((previousMessages) =>
+      GiftedChat.append(previousMessages, messages)
+    );
+    const { _id, createdAt, text, user } = messages[0];
+
+    addDoc(collection(database, "chats", chatRoomId, "messages"), {
+      _id,
+      createdAt,
+      text,
+      user,
+      to: otherId,
+    });
+  }, []);
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <GiftedChat
+        messages={messages}
+        showAvatarForEveryMessage={false}
+        showUserAvatar={false}
+        onSend={(messages) => onSend(messages)}
+        renderAvatar={null}
+        messagesContainerStyle={styles.messagesContainerStyle}
+        textInputStyle={styles.textInputStyle}
+        user={{
+          _id: auth.currentUser.uid,
+        }}
+      />
+    </SafeAreaView>
+  );
 }
-
-const styles = StyleSheet.create({ 
-    container: {
-        flex: 1, 
-        backgroundColor: '#fff'
-    }
-})

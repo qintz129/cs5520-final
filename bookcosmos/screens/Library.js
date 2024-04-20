@@ -1,19 +1,22 @@
-import { StyleSheet, Text, View, FlatList, Alert } from "react-native";
+import { Text, View, FlatList, Alert, ActivityIndicator } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
-import {
-  collection,
-  onSnapshot,
-  orderBy,
-  query,
-  where,
-} from "firebase/firestore";
+import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import { deleteFromDB } from "../firebase-files/firestoreHelper";
 import BookCard from "../components/BookCard";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { libraryStyles } from "../styles/ScreenStyles";
 
 // Library component to display the books in the library
 export default function Library({ navigation, userId, isMyLibrary }) {
   const [books, setBooks] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const styles = libraryStyles;
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return null;
+  }
 
   useEffect(() => {
     let booksQuery;
@@ -48,6 +51,7 @@ export default function Library({ navigation, userId, isMyLibrary }) {
         filterBooks.sort((a, b) => a.bookName.localeCompare(b.bookName));
         // Update the state variable with the fetched books
         setBooks(filterBooks);
+        setIsLoading(false);
       },
       (error) => {
         console.error("Error fetching books:", error);
@@ -100,24 +104,30 @@ export default function Library({ navigation, userId, isMyLibrary }) {
 
   return (
     <View style={styles.container}>
-      <FlatList
-        data={books}
-        renderItem={({ item }) => (
-          <BookCard
-            item={item}
-            isMyLibrary={isMyLibrary}
-            handleDeleteItem={handleDeleteItem}
-            handlePressBook={handlePressBook}
-          />
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      />
+      {isLoading ? (
+        <ActivityIndicator
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
+        />
+      ) : books.length === 0 ? (
+        <View>
+          <Text style={styles.emptyLibraryText}>Library is empty</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={books}
+          renderItem={({ item }) => (
+            <BookCard
+              item={item}
+              isMyLibrary={isMyLibrary}
+              handleDeleteItem={handleDeleteItem}
+              handlePressBook={handlePressBook}
+            />
+          )}
+          keyExtractor={(item) => item.id.toString()}
+        />
+      )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

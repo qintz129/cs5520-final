@@ -1,18 +1,24 @@
 import React, { useEffect, useState } from "react";
-import { Modal, View, Text, FlatList, StyleSheet, Alert } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
 import CustomButton from "./CustomButton";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { database } from "../firebase-files/firebaseSetup";
 import {
-  writeToDB,
   updateToDB,
   createExchangeRequest,
 } from "../firebase-files/firestoreHelper";
 import * as Notifications from "expo-notifications";
 import { throttle } from "lodash";
 import { useUser } from "../hooks/UserContext";
-import { useCustomFonts } from "../Fonts";
-import { ScrollView } from "react-native-gesture-handler";
+import { useCustomFonts } from "../hooks/UseFonts";
 
 // ChooseBookModal component to display a modal to choose a book for exchange
 export default function ChooseBookModal({
@@ -21,12 +27,11 @@ export default function ChooseBookModal({
   fromUserId,
   requestedBookId,
   toUserId,
-  requestSent,
-  setRequestSent,
 }) {
   const [books, setBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState(null);
   const { userInfo } = useUser();
+  const [isLoading, setIsLoading] = useState(false);
 
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
@@ -101,6 +106,7 @@ export default function ChooseBookModal({
 
   const handleConfirm = async () => {
     if (selectedBookId) {
+      setIsLoading(true);
       try {
         const newRequest = {
           fromUser: fromUserId,
@@ -122,9 +128,6 @@ export default function ChooseBookModal({
         // Update book status to indicate it is in exchange
         await updateBookStatus(selectedBookId);
 
-        // Set the requestSent state to true
-        setRequestSent(true);
-
         // Schedule a notification for the user
         scheduleThrottledNotification();
 
@@ -134,7 +137,11 @@ export default function ChooseBookModal({
         Alert.alert("Your request has been sent!");
       } catch (error) {
         console.error("Error writing request to database:", error);
+      } finally {
+        setIsLoading(false); // Set loading to false after request processing
       }
+    } else {
+      Alert.alert("Please select a book!");
     }
   };
 
@@ -147,23 +154,27 @@ export default function ChooseBookModal({
     >
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
-          <Text style={styles.modalTitle}>Select a book to exchange:</Text>
-          <FlatList
-            data={books}
-            renderItem={({ item }) => (
-              <View
-                style={[
-                  styles.item,
-                  selectedBookId === item.id && styles.selectedItem,
-                ]}
-              >
-                <CustomButton onPress={() => handleSelectBook(item.id)}>
-                  <Text style={styles.bookNameText}>{item.bookName}</Text>
-                </CustomButton>
-              </View>
-            )}
-            keyExtractor={(item) => item.id.toString()}
-          />
+          <Text style={styles.modalTitle}>Select a book to exchange</Text>
+          {books.length === 0 ? (
+            <Text style={styles.noBooksText}>No books available</Text>
+          ) : (
+            <FlatList
+              data={books}
+              renderItem={({ item }) => (
+                <View
+                  style={[
+                    styles.item,
+                    selectedBookId === item.id && styles.selectedItem,
+                  ]}
+                >
+                  <CustomButton onPress={() => handleSelectBook(item.id)}>
+                    <Text style={styles.bookNameText}>{item.bookName}</Text>
+                  </CustomButton>
+                </View>
+              )}
+              keyExtractor={(item) => item.id.toString()}
+            />
+          )}
         </View>
         <View style={styles.buttonContainer}>
           <CustomButton
@@ -176,7 +187,11 @@ export default function ChooseBookModal({
             onPress={handleConfirm}
             customStyle={styles.confirmButtonStyle}
           >
-            <Text style={styles.buttonText}>Confirm</Text>
+            {isLoading ? (
+              <ActivityIndicator color="white" />
+            ) : (
+              <Text style={styles.buttonText}>Confirm</Text>
+            )}
           </CustomButton>
         </View>
       </View>
@@ -242,5 +257,11 @@ const styles = StyleSheet.create({
     color: "#f5f5f5",
     fontSize: 18,
     fontFamily: "SecularOne_400Regular",
+  },
+  noBooksText: {
+    marginTop: 20,
+    fontFamily: "Molengo_400Regular",
+    fontSize: 18,
+    color: "grey",
   },
 });

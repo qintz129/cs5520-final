@@ -1,27 +1,24 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  Dimensions,
-} from "react-native";
-import React, { useState, useEffect} from "react";
+import { Text, View, Image, Dimensions } from "react-native";
+import React, { useState, useEffect } from "react";
 import CustomButton from "./CustomButton";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useNavigation } from "@react-navigation/native";
 import { storage } from "../firebase-files/firebaseSetup";
 import { ref, getDownloadURL } from "firebase/storage";
 import { Entypo } from "@expo/vector-icons";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { exploreBookCardStyles } from "../styles/ComponentStyles";
+import { COLORS } from "../styles/Colors";
 
-const ExploreBookCard = ({ item }) => {
+export default function ExploreBookCard({ item }) {
   const navigation = useNavigation();
-  const [bookAvatar, setBookAvatar] = useState(null); 
+  const [bookAvatar, setBookAvatar] = useState(null);
   const screenWidth = Dimensions.get("window").width;
-  const bookCardWidth = (screenWidth - 15 * 3) / 2; 
+  const bookCardWidth = (screenWidth - 15 * 3) / 2;
+  const styles = exploreBookCardStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -50,12 +47,13 @@ const ExploreBookCard = ({ item }) => {
       <View style={[styles.item, { width: bookCardWidth }]}>
         <View style={styles.cover}>
           {bookAvatar ? (
-            <Image
-              source={{ uri: bookAvatar }}
-              style={{ width: "100%", height: "100%" }}
-            />
+            <Image source={{ uri: bookAvatar }} style={styles.bookAvatar} />
           ) : (
-            <AntDesign name="picture" size={100} color="grey" />
+            <AntDesign
+              name="picture"
+              size={styles.imageIconSize}
+              color={COLORS.grey}
+            />
           )}
         </View>
         <Text
@@ -77,64 +75,14 @@ const ExploreBookCard = ({ item }) => {
           {item.author}
         </Text>
         <View style={styles.distanceContainer}>
-          <Entypo name="location-pin" size={24} color="#55c7aa" />
+          <Entypo
+            name="location-pin"
+            size={styles.pinIconSize}
+            color={COLORS.mainTheme}
+          />
           <Text style={styles.distanceText}>{item.distance} km</Text>
         </View>
       </View>
     </CustomButton>
   );
-}; 
-
-export default ExploreBookCard;
-
-const styles = StyleSheet.create({
-  item: {
-    flex: 1,
-    margin: 10,
-    height: 270,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    position: "relative",
-    backgroundColor: "white",
-  },
-  cover: {
-    width: "100%",
-    height: 150,
-    justifyContent: "center",
-    alignItems: "center",
-    borderRadius: 5,
-    overflow: "hidden",
-    shadowColor: "#000",
-  },
-  titleText: {
-    marginTop: 5,
-    fontSize: 17,
-    fontWeight: "bold",
-    textAlign: "center",
-    padding: 5,
-    fontFamily: "SecularOne_400Regular",
-  },
-  authorText: {
-    fontSize: 15,
-    textAlign: "center",
-    fontFamily: "Molengo_400Regular",
-  },
-  distanceContainer: {
-    position: "absolute",
-    bottom: 0,
-    flexDirection: "row",
-    justifyContent: "center",
-    alignItems: "center",
-    width: "100%",
-    padding: 5,
-  },
-  distanceText: {
-    fontSize: 14,
-    fontFamily: "SecularOne_400Regular",
-  },
-});
+}

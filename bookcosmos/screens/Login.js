@@ -1,11 +1,12 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { View, Text, StyleSheet, Alert } from "react-native";
+import { View, Text, Alert } from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
 import AuthenticationBackground from "../components/AuthenticationBackground";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { authenticationStyles } from "../styles/ScreenStyles";
 
 // Login component to allow users to login
 export default function Login({ navigation }) {
@@ -13,10 +14,10 @@ export default function Login({ navigation }) {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [isEmpty, setIsEmpty] = useState(true);
-
+  const styles = authenticationStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   const signupHandler = () => {
@@ -26,9 +27,15 @@ export default function Login({ navigation }) {
     try {
       const userCred = await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
-      console.log(err.code);
+      //console.log(err.code);
       if (err.code === "auth/invalid-credential") {
         Alert.alert("Wrong email or password, please try again");
+      } else if (err.code === "auth/user-not-found") {
+        Alert.alert("User not found, please try again");
+      } else if (err.code === "auth/wrong-password") {
+        Alert.alert("Wrong password, please try again");
+      } else if (err.code == "auth/invalid-email") {
+        Alert.alert("Invalid email, please try again");
       }
     }
   };
@@ -49,10 +56,13 @@ export default function Login({ navigation }) {
   return (
     <View style={styles.container}>
       <AuthenticationBackground />
-      <Text style={styles.logo}>Book Cosmos</Text>
+      <Text style={styles.logo}>
+        Book <Text style={styles.coloredLetter}>C</Text>osmos
+      </Text>
       <Text style={styles.slogan}>Start a Literary Odyssey </Text>
       <Text style={styles.slogan}>
-        Where Every Swap is a New Universe to Explore
+        Where Every <Text style={styles.coloredWord}>Swap</Text> is a New
+        Universe to Explore
       </Text>
       <CustomInput
         title="Email"
@@ -68,49 +78,14 @@ export default function Login({ navigation }) {
         secureTextEntry={!passwordVisible}
         onToggleVisibility={toggleVisibility}
       />
-      <CustomButton onPress={loginHandler}>
+      <CustomButton onPress={loginHandler} disabled={isEmpty}>
         <Text style={isEmpty ? styles.disabledText : styles.normalText}>
           Login
         </Text>
       </CustomButton>
       <CustomButton onPress={signupHandler}>
-        <Text style={styles.signUpText}>New User? Create An Account</Text>
+        <Text style={styles.normalText}>New User? Create An Account</Text>
       </CustomButton>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "stretch",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  logo: {
-    fontFamily: "PaytoneOne_400Regular",
-    fontSize: 45,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  slogan: {
-    fontFamily: "Molengo_400Regular",
-    fontSize: 16,
-    textAlign: "center",
-    marginBottom: 20,
-  },
-  disabledText: {
-    fontFamily: "Molengo_400Regular",
-    color: "grey",
-    fontSize: 18,
-  },
-  normalText: {
-    fontFamily: "Molengo_400Regular",
-    fontSize: 18,
-  },
-  signUpText: {
-    fontFamily: "Molengo_400Regular",
-    fontSize: 18,
-  },
-});

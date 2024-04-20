@@ -31,7 +31,7 @@ export async function writeToDB(data, col, docId, subCol) {
         const bookId = docRef.id;
         await updateDoc(docRef, { id: bookId });
         await updateUserBooks(bookId, auth.currentUser.uid);
-        console.log("Book data written successfully");
+        //console.log("Book data written successfully");
       } else {
         docRef = doc(database, col);
         await addDoc(collection(database, col), data);
@@ -52,7 +52,7 @@ async function updateUserBooks(bookId, userId) {
     await updateDoc(userDocRef, {
       books: books,
     });
-    console.log("User data updated successfully with new book ID");
+    //console.log("User data updated successfully with new book ID");
   } else {
     console.error("User not found");
   }
@@ -74,7 +74,7 @@ export async function updateToDB(
       const docRef = doc(database, col, id);
       await updateDoc(docRef, updates);
     }
-    console.log("Data updated successfully");
+    //console.log("Data updated successfully");
   } catch (err) {
     console.log(err);
   }
@@ -118,7 +118,7 @@ export async function deleteFromDB(id, col, docId = null, subCol = null) {
         if (bookDoc.exists()) {
           const bookData = bookDoc.data();
           await deleteDoc(bookDocRef);
-          console.log("Book deleted successfully");
+          //console.log("Book deleted successfully");
           await removeBookFromUser(bookData.owner, id);
         } else {
           console.error("Book not found");
@@ -127,7 +127,7 @@ export async function deleteFromDB(id, col, docId = null, subCol = null) {
         await deleteDoc(doc(database, col, id));
       }
     }
-    console.log("Data deleted successfully");
+    //console.log("Data deleted successfully");
   } catch (err) {
     console.error("Error deleting from DB:", err);
   }
@@ -144,7 +144,7 @@ async function removeBookFromUser(userId, bookId) {
     await updateDoc(userDocRef, {
       books: books,
     });
-    console.log("Book ID removed from user successfully");
+    //console.log("Book ID removed from user successfully");
   } else {
     console.error("User not found");
   }
@@ -192,7 +192,7 @@ export async function fetchExtra(doc) {
 }
 
 export async function fetchBooksAtLocation(location, currentUserUid) {
-  console.log("Fetching books at location:", location);
+  //console.log("Fetching books at location:", location);
   const { latitude, longitude } = location;
   const radius = 0.0001;
 
@@ -220,7 +220,7 @@ export async function fetchBooksAtLocation(location, currentUserUid) {
   querySnapshot.forEach((doc) => {
     books.push({ id: doc.id, ...doc.data() });
   });
-  console.log("Fetched books:", books);
+  //console.log("Fetched books:", books);
   if (books.length === 0) {
     return null;
   } else {

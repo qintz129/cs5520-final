@@ -1,29 +1,30 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, FlatList, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { doc, getDoc } from "firebase/firestore";
-import CustomButton from "../components/CustomButton";
 import { CustomInput } from "../components/InputHelper";
 import ExploreBookCard from "../components/ExploreBookCard";
 import * as Location from "expo-location";
-import { calculateDistance } from "../Utils";
+import { calculateDistance } from "../utils/Utils";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { exploreStyles } from "../styles/ScreenStyles";
 
 // Explore component to display the books available for exchange
 export default function Explore({ navigation }) {
   const [books, setBooks] = useState([]);
   const [searchKeyword, setSearchKeyword] = useState("");
-  const [allBooksLoaded, setAllBooksLoaded] = useState(false);
+  const [isLoading, setLoading] = useState(true);
   const [userLocation, setUserLocation] = useState(null);
+  const styles = exploreStyles;
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return null;
+  }
 
   // Get the user's location
-  useEffect(() => {  
+  useEffect(() => {
     async function getUserLocation() {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== "granted") {
@@ -36,9 +37,10 @@ export default function Explore({ navigation }) {
     getUserLocation();
   }, []);
 
-  useEffect(() => {  
+  useEffect(() => {
     if (!userLocation) return; // Only proceed if userLocation is available
     const fetchBooks = () => {
+      setLoading(true);
       try {
         const booksCollection = collection(database, "books");
         let booksQuery = booksCollection;
@@ -64,7 +66,7 @@ export default function Explore({ navigation }) {
             );
 
           const promises = fetchedBooks.map(async (book) => {
-            const ownerName = await getOwnerName(book.owner); 
+            const ownerName = await getOwnerName(book.owner);
             const distance = calculateDistance(
               userLocation.latitude,
               userLocation.longitude,
@@ -77,13 +79,13 @@ export default function Explore({ navigation }) {
           const booksWithOwnerName = await Promise.all(promises);
           const sortedBooks = booksWithOwnerName.sort(
             (a, b) => a.distance - b.distance
-          ); 
+          );
           setBooks(sortedBooks);
-          setAllBooksLoaded(true);
+          setLoading(false);
         });
         return unsubscribe;
       } catch (error) {
-        console.error("Error fetching books:", error); 
+        console.error("Error fetching books:", error);
       }
     };
 
@@ -94,6 +96,7 @@ export default function Explore({ navigation }) {
 
   // Function to get the owner name from the database by ownerId
   const getOwnerName = async (ownerId) => {
+    setLoading(true);
     try {
       const userDoc = doc(database, "users", ownerId);
       const userSnap = await getDoc(userDoc);
@@ -106,8 +109,11 @@ export default function Explore({ navigation }) {
     } catch (error) {
       console.error("Error fetching owner name:", error);
       return "Unknown";
+    } finally {
+      setLoading(false);
     }
   };
+  //console.log(books);
 
   return (
     <View style={styles.container}>
@@ -117,35 +123,22 @@ export default function Explore({ navigation }) {
           onChangeText={(text) => setSearchKeyword(text)}
         />
       </View>
-      { !allBooksLoaded? (
+      {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
+        />
+      ) : books.length > 0 ? (
+        <FlatList
+          data={books}
+          renderItem={({ item }) => <ExploreBookCard item={item} />}
+          keyExtractor={(item) => item.id.toString()}
+          numColumns={2}
         />
       ) : (
-        <>
-          {books.length > 0 && (
-            <FlatList
-              data={books}
-              renderItem={({ item }) => <ExploreBookCard item={item} />}
-              keyExtractor={(item) => item.id.toString()}
-              numColumns={2}
-            />
-          )}
-        </>
+        <Text style={styles.noResultsText}>No books available</Text>
       )}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  search: {
-    padding: 10,
-    width: "100%",
-    alignItems: "center",
-  },
-});

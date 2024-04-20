@@ -1,13 +1,15 @@
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text } from "react-native";
 import { Rating } from "react-native-ratings";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { reviewCardStyles } from "../styles/ComponentStyles";
 
 // ReviewCard component to display a review
 export default function ReviewCard({ review }) {
+  const styles = reviewCardStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   return (
@@ -15,7 +17,7 @@ export default function ReviewCard({ review }) {
       <Rating
         readonly
         startingValue={review.rating}
-        imageSize={20}
+        imageSize={styles.ratingImageSize}
         style={styles.rating}
       />
       <View style={styles.header}>
@@ -26,39 +28,3 @@ export default function ReviewCard({ review }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "#fff",
-    padding: 15,
-    borderRadius: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-    marginBottom: 10,
-  },
-  rating: {
-    alignSelf: "flex-start",
-    marginBottom: 5,
-  },
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  reviewerName: {
-    fontSize: 16,
-    fontWeight: "bold",
-    fontFamily: "SecularOne_400Regular",
-  },
-  date: {
-    fontSize: 16,
-    color: "#666",
-    fontFamily: "SecularOne_400Regular",
-  },
-  comment: {
-    fontSize: 14,
-    fontFamily: "Catamaran_400Regular",
-  },
-});

@@ -1,5 +1,12 @@
-import { StyleSheet, Text, View, Image, Alert } from "react-native";
-import React, { useEffect, useState} from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  Alert,
+  ActivityIndicator,
+} from "react-native";
+import React, { useEffect, useState } from "react";
 import CustomButton from "./CustomButton";
 import {
   deleteFromDB,
@@ -7,11 +14,13 @@ import {
   writeToDB,
 } from "../firebase-files/firestoreHelper";
 import { AntDesign } from "@expo/vector-icons";
-import { auth, database} from "../firebase-files/firebaseSetup";
+import { auth, database } from "../firebase-files/firebaseSetup";
 import { storage } from "../firebase-files/firebaseSetup";
-import { ref, getDownloadURL} from "firebase/storage";
-import { useCustomFonts } from "../Fonts"; 
-import { onSnapshot, doc} from "firebase/firestore";
+import { ref, getDownloadURL } from "firebase/storage";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { onSnapshot, doc } from "firebase/firestore";
+import { COLORS } from "../styles/Colors";
+import { requestCardStyles } from "../styles/ComponentStyles";
 
 // RequestCard component to display the exchange requests
 export default function RequestCard({
@@ -26,13 +35,20 @@ export default function RequestCard({
   initialStatus,
   initialCompletedUser,
   setUpdateTrigger,
-}) { 
-  const [status, setStatus] = useState(initialStatus); 
+}) {
+  const [status, setStatus] = useState(initialStatus);
   const [offeredBookAvatar, setOfferedBookAvatar] = useState(null);
   const [requestedBookAvatar, setRequestedBookAvatar] = useState(null);
+  const [isCancelAndRejectLoading, setIsCancelAndRejectLoading] =
+    useState(false);
+  const [isAcceptLoading, setIsAcceptLoading] = useState(false);
+  const [isCancelAfterAcceptLoading, setIsCancelAfterAcceptLoading] =
+    useState(false);
+  const [isCompleteLoading, setIsCompleteLoading] = useState(false);
+  const styles = requestCardStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -59,28 +75,38 @@ export default function RequestCard({
           console.error("Failed to load image:", error);
         });
     }
-  }, [requestedBookInfo]); 
+  }, [requestedBookInfo]);
 
-  useEffect(() => {  
-    let subcollectionName = tab === "incoming" ? "receivedRequests" : "sentRequests";
-    const docRef = doc(database, "users", auth.currentUser.uid, subcollectionName, requestId);
-  
-    const unsubscribe = onSnapshot(docRef, (docSnapshot) => {
-      if (docSnapshot.exists()) {
-        const requestData = docSnapshot.data();  
-        setStatus(requestData.status);
-      } else {
-        console.log("No such document!");
+  useEffect(() => {
+    let subcollectionName =
+      tab === "incoming" ? "receivedRequests" : "sentRequests";
+    const docRef = doc(
+      database,
+      "users",
+      auth.currentUser.uid,
+      subcollectionName,
+      requestId
+    );
+
+    const unsubscribe = onSnapshot(
+      docRef,
+      (docSnapshot) => {
+        if (docSnapshot.exists()) {
+          const requestData = docSnapshot.data();
+          setStatus(requestData.status);
+        } else {
+          console.log("No such document!");
+        }
+      },
+      (error) => {
+        console.error("Failed to fetch data: ", error);
       }
-    }, (error) => {
-      console.error("Failed to fetch data: ", error);
-    });
-  
+    );
+
     return () => {
       unsubscribe();
     };
   }, [tab, requestId, offeredBookInfo, requestedBookInfo]);
-  
 
   const handlePressBook = ({ id, owner }) => {
     navigation.navigate("Book Detail", {
@@ -107,6 +133,7 @@ export default function RequestCard({
         {
           text: "Confirm",
           onPress: async () => {
+            setIsCancelAndRejectLoading(true);
             // Wait for each delete operation to complete
             await deleteFromDB(requestId, "users", fromUserId, "sentRequests");
             console.log("Deleted from sentRequests");
@@ -129,7 +156,13 @@ export default function RequestCard({
               });
               console.log("Updated offered book status to free");
             }
-          if (action === "reject") {
+
+            if (action === "cancel") {
+              Alert.alert(
+                "Request Cancelled",
+                "The request has been cancelled"
+              );
+            } else if (action === "reject") {
               const historyEntryForm = {
                 myBook: offeredBookInfo.id,
                 requestedBook: requestedBookInfo.id,
@@ -141,6 +174,7 @@ export default function RequestCard({
               };
               await writeToDB(historyEntryForm, "users", fromUserId, "history");
               await writeToDB(historyEntryForm, "users", toUserId, "history");
+              Alert.alert("The request has been rejected");
             }
           },
         },
@@ -148,6 +182,8 @@ export default function RequestCard({
     } catch (err) {
       console.error("Failed to cancel the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
+    } finally {
+      setIsCancelAndRejectLoading(false);
     }
   };
 
@@ -162,6 +198,7 @@ export default function RequestCard({
         {
           text: "Confirm",
           onPress: async () => {
+            setIsAcceptLoading(true);
             // Wait for each update operation to complete
             await updateToDB(requestId, "users", toUserId, "receivedRequests", {
               status: "accepted",
@@ -191,16 +228,19 @@ export default function RequestCard({
 
             setStatus("accepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
+            Alert.alert("The request has been accepted");
           },
         },
       ]);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
+    } finally {
+      setIsAcceptLoading(false);
     }
   };
 
-  const handleAcceptAfterCancel = async () => {
+  const handleCancelAfterAccept = async () => {
     try {
       Alert.alert("Confirm", "Are you sure you want to cancel this request?", [
         {
@@ -210,6 +250,7 @@ export default function RequestCard({
         {
           text: "Confirm",
           onPress: async () => {
+            setIsCancelAfterAcceptLoading(true);
             // Wait for each update operation to complete
             await updateToDB(requestId, "users", toUserId, "receivedRequests", {
               status: "unaccepted",
@@ -238,12 +279,15 @@ export default function RequestCard({
             );
             setStatus("unaccepted"); // Assuming setStatus updates the component state
             setUpdateTrigger((prev) => prev + 1);
+            Alert.alert("The request has been cancelled");
           },
         },
       ]);
     } catch (err) {
       console.error("Failed to accept the exchange request:", err);
       // Handle the error, possibly update UI to show an error message
+    } finally {
+      setIsCancelAfterAcceptLoading(false);
     }
   };
 
@@ -261,6 +305,7 @@ export default function RequestCard({
           {
             text: "Confirm",
             onPress: async () => {
+              setIsCompleteLoading(true);
               // if the status is accepted, update the status to one user completed
               if (status === "accepted") {
                 const updates = {
@@ -281,9 +326,10 @@ export default function RequestCard({
                   "receivedRequests",
                   updates
                 );
-               
-                setUpdateTrigger((prev) => prev + 1); 
+
+                setUpdateTrigger((prev) => prev + 1);
                 setStatus("one user completed");
+                Alert.alert("The exchange has been completed");
                 // if the status is one user completed, update the status to completed
               } else if (status === "one user completed") {
                 const updates = {
@@ -330,6 +376,7 @@ export default function RequestCard({
                   "history"
                 );
                 await writeToDB(historyEntryForm, "users", toUserId, "history");
+                Alert.alert("The exchange has been completed");
               }
             },
           },
@@ -338,6 +385,8 @@ export default function RequestCard({
     } catch (error) {
       console.error("Failed to complete the exchange request:", error);
       // Handle the error appropriately
+    } finally {
+      setIsCompleteLoading(false);
     }
   };
   return status === "completed" ? null : (
@@ -350,12 +399,14 @@ export default function RequestCard({
           !requestedBookInfo ||
           offeredBookInfo.bookStatus === "inExchange" ||
           requestedBookInfo.bookStatus === "inExchange") && (
-          <Text>One or both books are no longer available</Text>
+          <Text style={styles.noLongerAvailableText}>
+            One or both books are no longer available
+          </Text>
         )}
       <View style={styles.books}>
         <View style={styles.bookItem}>
-          <Text style={styles.offeredText}>Offered</Text> 
-          {offeredBookInfo ? ( 
+          <Text style={styles.offeredText}>Offered</Text>
+          {offeredBookInfo ? (
             <View style={styles.bookLabel}>
               <CustomButton
                 onPress={() =>
@@ -364,18 +415,29 @@ export default function RequestCard({
                     owner: offeredBookInfo.owner,
                   })
                 }
-              >  
-              {offeredBookAvatar ? (
-                <Image source={{ uri: offeredBookAvatar }} style={styles.image} />
-              ) : (
-                <AntDesign name="picture" size={100} color="grey"/>
-              )}
+              >
+                {offeredBookAvatar ? (
+                  <Image
+                    source={{ uri: offeredBookAvatar }}
+                    style={styles.image}
+                  />
+                ) : (
+                  <AntDesign
+                    name="picture"
+                    size={styles.pictureIconSize}
+                    color={COLORS.grey}
+                  />
+                )}
                 <Text style={styles.requestCardText}>
                   {offeredBookInfo.bookName}
                 </Text>
               </CustomButton>
               {offeredBookInfo.bookStatus === "inExchange" && (
-                <AntDesign name="swap" size={24} color="red" />
+                <AntDesign
+                  name="swap"
+                  size={styles.swapIconSize}
+                  color={COLORS.red}
+                />
               )}
             </View>
           ) : (
@@ -393,18 +455,29 @@ export default function RequestCard({
                     owner: requestedBookInfo.owner,
                   })
                 }
-              > 
-               {requestedBookAvatar ? (
-                  <Image source={{ uri: requestedBookAvatar }} style={styles.image} />
+              >
+                {requestedBookAvatar ? (
+                  <Image
+                    source={{ uri: requestedBookAvatar }}
+                    style={styles.image}
+                  />
                 ) : (
-                  <AntDesign name="picture" size={100} color="grey" />
+                  <AntDesign
+                    name="picture"
+                    size={styles.pictureIconSize}
+                    color={COLORS.grey}
+                  />
                 )}
                 <Text style={styles.requestCardText}>
                   {requestedBookInfo.bookName}
                 </Text>
               </CustomButton>
               {requestedBookInfo.bookStatus === "inExchange" && (
-                <AntDesign name="swap" size={24} color="red" />
+                <AntDesign
+                  name="swap"
+                  size={styles.swapIconSize}
+                  color={COLORS.red}
+                />
               )}
             </View>
           ) : (
@@ -417,7 +490,11 @@ export default function RequestCard({
           customStyle={styles.outgoingCancelButton}
           onPress={() => handleCancelAndReject("cancel")}
         >
-          <Text style={styles.buttonText}>Cancel</Text>
+          {isCancelAndRejectLoading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.buttonText}>Cancel</Text>
+          )}
         </CustomButton>
       ) : tab === "incoming" && status === "unaccepted" ? (
         <View style={styles.buttonView}>
@@ -425,7 +502,11 @@ export default function RequestCard({
             customStyle={styles.rejectButton}
             onPress={() => handleCancelAndReject("reject")}
           >
-            <Text style={styles.buttonText}>Reject</Text>
+            {isCancelAndRejectLoading ? (
+              <ActivityIndicator color={COLORS.white} />
+            ) : (
+              <Text style={styles.buttonText}>Reject</Text>
+            )}
           </CustomButton>
           {offeredBookInfo &&
             requestedBookInfo &&
@@ -435,36 +516,50 @@ export default function RequestCard({
                 customStyle={styles.acceptButton}
                 onPress={() => handleAccept()}
               >
-                <Text style={styles.buttonText}>Accept</Text>
+                {isAcceptLoading ? (
+                  <ActivityIndicator color={COLORS.white} />
+                ) : (
+                  <Text style={styles.buttonText}>Accept</Text>
+                )}
               </CustomButton>
             )}
         </View>
-      ) : status === "accepted" ? ( 
+      ) : status === "accepted" ? (
         <>
-        {offeredBookInfo.owner !== auth.currentUser.uid ? (
-          <Text style={styles.addressText}>  
-           Shipping Address: {'\n'}
-          {offeredBookInfo.address} </Text> 
-        ) : (
-          <Text style={styles.addressText}>  
-           Shipping Address: {'\n'}
-          {requestedBookInfo.address} </Text>
-        )}
-        <View style={styles.buttonView}>
-          <CustomButton
-            customStyle={styles.cancelButton}
-            onPress={() => handleAcceptAfterCancel()}
-          >
-            <Text style={styles.buttonText}>Cancel</Text>
-          </CustomButton>
-          <CustomButton
-            customStyle={styles.completeButton}
-            onPress={() => handleComplete()}
-          >
-            <Text style={styles.buttonText}>Complete</Text>
-          </CustomButton>
-        </View>
-      </>
+          {offeredBookInfo.owner !== auth.currentUser.uid ? (
+            <Text style={styles.addressText}>
+              Shipping Address: {"\n"}
+              {offeredBookInfo.address}{" "}
+            </Text>
+          ) : (
+            <Text style={styles.addressText}>
+              Shipping Address: {"\n"}
+              {requestedBookInfo.address}{" "}
+            </Text>
+          )}
+          <View style={styles.buttonView}>
+            <CustomButton
+              customStyle={styles.cancelButton}
+              onPress={() => handleCancelAfterAccept()}
+            >
+              {isCancelAfterAcceptLoading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.buttonText}>Cancel</Text>
+              )}
+            </CustomButton>
+            <CustomButton
+              customStyle={styles.completeButton}
+              onPress={() => handleComplete()}
+            >
+              {isCompleteLoading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.buttonText}>Complete</Text>
+              )}
+            </CustomButton>
+          </View>
+        </>
       ) : status === "one user completed" &&
         initialCompletedUser === auth.currentUser.uid ? (
         <Text style={styles.waitingText}>
@@ -476,140 +571,13 @@ export default function RequestCard({
           customStyle={styles.waitingButton}
           onPress={() => handleComplete()}
         >
-          <Text style={styles.buttonText}>Waiting for you to complete</Text>
+          {isCompleteLoading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.buttonText}>Waiting for you to complete</Text>
+          )}
         </CustomButton>
       ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  dateContainer: {
-    borderBottomColor: "#ccc",
-    borderBottomWidth: 1,
-  },
-  dateText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "SecularOne_400Regular",
-  },
-  offeredText: {
-    color: "#ff9529",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-  },
-  requestedText: {
-    color: "#55aacc",
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    marginTop: 10,
-  },
-  requestCardText: {
-    color: "black",
-    fontSize: 16,
-    fontFamily: "SecularOne_400Regular",
-  }, 
-  addressText: {
-    color: "black",
-    fontSize: 14,
-    fontFamily: "SecularOne_400Regular",
-    marginVertical: 10, 
-    alignSelf: "center", 
-    width: "80%",
-  },
-  books: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  container: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    margin: 10,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 1.41,
-    elevation: 2,
-  },
-  bookLabel: {
-    alignItems: "center",
-  },
-  bookItem: {
-    width: "45%",
-    alignItems: "center",
-  },
-  image: {
-    width: 90,
-    height: 90,
-    borderRadius: 10,
-    marginVertical: 5,
-  },
-  buttonView: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-  },
-  outgoingCancelButton: {
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    padding: 10,
-    alignSelf: "center",
-    width: "40%",
-    height: 40,
-  },
-  buttonText: {
-    color: "white",
-    alignSelf: "center",
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 15, 
-  },
-  rejectButton: {
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  acceptButton: {
-    borderRadius: 10,
-    backgroundColor: "#55c7aa",
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  cancelButton: {
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  completeButton: {
-    borderRadius: 10,
-    backgroundColor: "#55c7aa",
-    padding: 10,
-    height: 40,
-    width: "30%",
-  },
-  waitingText: {
-    marginVertical: 10,
-    color: "#f44336",
-    alignSelf: "center",
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 16,
-  },
-  waitingButton: {
-    backgroundColor: "#55c7aa",
-    borderRadius: 10,
-    padding: 10,
-    height: 50,
-    alignSelf: "center",
-    width: "80%",
-  },
-});

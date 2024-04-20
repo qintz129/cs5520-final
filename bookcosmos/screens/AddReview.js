@@ -1,11 +1,4 @@
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  Keyboard,
-  Alert,
-} from "react-native";
+import { View, Text, ActivityIndicator, Keyboard, Alert } from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
 import CustomButton from "../components/CustomButton";
@@ -14,13 +7,17 @@ import { useRoute } from "@react-navigation/native";
 import { writeToDB, updateToDB } from "../firebase-files/firestoreHelper";
 import { database, auth } from "../firebase-files/firebaseSetup";
 import { getDoc, doc } from "firebase/firestore";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { COLORS } from "../styles/Colors";
+import { addReviewStyles } from "../styles/ScreenStyles";
 
 export default function AddReview({ navigation }) {
   const [reviewer, setReviewer] = useState("");
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
+  const styles = addReviewStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   useEffect(() => {
@@ -71,6 +68,7 @@ export default function AddReview({ navigation }) {
         {
           text: "Confirm",
           onPress: async () => {
+            setIsSubmitLoading(true);
             // Write the review to the database
             await writeToDB(newReview, "users", reviewee, "reviews");
             console.log("Review submitted successfully");
@@ -93,6 +91,8 @@ export default function AddReview({ navigation }) {
       ]);
     } catch (error) {
       console.error("Error submitting review:", error);
+    } finally {
+      setIsSubmitLoading(false);
     }
   };
 
@@ -119,46 +119,13 @@ export default function AddReview({ navigation }) {
           <Text style={styles.buttonText}>Clear</Text>
         </CustomButton>
         <CustomButton customStyle={styles.submitButton} onPress={handleSubmit}>
-          <Text style={styles.buttonText}>Submit</Text>
+          {isSubmitLoading ? (
+            <ActivityIndicator color={COLORS.white} />
+          ) : (
+            <Text style={styles.buttonText}>Submit</Text>
+          )}
         </CustomButton>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "flex-start",
-    padding: 20,
-  },
-  header: {
-    fontSize: 20,
-    marginBottom: 20,
-    fontFamily: "Molengo_400Regular",
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginTop: 20,
-  },
-  clearButton: {
-    width: "40%",
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    height: 50,
-  },
-  submitButton: {
-    width: "40%",
-    backgroundColor: "#55c7aa",
-    borderRadius: 10,
-    height: 50,
-  },
-  buttonText: {
-    fontSize: 18,
-    fontFamily: "SecularOne_400Regular",
-    color: "white",
-  },
-});

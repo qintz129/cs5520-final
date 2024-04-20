@@ -1,20 +1,23 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  FlatList,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, FlatList, ActivityIndicator } from "react-native";
 import React, { useEffect, useState } from "react";
 import { collection, onSnapshot, query } from "firebase/firestore";
 import { database, auth } from "../firebase-files/firebaseSetup";
-import { convertTimestamp } from "../Utils";
+import { convertTimestamp } from "../utils/Utils";
 import HistoryCard from "../components/HistoryCard";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { historyStyles } from "../styles/ScreenStyles";
 
 // History component to display the history of exchanges
 export default function History({ navigation }) {
   const [history, setHistory] = useState([]);
   const [isLoading, setLoading] = useState(false);
+  const styles = historyStyles;
+  const { fontsLoaded } = useCustomFonts();
+  if (!fontsLoaded) {
+    return null;
+  }
+
   // useEffect to fetch the history of exchanges
   useEffect(() => {
     const fetchHistory = () => {
@@ -49,16 +52,18 @@ export default function History({ navigation }) {
     return () => unsubscribe();
   }, [auth.currentUser.uid]);
 
-  console.log(history);
+  //console.log(history);
 
   return (
     <View style={styles.container}>
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
         />
+      ) : history.length === 0 ? (
+        <Text style={styles.noHistoryText}>No exchange history</Text>
       ) : (
         <FlatList
           data={history}
@@ -95,9 +100,3 @@ export default function History({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

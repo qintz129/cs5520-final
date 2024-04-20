@@ -1,4 +1,3 @@
-import { StyleSheet, Text, View } from "react-native";
 import React, { useEffect, useState } from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
@@ -20,8 +19,10 @@ import { UserProvider } from "./hooks/UserContext";
 import Map from "./screens/Map";
 import * as Notifications from "expo-notifications";
 import NotificationListener from "./components/NotificationListener";
-import { useCustomFonts } from "./Fonts";
+import { useCustomFonts } from "./hooks/UseFonts";
 import Chat from "./screens/Chat";
+import { COLORS } from "./styles/Colors";
+import { appStyles } from "./styles/AppStyles";
 
 Notifications.setNotificationHandler({
   handleNotification: async function (notification) {
@@ -53,9 +54,10 @@ export default function App() {
     });
   }, []);
 
+  const styles = appStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   const AuthStack = (
@@ -69,14 +71,12 @@ export default function App() {
       <Stack.Screen
         name="MainTab"
         component={MainTab}
-        options={{
-          headerShown: false,
-        }}
+        options={styles.mainTabOptions}
       />
       <Stack.Screen
         name="User Info"
         component={UserInfo}
-        options={{ headerBackTitleVisible: false }}
+        options={styles.stackScreenOptions}
       />
       <Stack.Screen
         name="Add A Book"
@@ -84,37 +84,41 @@ export default function App() {
         options={({ navigation }) => ({
           headerLeft: () => (
             <CustomButton onPress={() => navigation.goBack()}>
-              <AntDesign name="close" size={24} color="black" />
+              <AntDesign
+                name="close"
+                size={styles.closeIconSize}
+                color={COLORS.red}
+              />
             </CustomButton>
           ),
-          gestureDirection: "vertical",
-          transitionSpec: {
-            close: {
-              animation: "timing",
-              config: { duration: 1000 },
-            },
-          },
+          ...styles.addABookOptions,
         })}
       />
       <Stack.Screen
         name="Book Detail"
         component={BookDetail}
-        options={{ headerBackTitleVisible: false }}
+        options={styles.stackScreenOptions}
       />
       <Stack.Screen
         name="Other User Profile"
         component={OtherUserProfile}
-        options={{ headerBackTitleVisible: false }}
+        options={styles.stackScreenOptions}
       />
-      <Stack.Screen name="Add A Review" component={AddReview} />
+      <Stack.Screen
+        name="Add A Review"
+        component={AddReview}
+        options={styles.stackScreenOptions}
+      />
       <Stack.Screen
         name="Map"
         component={Map}
-        options={{
-          headerBackTitleVisible: false,
-        }}
+        options={styles.stackScreenOptions}
       />
-      <Stack.Screen name="Chat" component={Chat} />
+      <Stack.Screen
+        name="Chat"
+        component={Chat}
+        options={styles.stackScreenOptions}
+      />
     </>
   );
 
@@ -126,13 +130,7 @@ export default function App() {
             <NotificationListener />
             <Stack.Navigator
               initialRouteName="Signup"
-              screenOptions={{
-                headerBackTitleVisible: false,
-                headerTitleStyle: {
-                  fontFamily: "SecularOne_400Regular",
-                  fontSize: 20,
-                },
-              }}
+              screenOptions={styles.stackNavigatorOptions}
             >
               {userLoggedIn ? AppStack : AuthStack}
             </Stack.Navigator>
@@ -142,5 +140,3 @@ export default function App() {
     </UserProvider>
   );
 }
-
-const styles = StyleSheet.create({});

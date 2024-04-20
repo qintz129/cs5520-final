@@ -1,14 +1,8 @@
-import {
-  StyleSheet,
-  Text,
-  View,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { Text, View, ActivityIndicator, FlatList } from "react-native";
 import React, { useState, useEffect } from "react";
 import MapView, { Marker } from "react-native-maps";
 import * as Location from "expo-location";
-import { Feather } from "@expo/vector-icons";
+import { Ionicons } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
 import {
   fetchBooksAtLocation,
@@ -18,8 +12,12 @@ import BookCard from "../components/BookCard";
 import { useNavigation } from "@react-navigation/native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { Entypo } from "@expo/vector-icons";
-import { calculateDistance } from "../Utils";
-import { useCustomFonts } from "../Fonts";
+import { calculateDistance } from "../utils/Utils";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { activityIndicatorStyles } from "../styles/CustomStyles";
+import { mapView } from "../utils/Constants";
+import { COLORS } from "../styles/Colors";
+import { mapStyles } from "../styles/ScreenStyles";
 
 export default function Map() {
   const navigation = useNavigation();
@@ -29,9 +27,10 @@ export default function Map() {
   const [booksLocations, setBooksLocations] = useState([]);
   const [selectedBooks, setSelectedBooks] = useState(null);
   const [selectedBooksDistance, setSelectedBooksDistance] = useState(null);
+  const styles = mapStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   // Get user's location
@@ -120,9 +119,9 @@ export default function Map() {
     <>
       {isLoading ? (
         <ActivityIndicator
-          size="large"
-          color="#55c7aa"
-          style={{ marginTop: 20 }}
+          size={activityIndicatorStyles.size}
+          color={activityIndicatorStyles.color}
+          style={activityIndicatorStyles.style}
         />
       ) : (
         userLocation && (
@@ -131,8 +130,8 @@ export default function Map() {
             initialRegion={{
               latitude: userLocation.latitude,
               longitude: userLocation.longitude,
-              latitudeDelta: 0.0922,
-              longitudeDelta: 0.0421,
+              latitudeDelta: mapView.latitudeDelta,
+              longitudeDelta: mapView.longitudeDelta,
             }}
             showsUserLocation={true}
             onUserLocationChange={(event) =>
@@ -151,13 +150,13 @@ export default function Map() {
                     }}
                     onPress={() => handleMarkerPress(location)}
                   >
-                    <Feather
-                      name="book-open"
-                      size={27}
-                      color="black"
+                    <Ionicons
+                      name="library-outline"
+                      size={styles.bookIconSize}
+                      color={COLORS.black}
                       style={styles.bookIcon}
                     />
-                    {zoomLevel < 0.5 && (
+                    {zoomLevel < mapView.zoomLevel && (
                       <View style={styles.markerTextContainer}>
                         <Text style={styles.markerText}>
                           {location.booksCount === 1
@@ -176,7 +175,11 @@ export default function Map() {
         <View style={styles.bottomContainer}>
           <Text style={styles.header}>Books at this location</Text>
           <View style={styles.distanceContainer}>
-            <Entypo name="location-pin" size={24} color="#55c7aa" />
+            <Entypo
+              name="location-pin"
+              size={styles.pinIconSize}
+              color={COLORS.mainTheme}
+            />
             <Text style={styles.distanceText}>{selectedBooksDistance} km</Text>
           </View>
           <FlatList
@@ -197,62 +200,3 @@ export default function Map() {
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  map: {
-    flex: 1,
-  },
-  bookIcon: {
-    marginLeft: 16,
-  },
-  distanceContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  distanceText: {
-    fontSize: 16,
-    fontFamily: "SecularOne_400Regular",
-    marginLeft: 5,
-  },
-  markerTextContainer: {
-    backgroundColor: "#55c7aa",
-    borderRadius: 8,
-    padding: 5,
-  },
-  markerText: {
-    fontWeight: "bold",
-    color: "white",
-    fontFamily: "SecularOne_400Regular",
-    fontSize: 14,
-  },
-  bottomContainer: {
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: "white",
-    padding: 20,
-    borderTopLeftRadius: 20,
-    borderTopRightRadius: 20,
-    height: "50%", 
-    flex: 1,
-  },
-  header: {
-    fontSize: 20,
-    fontFamily: "SecularOne_400Regular",
-    marginBottom: 10,
-  },
-  closeButton: {
-    fontSize: 16,
-    marginTop: 20,
-    backgroundColor: "#f44336",
-    borderRadius: 10,
-    marginHorizontal: 100,
-    height: 50,
-  },
-  closeText: {
-    fontFamily: "SecularOne_400Regular",
-    color: "white",
-    fontSize: 18,
-  },
-});

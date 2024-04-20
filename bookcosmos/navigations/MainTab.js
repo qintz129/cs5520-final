@@ -8,117 +8,82 @@ import { Foundation } from "@expo/vector-icons";
 import { FontAwesome } from "@expo/vector-icons";
 import { FontAwesome5 } from "@expo/vector-icons";
 import CustomButton from "../components/CustomButton";
-import { StyleSheet, Text } from "react-native";
-import { useCustomFonts } from "../Fonts";
+import { useCustomFonts } from "../hooks/UseFonts";
+import { COLORS } from "../styles/Colors";
+import { mainTabStyles } from "../styles/MainTabStyles";
 
 const Tab = createBottomTabNavigator();
 
 // MainTab component to create the bottom tab navigation
 export default function MainTab({ navigation }) {
+  const styles = mainTabStyles;
   const { fontsLoaded } = useCustomFonts();
   if (!fontsLoaded) {
-    return <Text>Loading...</Text>;
+    return null;
   }
 
   return (
-    <Tab.Navigator
-      screenOptions={{
-        tabBarActiveTintColor: "#55c7aa",
-      }}
-    >
+    <Tab.Navigator screenOptions={styles.tabNavigatorOptions}>
       <Tab.Screen
         name="Explore"
         component={Explore}
         options={{
-          headerStyle: { height: 100 },
-          headerTitleStyle: {
-            fontSize: 20,
-            fontFamily: "SecularOne_400Regular",
-            fontWeight: "bold",
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="search" size={24} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="search" size={styles.tabIconSize} color={color} />
           ),
           headerRight: () => (
             <CustomButton
               onPress={() => navigation.navigate("Map")}
               customStyle={styles.headerRightButton}
             >
-              <FontAwesome5 name="map-marked-alt" size={20} color="white" />
+              <FontAwesome5
+                name="map-marked-alt"
+                size={styles.mapIconSize}
+                color={COLORS.white}
+              />
             </CustomButton>
           ),
+          ...styles.tabScreenOptions,
         }}
       />
       <Tab.Screen
         name="Requests"
         component={Requests}
         options={{
-          headerStyle: { height: 100 },
-          headerTitleStyle: {
-            fontSize: 20,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarIcon: ({ color, size }) => (
-            <Foundation name="book-bookmark" size={24} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Foundation
+              name="book-bookmark"
+              size={styles.tabIconSize}
+              color={color}
+            />
           ),
+          ...styles.tabScreenOptions,
         }}
       />
       <Tab.Screen
         name="History"
         component={History}
         options={{
-          headerStyle: { height: 100 },
-          tabBarLabelStyle: {
-            fontSize: 12,
-          },
-          headerTitleStyle: {
-            fontSize: 20,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome name="history" size={24} color={color} />
+          tabBarIcon: ({ color }) => (
+            <FontAwesome
+              name="history"
+              size={styles.tabIconSize}
+              color={color}
+            />
           ),
+          ...styles.tabScreenOptions,
         }}
       />
       <Tab.Screen
         name="Profile"
         component={Profile}
         options={{
-          headerStyle: { height: 100 },
-          headerTitleStyle: {
-            fontSize: 20,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarLabelStyle: {
-            fontSize: 12,
-            fontFamily: "SecularOne_400Regular",
-          },
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="person" size={24} color={color} />
+          tabBarIcon: ({ color }) => (
+            <Ionicons name="person" size={styles.tabIconSize} color={color} />
           ),
+          ...styles.tabScreenOptions,
         }}
       />
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  headerRightButton: {
-    marginRight: 15,
-    backgroundColor: "#55c7aa",
-    borderRadius: 5,
-    padding: 5,
-  },
-});
