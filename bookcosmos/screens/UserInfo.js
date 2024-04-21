@@ -153,7 +153,8 @@ export default function UserInfo({ navigation }) {
                 }
               }
               setInitialPassword(password);
-              Alert.alert("Changes saved successfully");
+              Alert.alert("Changes saved successfully"); 
+              navigation.goBack();
             } catch (error) {
               console.error("Error saving changes:", error);
             } finally {
@@ -163,7 +164,7 @@ export default function UserInfo({ navigation }) {
         },
       ],
       { cancelable: true }
-    );
+    ); 
   };
 
   const toggleVisibility = () => {

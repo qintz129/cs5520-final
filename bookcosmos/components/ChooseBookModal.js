@@ -156,7 +156,7 @@ export default function ChooseBookModal({
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Select a book to exchange</Text>
           {books.length === 0 ? (
-            <Text style={styles.noBooksText}>No books available</Text>
+            <Text style={styles.noBooksText}>No books available, add books to your library</Text>
           ) : (
             <FlatList
               data={books}

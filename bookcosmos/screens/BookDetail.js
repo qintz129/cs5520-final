@@ -258,7 +258,7 @@ export default function BookDetail({ route, navigation }) {
                     ? `${description.substring(0, 200)}...`
                     : description}
                 </Text>
-                {description && (
+                {description.length > 200 && (
                   <CustomButton onPress={toggleDescription}>
                     <Text style={styles.expandButtonText}>
                       {isExpanded ? "Hide" : "Read more"}

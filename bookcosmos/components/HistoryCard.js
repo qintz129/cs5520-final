@@ -16,7 +16,6 @@ export default function HistoryCard({
   date,
   navigation,
   reviewee,
-  reviewer,
   exchangeId,
   isReviewed,
   status,

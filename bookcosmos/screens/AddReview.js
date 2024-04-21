@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator, Keyboard, Alert } from "react-native";
+import { View, Text, ActivityIndicator, Keyboard, Alert} from "react-native";
 import React, { useState, useEffect } from "react";
 import { AirbnbRating } from "react-native-ratings";
 import CustomButton from "../components/CustomButton";
@@ -45,7 +45,7 @@ export default function AddReview({ navigation }) {
   const { reviewee, exchangeId } = route.params;
 
   const ratingCompleted = (rate) => {
-    setRating(rate);
+    setRating(rate); 
   };
 
   const handleSubmit = async () => {
@@ -57,7 +57,7 @@ export default function AddReview({ navigation }) {
       revieweeId: reviewee,
       date: new Date().toISOString(),
       exchangeId: exchangeId,
-    };
+    }; 
 
     try {
       Alert.alert("Confirm", "Are you sure you want to submit this review?", [
@@ -104,8 +104,11 @@ export default function AddReview({ navigation }) {
     Keyboard.dismiss();
   };
 
-  return (
-    <View style={styles.container}>
+  console.log("reviewer", reviewer); 
+  console.log("reviewee", reviewee);
+ 
+  return ( 
+    <View style={styles.container}>   
       <Text style={styles.header}>Leave a Review for Your Book Partner</Text>
       <AirbnbRating key={key} onFinishRating={ratingCompleted} />
       <MultilineInput
@@ -113,7 +116,7 @@ export default function AddReview({ navigation }) {
         value={comment}
         onChangeText={setComment}
         placeholder="Write your comment here..."
-      />
+      /> 
       <View style={styles.buttonContainer}>
         <CustomButton customStyle={styles.clearButton} onPress={handleClear}>
           <Text style={styles.buttonText}>Clear</Text>
@@ -125,7 +128,7 @@ export default function AddReview({ navigation }) {
             <Text style={styles.buttonText}>Submit</Text>
           )}
         </CustomButton>
-      </View>
-    </View>
+      </View>   
+    </View> 
   );
 }

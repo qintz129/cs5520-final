@@ -1,6 +1,6 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, KeyboardAvoidingView, Platform, ScrollView} from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
@@ -80,48 +80,54 @@ export default function Signup({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <AuthenticationBackground />
-      <Text style={styles.logo}>
-        Book <Text style={styles.coloredLetter}>C</Text>osmos
-      </Text>
-      <Text style={styles.slogan}>Start a Literary Odyssey </Text>
-      <Text style={styles.slogan}>
-        Where Every <Text style={styles.coloredWord}>Swap</Text> is a New
-        Universe to Explore
-      </Text>
-      <CustomInput
-        title="Email"
-        onChangeText={emailHandler}
-        value={email}
-        placeholder="Email"
-      />
-      <CustomPassWordInput
-        title="Password"
-        onChangeText={passwordHandler}
-        value={password}
-        placeholder="Password"
-        secureTextEntry={!passwordVisible}
-        onToggleVisibility={toggleVisibility}
-      />
-      {passwordError && <Text>Passwords do not match</Text>}
-      <CustomPassWordInput
-        title="Confirm Password"
-        onChangeText={confirmPasswordHandler}
-        value={confirmPassword}
-        placeholder="Password"
-        secureTextEntry={!passwordVisible}
-        onToggleVisibility={toggleVisibility}
-      />
-      {passwordError && <Text>Passwords do not match</Text>}
-      <CustomButton onPress={signupHandler} disabled={isEmpty}>
-        <Text style={isEmpty ? styles.disabledText : styles.normalText}>
-          Register
-        </Text>
-      </CustomButton>
-      <CustomButton onPress={loginHandler}>
-        <Text style={styles.normalText}>Already Registered? Login</Text>
-      </CustomButton>
+    <View style={styles.container}> 
+      <AuthenticationBackground /> 
+      <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : null}
+          style={Platform.OS === "ios" ? { flex: 1 } : null}
+          keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
+        >   
+          <Text style={styles.logo}>
+            Book <Text style={styles.coloredLetter}>C</Text>osmos
+          </Text>
+          <Text style={styles.slogan}>Start a Literary Odyssey </Text>
+          <Text style={styles.slogan}>
+            Where Every <Text style={styles.coloredWord}>Swap</Text> is a New
+            Universe to Explore
+          </Text>
+          <CustomInput
+            title="Email"
+            onChangeText={emailHandler}
+            value={email}
+            placeholder="Email"
+          />
+          <CustomPassWordInput
+            title="Password"
+            onChangeText={passwordHandler}
+            value={password}
+            placeholder="Password"
+            secureTextEntry={!passwordVisible}
+            onToggleVisibility={toggleVisibility}
+          />
+          {passwordError && <Text>Passwords do not match</Text>}
+          <CustomPassWordInput
+            title="Confirm Password"
+            onChangeText={confirmPasswordHandler}
+            value={confirmPassword}
+            placeholder="Password"
+            secureTextEntry={!passwordVisible}
+            onToggleVisibility={toggleVisibility}
+          />
+          {passwordError && <Text>Passwords do not match</Text>}
+          <CustomButton onPress={signupHandler} disabled={isEmpty}>
+            <Text style={isEmpty ? styles.disabledText : styles.normalText}>
+              Register
+            </Text>
+          </CustomButton>
+          <CustomButton onPress={loginHandler}>
+            <Text style={styles.normalText}>Already Registered? Login</Text>
+        </CustomButton>  
+      </KeyboardAvoidingView>
     </View>
   );
 }
