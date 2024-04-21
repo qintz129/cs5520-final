@@ -26,7 +26,7 @@ export default function ChooseBookModal({
   onRequestClose,
   fromUserId,
   requestedBookId,
-  toUserId,
+  toUserId, 
 }) {
   const [books, setBooks] = useState([]);
   const [selectedBookId, setSelectedBookId] = useState(null);
@@ -143,7 +143,7 @@ export default function ChooseBookModal({
     } else {
       Alert.alert("Please select a book!");
     }
-  };
+  }; 
 
   return (
     <Modal
@@ -155,8 +155,8 @@ export default function ChooseBookModal({
       <View style={styles.modalContainer}>
         <View style={styles.modalContent}>
           <Text style={styles.modalTitle}>Select a book to exchange</Text>
-          {books.length === 0 ? (
-            <Text style={styles.noBooksText}>No books available, add books to your library</Text>
+          {books.length === 0 ? ( 
+            <Text style={styles.noBooksText}>No books available, add books to your library</Text> 
           ) : (
             <FlatList
               data={books}
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
   },
   modalContent: {
     maxHeight: "60%",
-    width: "80%",
+    width: "90%",
     backgroundColor: "white",
     padding: 20,
     borderRadius: 10,

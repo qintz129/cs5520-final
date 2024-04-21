@@ -350,7 +350,7 @@ export default function BookDetail({ route, navigation }) {
               onSelectBook={handleSelectBook}
               fromUserId={auth.currentUser.uid}
               requestedBookId={bookId}
-              toUserId={ownerId}
+              toUserId={ownerId} 
             />
           </View>
         )}
