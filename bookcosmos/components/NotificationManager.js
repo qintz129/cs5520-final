@@ -3,17 +3,18 @@ import { useState, useEffect } from "react";
 import * as Notifications from "expo-notifications";
 import { notificationManagerStyles } from "../styles/ComponentStyles";
 
+// NotificationManager component to manage the notification settings
 export default function NotificationManager({
   initialNotification,
   notificationHandler,
 }) {
   const [isNotificationsEnabled, setIsNotificationsEnabled] = useState(false);
   const styles = notificationManagerStyles;
-
+ // Set the initial notification setting
   useEffect(() => {
     setIsNotificationsEnabled(initialNotification);
   }, [initialNotification]);
-
+  // Verify the permission to send notifications
   async function verifyPermission() {
     try {
       const status = await Notifications.getPermissionsAsync();
@@ -26,9 +27,10 @@ export default function NotificationManager({
       console.log(error);
     }
   }
-
+  // Toggle the notification setting
   const toggleSwitch = async () => {
-    const newNotificationEnabled = !isNotificationsEnabled;
+    const newNotificationEnabled = !isNotificationsEnabled; 
+    // Enable or disable the notification
     if (newNotificationEnabled) {
       try {
         if (!(await verifyPermission())) {
@@ -40,7 +42,8 @@ export default function NotificationManager({
       } catch (error) {
         console.log(error);
       }
-    } else {
+    } else { 
+      // After disabling the notification settings, Cancel all scheduled notifications
       await Notifications.cancelAllScheduledNotificationsAsync();
       setIsNotificationsEnabled(false);
       notificationHandler(false);

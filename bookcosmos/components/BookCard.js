@@ -9,7 +9,8 @@ import { useCustomFonts } from "../hooks/UseFonts";
 import { COLORS } from "../styles/Colors";
 import { bookCardStyles } from "../styles/ComponentStyles";
 
-const ExploreBookCard = memo(
+// BookCard component, use memo to prevent unnecessary re-renders
+const BookCard = memo(
   ({ item, isMyLibrary, handlePressBook, handleDeleteItem }) => {
     //console.log(item.bookName, item.bookStatus, isMyLibrary);
     const [bookAvatar, setBookAvatar] = useState(null);
@@ -54,13 +55,15 @@ const ExploreBookCard = memo(
           </View>
         </View>
       );
-    }
+    } 
+    // Icon for book status
     const icon =
       item.bookStatus === "inExchange"
         ? "swap"
         : item.bookStatus === "pending"
         ? "swapright"
-        : null;
+        : null; 
+
     const content = (
       <View style={styles.item}>
         <CustomButton
@@ -80,7 +83,8 @@ const ExploreBookCard = memo(
         </CustomButton>
       </View>
     );
-    return item.bookStatus === "free" && isMyLibrary ? (
+    return item.bookStatus === "free" && isMyLibrary ? ( 
+      // Swipeable component for delete button
       <Swipeable
         renderRightActions={() => (
           <CustomButton
@@ -100,7 +104,8 @@ const ExploreBookCard = memo(
     ) : (
       content
     );
-  },
+  }, 
+  // Only re-render if the item or isMyLibrary changes
   (prevProps, nextProps) => {
     return (
       prevProps.item.id === nextProps.item.id &&
@@ -113,4 +118,4 @@ const ExploreBookCard = memo(
   }
 );
 
-export default ExploreBookCard;
+export default BookCard;

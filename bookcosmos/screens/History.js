@@ -51,9 +51,7 @@ export default function History({ navigation }) {
     const unsubscribe = fetchHistory();
     return () => unsubscribe();
   }, [auth.currentUser.uid]);
-
-  //console.log(history);
-
+  
   return (
     <View style={styles.container}>
       {isLoading ? (
@@ -87,8 +85,8 @@ export default function History({ navigation }) {
                 theirBook={item.myBook}
                 date={convertTimestamp(item.date)}
                 navigation={navigation}
-                reviewee={auth.currentUser.uid}
-                reviewer={item.toUser}
+                reviewee={item.fromUser}
+                reviewer={auth.currentUser.uid}
                 exchangeId={item.id}
                 isReviewed={item.isReviewed}
                 status={item.status}

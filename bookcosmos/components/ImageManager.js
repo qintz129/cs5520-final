@@ -8,6 +8,7 @@ import { useCustomFonts } from "../hooks/UseFonts";
 import { COLORS } from "../styles/Colors";
 import { imageManagerStyles } from "../styles/ComponentStyles";
 
+// ImageManager component to manage the image of the book
 export default function ImageManager({
   receiveImageUri,
   receiveNewImage,
@@ -22,10 +23,13 @@ export default function ImageManager({
   if (!fontsLoaded) {
     return null;
   }
-
+  
+  // Reset the imageUri when the initialImageUri changes
   useEffect(() => {
     setImageUri(initialImageUri);
-  }, [initialImageUri]);
+  }, [initialImageUri]); 
+
+  // Verify the permission to access the camera
   async function verifyPermission() {
     if (status.granted) {
       return true;
@@ -36,7 +40,8 @@ export default function ImageManager({
     } catch (err) {
       console.log(err);
     }
-  }
+  } 
+  // Take a photo using the camera
   async function takeImageHandler() {
     try {
       const havePermission = await verifyPermission();
@@ -58,7 +63,7 @@ export default function ImageManager({
       console.log(err);
     }
   }
-
+  // Pick an image from the gallery
   async function pickImageHandler() {
     const havePermission = await verifyPermission();
     if (!havePermission) {
@@ -76,7 +81,7 @@ export default function ImageManager({
     setImageUri(result.assets[0].uri);
     receiveNewImage(true);
   }
-
+  // Show the ActionSheet to take a photo or choose a photo from the gallery
   const showActionSheet = () => {
     console.log("Attempting to show ActionSheet");
     const options = ["Take Photo", "Choose Photo", "Cancel"];

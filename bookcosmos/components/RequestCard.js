@@ -162,7 +162,8 @@ export default function RequestCard({
                 "Request Cancelled",
                 "The request has been cancelled"
               );
-            } else if (action === "reject") {
+            } else if (action === "reject") { 
+              // Write the rejected request to the history
               const historyEntryForm = {
                 myBook: offeredBookInfo.id,
                 requestedBook: requestedBookInfo.id,
@@ -239,7 +240,7 @@ export default function RequestCard({
       setIsAcceptLoading(false);
     }
   };
-
+  // Function to handle the cancel after accept button
   const handleCancelAfterAccept = async () => {
     try {
       Alert.alert("Confirm", "Are you sure you want to cancel this request?", [
@@ -359,7 +360,7 @@ export default function RequestCard({
 
                 setStatus("completed");
                 setUpdateTrigger((prev) => prev + 1);
-
+                // Write the completed request to the history
                 const historyEntryForm = {
                   myBook: requestedBookInfo.id,
                   requestedBook: offeredBookInfo.id,
@@ -369,12 +370,7 @@ export default function RequestCard({
                   date: new Date().toISOString(),
                   status: "completed",
                 };
-                await writeToDB(
-                  historyEntryForm,
-                  "users",
-                  fromUserId,
-                  "history"
-                );
+                await writeToDB(historyEntryForm, "users",fromUserId,"history");
                 await writeToDB(historyEntryForm, "users", toUserId, "history");
                 Alert.alert("The exchange has been completed");
               }

@@ -198,7 +198,7 @@ export default function BookDetail({ route, navigation }) {
         });
     }
   }, [ownerAvatarURI]);
-
+  // Function to fetch book details from Google Books API
   const fetchBookDetails = async (name, author) => {
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
       name
@@ -258,7 +258,7 @@ export default function BookDetail({ route, navigation }) {
                     ? `${description.substring(0, 200)}...`
                     : description}
                 </Text>
-                {description && (
+                {description.length > 200 && (
                   <CustomButton onPress={toggleDescription}>
                     <Text style={styles.expandButtonText}>
                       {isExpanded ? "Hide" : "Read more"}
@@ -350,7 +350,7 @@ export default function BookDetail({ route, navigation }) {
               onSelectBook={handleSelectBook}
               fromUserId={auth.currentUser.uid}
               requestedBookId={bookId}
-              toUserId={ownerId}
+              toUserId={ownerId} 
             />
           </View>
         )}

@@ -10,6 +10,7 @@ import { useCustomFonts } from "../hooks/UseFonts";
 import { exploreBookCardStyles } from "../styles/ComponentStyles";
 import { COLORS } from "../styles/Colors";
 
+// ExploreBookCard component to display the book card in Explore screen
 export default function ExploreBookCard({ item }) {
   const navigation = useNavigation();
   const [bookAvatar, setBookAvatar] = useState(null);
@@ -20,7 +21,7 @@ export default function ExploreBookCard({ item }) {
   if (!fontsLoaded) {
     return null;
   }
-
+  // If the book has an image, load the image from firebase storage
   useEffect(() => {
     if (item.image) {
       const imageRef = ref(storage, item.image);

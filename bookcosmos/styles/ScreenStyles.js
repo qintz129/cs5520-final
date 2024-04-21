@@ -4,17 +4,18 @@ import { noDataTextStyles, tabToggleStyles } from "./CustomStyles";
 
 // Styles for Signup and Login screens
 export const authenticationStyles = StyleSheet.create({
-  container: {
+  container: { 
     flex: 1,
     backgroundColor: COLORS.white,
     paddingHorizontal: 20,
-    justifyContent: "center",
+    justifyContent: "flex-start",  
   },
   logo: {
     fontFamily: "PaytoneOne_400Regular",
     fontSize: 45,
     textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 20, 
+    marginTop: 20,
   },
   coloredLetter: { color: COLORS.mainTheme },
   slogan: {
@@ -345,7 +346,6 @@ export const addReviewStyles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     width: "100%",
-    marginTop: 20,
   },
   clearButton: {
     width: "40%",

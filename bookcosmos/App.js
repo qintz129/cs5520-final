@@ -24,6 +24,7 @@ import Chat from "./screens/Chat";
 import { COLORS } from "./styles/Colors";
 import { appStyles } from "./styles/AppStyles";
 
+// Notification handler to show notifications
 Notifications.setNotificationHandler({
   handleNotification: async function (notification) {
     return {
