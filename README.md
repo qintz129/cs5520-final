@@ -278,3 +278,4 @@ Tianzi Qin:
 - Fix the reviewee name bug in the AddReview screen.
 - Add address of the book in the accepted request card. 
 - Video demo recording.
+- Update the README file.
