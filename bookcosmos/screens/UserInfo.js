@@ -39,7 +39,7 @@ export default function UserInfo({ navigation }) {
   if (!fontsLoaded) {
     return null;
   }
-
+  // Fetch the image from the storage
   useEffect(() => {
     const fetchImage = async () => {
       const imageRef = ref(storage, imageUri);
@@ -56,11 +56,11 @@ export default function UserInfo({ navigation }) {
       fetchImage();
     }
   }, [imageUri]);
-
+  // Handle the name change
   const handleNameChange = (changedText) => {
     setName(changedText);
   };
-
+  // Sign out the user
   const signOutHandler = async () => {
     try {
       await signOut(auth);
@@ -68,7 +68,7 @@ export default function UserInfo({ navigation }) {
       console.log(err);
     }
   };
-
+ 
   const handleSave = () => {
     Alert.alert(
       "Important",
@@ -84,13 +84,14 @@ export default function UserInfo({ navigation }) {
                 Alert.alert("Password should be at least 6 characters");
                 return;
               }
-
+              // If the user has a new password, reauthenticate the user
               if (initialPassword !== password) {
                 const credential = EmailAuthProvider.credential(
                   auth.currentUser.email,
                   initialPassword
                 );
-                try {
+                try { 
+                  // Reauthenticate the user with the credential
                   await reauthenticateWithCredential(
                     auth.currentUser,
                     credential
@@ -101,7 +102,7 @@ export default function UserInfo({ navigation }) {
                   console.error("Error reauthenticating:", error);
                 }
               }
-
+              // If the user has a new image, upload it to the storage
               if (hasNewImage && uploadUri) {
                 try {
                   const newImageUri = await getImageData(uploadUri);
@@ -166,7 +167,7 @@ export default function UserInfo({ navigation }) {
       { cancelable: true }
     ); 
   };
-
+  // Toggle the password visibility
   const toggleVisibility = () => {
     setPasswordVisible(!passwordVisible);
   };
@@ -191,11 +192,11 @@ export default function UserInfo({ navigation }) {
       console.log(err);
     }
   }
-
+  // Handle the password edit, to show the modal
   function handlePasswordEdit() {
     setIsModalVisible(true);
   }
-
+  // Receive the value to show whether the notification is on or off
   const receiveNotification = (notification) => {
     setNotification(notification);
     console.log("notification", notification);

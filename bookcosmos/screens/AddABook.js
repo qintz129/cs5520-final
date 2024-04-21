@@ -24,6 +24,7 @@ import { useCustomFonts } from "../hooks/UseFonts";
 import { COLORS } from "../styles/Colors";
 import { addABookStyles } from "../styles/ScreenStyles";
 
+// AddABook screen to add a new book or edit an existing book
 export default function AddABook({ navigation, route }) {
   const [bookName, setBookName] = useState("");
   const [author, setAuthor] = useState("");
@@ -101,7 +102,7 @@ export default function AddABook({ navigation, route }) {
       return () => unsubscribe();
     }
   }, [editMode, bookId]);
-
+  // Fetch the image from the storage
   useEffect(() => {
     const fetchImage = async () => {
       const imageRef = ref(storage, imageUri);
@@ -118,15 +119,15 @@ export default function AddABook({ navigation, route }) {
       fetchImage();
     }
   }, [imageUri]);
-
+  // Receive the image uri from the ImageManager
   const receiveImageUri = (takenImageUri) => {
     setUploadUri(takenImageUri);
   };
-
+  // Check if a new image is received
   const receiveNewImage = (newImage) => {
     setHasNewImage(newImage);
   };
-
+  // Upload the image to the storage
   async function getImageData(uri) {
     try {
       const response = await fetch(uri);
@@ -140,7 +141,7 @@ export default function AddABook({ navigation, route }) {
       console.log(err);
     }
   }
-
+  // Process the image
   async function processImage(uploadUri) {
     try {
       const newImageUri = await getImageData(uploadUri);
@@ -151,7 +152,7 @@ export default function AddABook({ navigation, route }) {
       return null;
     }
   }
-
+  // Handle the save button
   async function handleSave() {
     Alert.alert(
       "Important",
@@ -162,7 +163,8 @@ export default function AddABook({ navigation, route }) {
           text: "Yes",
           onPress: async () => {
             setIsSaveLoading(true);
-            try {
+            try { 
+              // Check if the required fields are filled
               if (!bookName || !author || !address) {
                 Alert.alert("Please fill in book name, author, and address.");
                 return;
@@ -194,7 +196,7 @@ export default function AddABook({ navigation, route }) {
                 newBookData.image = newImageUri;
               }
               console.log("newBookData", newBookData);
-
+              // If in the edit mode, update the book data
               if (editMode) {
                 await updateToDB(bookId, "books", null, null, newBookData);
                 navigation.goBack();
@@ -223,7 +225,7 @@ export default function AddABook({ navigation, route }) {
     setAddress("");
     Keyboard.dismiss();
   };
-
+  // Fetch the book description from Google Books API
   const fetchBookDescription = async (name, author) => {
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
       name
@@ -243,7 +245,7 @@ export default function AddABook({ navigation, route }) {
       console.error("Failed to fetch book details:", error);
     }
   };
-
+  // Initialize the Geocoder
   Geocoder.init(googleApi, { language: "en" });
 
   // Get coordinates from address
@@ -258,7 +260,7 @@ export default function AddABook({ navigation, route }) {
       return null;
     }
   };
-
+  // Get address from coordinates
   const getReverseGeocodingData = (lat, lng) => {
     const url = `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${googleApi}`;
     if (lat && lng) {
@@ -280,7 +282,8 @@ export default function AddABook({ navigation, route }) {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container}>   
+      {/* KeyboardAvoidingView to avoid the keyboard covering the input fields */}
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : null}
         style={Platform.OS === "ios" ? { flex: 1 } : null}

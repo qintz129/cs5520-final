@@ -19,6 +19,7 @@ import { mapView } from "../utils/Constants";
 import { COLORS } from "../styles/Colors";
 import { mapStyles } from "../styles/ScreenStyles";
 
+// Map screen to display the books' locations
 export default function Map() {
   const navigation = useNavigation();
   const [userLocation, setUserLocation] = useState(null);

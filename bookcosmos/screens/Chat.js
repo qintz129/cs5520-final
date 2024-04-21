@@ -16,6 +16,7 @@ import {
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { chatStyles } from "../styles/ScreenStyles";
 
+// Chat screen to display messages between users
 export default function Chat({ route, navigation }) {
   const { otherId, otherName } = route.params;
   const [messages, setMessages] = useState([]);
@@ -34,7 +35,8 @@ export default function Chat({ route, navigation }) {
 
   const chatRoomId = generateChatRoomId(auth.currentUser.uid, otherId);
   console.log(chatRoomId);
-
+  
+  // Fetch messages from the database
   useLayoutEffect(() => {
     const messagesRef = collection(database, "chats", chatRoomId, "messages");
     const q = query(messagesRef, orderBy("createdAt", "desc"));
@@ -57,6 +59,7 @@ export default function Chat({ route, navigation }) {
     return () => unsubscribe();
   }, [chatRoomId]);
 
+  // Send messages to the database
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)

@@ -10,7 +10,7 @@ import { getDoc, doc } from "firebase/firestore";
 import { useCustomFonts } from "../hooks/UseFonts";
 import { COLORS } from "../styles/Colors";
 import { addReviewStyles } from "../styles/ScreenStyles";
-
+// AddReview screen to add a review for the book partner
 export default function AddReview({ navigation }) {
   const [reviewer, setReviewer] = useState("");
   const [isSubmitLoading, setIsSubmitLoading] = useState(false);
@@ -19,7 +19,7 @@ export default function AddReview({ navigation }) {
   if (!fontsLoaded) {
     return null;
   }
-
+  // Get the reviewer's name from the database
   useEffect(() => {
     const getUserInfo = async () => {
       try {

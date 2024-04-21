@@ -25,7 +25,8 @@ export default function Login({ navigation }) {
   };
   const loginHandler = async () => {
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const userCred = await signInWithEmailAndPassword(auth, email, password); 
+      console.log("User logged in", userCred.user.uid);
     } catch (err) {
       //console.log(err.code);
       if (err.code === "auth/invalid-credential") {

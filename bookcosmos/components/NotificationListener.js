@@ -2,9 +2,10 @@ import { useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
 import * as Notifications from "expo-notifications";
 
+// NotificationListener component to listen to the notification response
 const NotificationListener = () => {
   const navigation = useNavigation();
-
+  // Listen to the notification response
   useEffect(() => {
     const subscription = Notifications.addNotificationResponseReceivedListener(
       (notificationResponse) => {

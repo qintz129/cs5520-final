@@ -198,7 +198,7 @@ export default function BookDetail({ route, navigation }) {
         });
     }
   }, [ownerAvatarURI]);
-
+  // Function to fetch book details from Google Books API
   const fetchBookDetails = async (name, author) => {
     const url = `https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(
       name
