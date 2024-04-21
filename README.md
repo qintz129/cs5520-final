@@ -249,13 +249,15 @@ Screenshots:
 - The address of the book that users want to exchange will be shown after a request is accepted, which is more clear for users to know where to go.
 
     - Screenshots:
+
     ![ShippingAddress](readmeFiles/ShippingAddress.jpeg)
 
 - Add read more and hide button for the long book description in the BookDetail screen.
 
     - Screenshots:
+
     ![ReadMore](readmeFiles/ReadMore.jpg)
-![Hide](readmeFiles/Hide.jpg)
+    ![Hide](readmeFiles/Hide.jpg)
 
 - Add descriptive text to screens when there is no data for this functionality.
 
