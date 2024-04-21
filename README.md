@@ -234,48 +234,79 @@ Hanyi Zhou:
 - Popup alerts asking for confirmation when users click all the buttons in the RequestCard.
 - Present average rating info of other users in the BookDetail and OtherUserProfile screens.  
 
-## Iteration 3 
+## Iteration 3
 
-### Chat Function 
+### Chat Function
+
 According to the feedback from Iteration 1 that there is no means for users to communicate, we implemented chat function as a new feature in the app, a user can enter the chat page by clicking the chat icon in other user's profile.  
 
 Screenshots:
 
 ![Chat](readmeFiles/Chat.jpg)
 
-### Other small updates 
-- The address of the book that users want to exchange will be shown after a request is accepted, which is more clear for users to know where to go. 
-- Add read more and hide button for the long book description in the BookDetail screen. 
+### Other small updates
 
-### Bug fix 
-- Fix the render bug in the request card, when one user accepts, rejects or completes the request, the status of the request will be updated simultaneously in another users' request list. 
-- Fix the picture re-render problems in the flatlist in the Library Screen, using memo to prevent unnecessary re render. 
+- The address of the book that users want to exchange will be shown after a request is accepted, which is more clear for users to know where to go.
 
-### UI Optimization 
-- Add fonts and colors to the app, make the app more beautiful and consistent. 
-- Add logo and background image to the app signup/login page.   
+    - Screenshots:
+    ![ShippingAddress](readmeFiles/ShippingAddress.jpeg)
+
+- Add read more and hide button for the long book description in the BookDetail screen.
+
+    - Screenshots:
+    ![ReadMore](readmeFiles/ReadMore.jpg)
+![Hide](readmeFiles/Hide.jpg)
+
+- Add descriptive text to screens when there is no data for this functionality.
+
+    - Screenshots:
+    ![NoRequests](readmeFiles/NoRequests.jpeg)
+
+- Add activity indicators to all buttons to show the processing status. Users will see them after clicking the buttons until the requests are handled by the backend successfully.
+
+### Bug fix
+
+- Fix the render bug in the request card, when one user accepts, rejects or completes the request, the status of the request will be updated simultaneously in another users' request list.
+- Fix the picture re-render problems in the flatlist in the Library Screen, using memo to prevent unnecessary re render.
+- Fix the render bug of the History Card the History Screen. Update the data fetching logic to make the screen correctly render completed and rejected exchanges.
+- Fix the render bug of the flatlist in the Map Screen. Make the list can be dragged down by the user.
+- Fix the render bug of the search function in the Explore Screen. Show an activity indicator while searching for results.
+- Fix the render bug of the distance in the Book Detail Screen. Let it render correctly whenever the users click the book card in the Explore, Map or book owner's profile.
+
+### UI Optimization
+
+- Add fonts and colors to the app, make the app more beautiful and consistent.
+- Add logo and background image to the app signup/login page.
 - Add button and input styles to the app.
 
 Some UI examples:  
 
 ![Signup-3](readmeFiles/Signup-3.jpg)
-![Explore-3](readmeFiles/Explore-3.jpg) 
-![Map-3](readmeFiles/Map-3.jpg) 
+![Explore-3](readmeFiles/Explore-3.jpg)
+![Map-3](readmeFiles/Map-3.jpg)
 ![Details-3](readmeFiles/Details-3.jpg)  
-![Requests-3](readmeFiles/Requests-3.jpg) 
-![History-3](readmeFiles/History-3.jpg) 
-![Profile-3](readmeFiles/Profile-3.jpg) 
-![Reviews-3](readmeFiles/Reviews-3.jpg) 
+![Requests-3](readmeFiles/Requests-3.jpg)
+![History-3](readmeFiles/History-3.jpg)
+![Profile-3](readmeFiles/Profile-3.jpg)
+![Reviews-3](readmeFiles/Reviews-3.jpg)
 ![UserInfo-3](readmeFiles/UserInfo-3.jpg)
 
-### Contribution 
+### Contribution
 
-Tianzi Qin: 
+Tianzi Qin:
 
-- Implement the chat function. 
-- Add read more and hide button for the long book description in the BookDetail screen. 
-- Fix the render bug in the request card and the re-render problem in the flatlist in the Library Screen.   
+- Implement the chat function.
+- Add read more and hide button for the long book description in the BookDetail screen.
+- Fix the render bug in the request card and the re-render problem in the flatlist in the Library Screen.
 - Fix the reviewee name bug in the AddReview screen.
-- Add address of the book in the accepted request card. 
+- Add address of the book in the accepted request card.
 - Video demo recording.
+- Update the README file.
+
+Hanyi Zhou:
+
+- Optimize the UI. Add fonts, colors, icons to the app and adjust all the styles of each component and screen. Move out all styles and put them together to the styles/ folder.
+- Add descriptive text of no data to screens and activity indicators to the buttons.
+- Fix the render bugs of History Card in the History, bugs of flatlist in Map, the bugs of searching function in Explore and the bugs of distance in Book Detail.
+- Video demo editing.
 - Update the README file.
