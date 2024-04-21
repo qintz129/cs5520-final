@@ -262,6 +262,7 @@ Screenshots:
 - Add descriptive text to screens when there is no data for this functionality.
 
     - Screenshots:
+    
     ![NoRequests](readmeFiles/NoRequests.jpeg)
 
 - Add activity indicators to all buttons to show the processing status. Users will see them after clicking the buttons until the requests are handled by the backend successfully.
