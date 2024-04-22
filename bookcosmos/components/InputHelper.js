@@ -107,7 +107,7 @@ export function CustomPassWordInput({
     </View>
   );
 }
-
+// MultilineInput component to achieve the multiline input for all screens
 export function MultilineInput({
   title,
   onChangeText,

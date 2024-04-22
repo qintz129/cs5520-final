@@ -1,6 +1,6 @@
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useState } from "react";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert} from "react-native";
 import { auth } from "../firebase-files/firebaseSetup";
 import { CustomInput, CustomPassWordInput } from "../components/InputHelper";
 import CustomButton from "../components/CustomButton";
@@ -25,7 +25,8 @@ export default function Login({ navigation }) {
   };
   const loginHandler = async () => {
     try {
-      const userCred = await signInWithEmailAndPassword(auth, email, password);
+      const userCred = await signInWithEmailAndPassword(auth, email, password); 
+      console.log("User logged in", userCred.user.uid);
     } catch (err) {
       //console.log(err.code);
       if (err.code === "auth/invalid-credential") {
@@ -54,8 +55,8 @@ export default function Login({ navigation }) {
     setPasswordVisible(!passwordVisible);
   };
   return (
-    <View style={styles.container}>
-      <AuthenticationBackground />
+    <View style={styles.container}> 
+      <AuthenticationBackground /> 
       <Text style={styles.logo}>
         Book <Text style={styles.coloredLetter}>C</Text>osmos
       </Text>
@@ -85,7 +86,7 @@ export default function Login({ navigation }) {
       </CustomButton>
       <CustomButton onPress={signupHandler}>
         <Text style={styles.normalText}>New User? Create An Account</Text>
-      </CustomButton>
+      </CustomButton> 
     </View>
   );
 }

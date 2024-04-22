@@ -447,8 +447,7 @@ export const inputHelperStyles = StyleSheet.create({
   iconSize: 24,
   container: {
     width: "100%",
-    marginHorizontal: 10,
-    marginTop: 10,
+    marginTop: 10,  
   },
   title: {
     fontFamily: "SecularOne_400Regular",
@@ -464,9 +463,9 @@ export const inputHelperStyles = StyleSheet.create({
     borderWidth: 1.5,
     marginTop: 5,
     borderRadius: 10,
-    paddingHorizontal: 10,
     borderColor: COLORS.grey,
-    width: "100%",
+    width: "100%",  
+    padding: 5
   },
   multiline: {
     borderWidth: 1.5,

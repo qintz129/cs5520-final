@@ -3,7 +3,7 @@ import { PaytoneOne_400Regular } from "@expo-google-fonts/paytone-one";
 import { Molengo_400Regular } from "@expo-google-fonts/molengo";
 import { SecularOne_400Regular } from "@expo-google-fonts/secular-one";
 import { Catamaran_400Regular } from "@expo-google-fonts/catamaran";
-
+// Custom fonts to be used in the application
 export function useCustomFonts() {
   const [fontsLoaded] = useFonts({
     PaytoneOne_400Regular,

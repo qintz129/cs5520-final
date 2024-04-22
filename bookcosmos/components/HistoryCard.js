@@ -16,7 +16,6 @@ export default function HistoryCard({
   date,
   navigation,
   reviewee,
-  reviewer,
   exchangeId,
   isReviewed,
   status,
@@ -54,7 +53,8 @@ export default function HistoryCard({
     };
     fetchBooksData();
   }, [myBook, theirBook]);
-
+  
+  // Load the images of the books from firebase storage
   useEffect(() => {
     if (myBookData.image) {
       const imageRef = ref(storage, myBookData.image);
@@ -67,7 +67,8 @@ export default function HistoryCard({
         });
     }
   }, [myBookData.image]);
-
+  
+  // Load their book image
   useEffect(() => {
     if (theirBookData.image) {
       const imageRef = ref(storage, theirBookData.image);

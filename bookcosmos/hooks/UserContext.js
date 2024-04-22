@@ -1,7 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from "react";
 import { auth, database } from "../firebase-files/firebaseSetup";
 import { onSnapshot, doc } from "firebase/firestore";
-
+// UserContext to store user information
 const UserContext = createContext();
 
 export const useUser = () => useContext(UserContext);
@@ -13,7 +13,8 @@ export const UserProvider = ({ children }) => {
     imageUri: null,
     password: "",
     notification: false,
-  });
+  }); 
+  // Fetch user data from the database
   useEffect(() => {
     if (auth.currentUser) {
       const unsubscribe = onSnapshot(
@@ -40,7 +41,8 @@ export const UserProvider = ({ children }) => {
       );
 
       return () => unsubscribe();
-    } else {
+    } else {  
+      // Reset user info if user is not logged in
       setUserInfo({
         name: "",
         email: "",

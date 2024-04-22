@@ -5,6 +5,7 @@ import CustomButton from "./CustomButton";
 import { useCustomFonts } from "../hooks/UseFonts";
 import { changePasswordModalStyles } from "../styles/ComponentStyles";
 
+// ChangePassword Modal to change the password
 export default function ChangePassword({ isVisible, onClose, onSave }) {
   const [newPassword, setNewPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);

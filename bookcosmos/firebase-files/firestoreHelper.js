@@ -190,7 +190,7 @@ export async function fetchExtra(doc) {
     requestedBookInfo,
   };
 }
-
+// Function to fetch books at a specific location range
 export async function fetchBooksAtLocation(location, currentUserUid) {
   //console.log("Fetching books at location:", location);
   const { latitude, longitude } = location;
